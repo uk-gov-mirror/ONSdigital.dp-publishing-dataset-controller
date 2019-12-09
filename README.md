@@ -24,7 +24,7 @@ environment variables, or with a link to a configuration guide.
 
 | Environment variable | Default | Description
 | -------------------- | ------- | -----------
-| BIND_ADDR            | :8080   | The host and port to bind to
+| BIND_ADDR            | :24000  | The host and port to bind to
 
 ### Contributing
 
