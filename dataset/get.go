@@ -1,12 +1,12 @@
-package handler
+package dataset
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/log.go/log"
-    "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 )
 
 // GetDataset returns a specfic dataset
@@ -19,16 +19,23 @@ func GetDataset(dc *dataset.Client) http.HandlerFunc {
 func getDataset(w http.ResponseWriter, req *http.Request, dc *dataset.Client) {
 	ctx := req.Context()
 	vars := mux.Vars(req)
-    datasetID := vars["datasetID"]
+	datasetID := vars["datasetID"]
 	userAccessToken := ""
 	collectionID := ""
 
-	datasets, err := dc.Get(ctx, userAccessToken, "", collectionID, datasetID)
+	dataset, err := dc.Get(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
-		log.Event(nil, "error getting dataset", log.Error(err))
+		log.Event(ctx, "error getting dataset", log.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	b, _ := json.Marshal(datasets)
+
+	b, err := json.Marshal(dataset)
+	if err != nil {
+		log.Event(ctx, "error marshalling json", log.Error(err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	w.Write(b)
 }

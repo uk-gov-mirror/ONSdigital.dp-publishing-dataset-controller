@@ -1,10 +1,11 @@
-package handler
+package dataset
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/log"
 )
 
@@ -19,15 +20,26 @@ func getAllDatasets(w http.ResponseWriter, req *http.Request, dc *dataset.Client
 	ctx := req.Context()
 	// userAccessToken := getUserAccessTokenFromContent(ctx)
 	// collectionID := getCollectionIDFromContext(ctx)
-	userAccessToken := "39db1923182338dc096c662eae572a5d8debff2869e619908d99ac2bbd07aa4c"
-	collectionID := "00test-906d2af2c0c50a81b8bc944327971d852ed6b7f89f5a1841911854f59478033f"
+	userAccessToken := ""
+	collectionID := ""
+
+	log.Event(ctx, "calling get datasets")
 
 	datasets, err := dc.GetDatasets(ctx, userAccessToken, "", collectionID)
 	if err != nil {
-		log.Event(nil, "error getting all datasets", log.Error(err))
+		log.Event(ctx, "error getting all datasets", log.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	b, _ := json.Marshal(datasets)
+
+	mapped := mapper.AllDatasets(datasets)
+
+	b, err := json.Marshal(mapped)
+	if err != nil {
+		log.Event(ctx, "error marshalling json", log.Error(err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	w.Write(b)
 }
