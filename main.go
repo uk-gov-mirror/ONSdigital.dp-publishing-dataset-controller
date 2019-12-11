@@ -6,7 +6,6 @@ import (
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/config"
-	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/routes"
 	"github.com/ONSdigital/go-ns/server"
 	"github.com/ONSdigital/log.go/log"
@@ -25,17 +24,15 @@ func main() {
 
 	router := mux.NewRouter()
 
-	clients := model.Clients{
-		Dc: dataset.NewAPIClient(cfg.DatasetAPIURL),
-		Zc: zebedee.NewZebedeeClient(cfg.ZebedeeURL),
-	}
+	dc := dataset.NewAPIClient(cfg.DatasetAPIURL)
+	zc := zebedee.NewZebedeeClient(cfg.ZebedeeURL)
 
-	routes.Init(router, cfg, clients)
+	routes.Init(router, cfg, dc, zc)
 
 	s := server.New(cfg.BindAddr, router)
 
 	if err := s.ListenAndServe(); err != nil {
 		log.Event(nil, "error starting http server", log.Error(err))
-		os.Exit(2)
+		os.Exit(1)
 	}
 }
