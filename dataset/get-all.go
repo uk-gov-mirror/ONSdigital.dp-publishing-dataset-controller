@@ -10,13 +10,13 @@ import (
 )
 
 // GetAllDatasets returns a mapped list of all datasets
-func GetAllDatasets(dc *dataset.Client) http.HandlerFunc {
+func GetAll(dc *dataset.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		getAllDatasets(w, req, dc)
+		getAll(w, req, dc)
 	}
 }
 
-func getAllDatasets(w http.ResponseWriter, req *http.Request, dc *dataset.Client) {
+func getAll(w http.ResponseWriter, req *http.Request, dc *dataset.Client) {
 	ctx := req.Context()
 	// userAccessToken := getUserAccessTokenFromContent(ctx)
 	// collectionID := getCollectionIDFromContext(ctx)

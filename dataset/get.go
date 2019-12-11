@@ -10,13 +10,13 @@ import (
 )
 
 // GetDataset returns a specfic dataset
-func GetDataset(dc *dataset.Client) http.HandlerFunc {
+func Get(dc *dataset.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		getDataset(w, req, dc)
+		get(w, req, dc)
 	}
 }
 
-func getDataset(w http.ResponseWriter, req *http.Request, dc *dataset.Client) {
+func get(w http.ResponseWriter, req *http.Request, dc *dataset.Client) {
 	ctx := req.Context()
 	vars := mux.Vars(req)
 	datasetID := vars["datasetID"]
