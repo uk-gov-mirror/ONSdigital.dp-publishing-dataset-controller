@@ -1,14 +1,17 @@
 package config
 
 import (
+	"time"
+
 	"github.com/kelseyhightower/envconfig"
 )
 
 // Config represents the configuration required for florence
 type Config struct {
-	BindAddr      string `envconfig:"BIND_ADDR"`
-	ZebedeeURL    string `envconfig:"ZEBEDEE_URL"`
-	DatasetAPIURL string `envconfig:"DATASET_API_URL"`
+	BindAddr                string        `envconfig:"BIND_ADDR"`
+	ZebedeeURL              string        `envconfig:"ZEBEDEE_URL"`
+	DatasetAPIURL           string        `envconfig:"DATASET_API_URL"`
+	GracefulShutdownTimeout time.Duration `envconfig:"GRACEFUL_SHUTDOWN_TIMEOUT"`
 }
 
 var cfg *Config
@@ -20,9 +23,10 @@ func Get() (*Config, error) {
 	}
 
 	cfg = &Config{
-		BindAddr:      ":24000",
-		ZebedeeURL:    "http://localhost:8082",
-		DatasetAPIURL: "http://localhost:22000",
+		BindAddr:                ":24000",
+		ZebedeeURL:              "http://localhost:8082",
+		DatasetAPIURL:           "http://localhost:22000",
+		GracefulShutdownTimeout: 5 * time.Second,
 	}
 
 	return cfg, envconfig.Process("", cfg)
