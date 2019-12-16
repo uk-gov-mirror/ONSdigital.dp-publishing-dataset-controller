@@ -2,6 +2,6 @@ FROM onsdigital/dp-concourse-tools-ubuntu
 
 WORKDIR /app/
 
-ADD dp-frontend-dataset-controller .
+ADD dp-publishing-dataset-controller .
 
-CMD ./dp-frontend-dataset-controller
+CMD ./dp-publishing-dataset-controller
