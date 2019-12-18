@@ -40,6 +40,10 @@ func main() {
 	routes.Init(router, cfg, hc, dc)
 
 	s := server.New(cfg.BindAddr, router)
+
+	// TODO: passing nil here because library requires context.Context()
+	// but it's currently up for discussion whether app should pass it,
+	// or library creates it. fix this as causes app to crash on shut down
 	hc.Start(nil)
 
 	go func() {
