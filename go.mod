@@ -2,10 +2,8 @@ module github.com/ONSdigital/dp-publishing-dataset-controller
 
 go 1.12
 
-replace github.com/ONSdigital/dp-api-clients-go => ../dp-api-clients-go/
-
 require (
-	github.com/ONSdigital/dp-api-clients-go v0.0.0-20191028105437-cc0f9e68e16a
+	github.com/ONSdigital/dp-api-clients-go v0.0.0-20191218080024-4c99afe1e68a
 	github.com/ONSdigital/dp-healthcheck v0.0.0-20191216161914-d138533977b6
 	github.com/ONSdigital/go-ns v0.0.0-20191104121206-f144c4ec2e58
 	github.com/ONSdigital/log.go v0.0.0-20191127134126-2a610b254f20
