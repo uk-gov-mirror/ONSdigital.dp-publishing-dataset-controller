@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	"github.com/ONSdigital/dp-api-clients-go/headers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/log"
 )
@@ -18,10 +19,19 @@ func GetAll(dc *dataset.Client) http.HandlerFunc {
 
 func getAll(w http.ResponseWriter, req *http.Request, dc *dataset.Client) {
 	ctx := req.Context()
-	// userAccessToken := getUserAccessTokenFromContent(ctx)
-	// collectionID := getCollectionIDFromContext(ctx)
-	userAccessToken := ""
-	collectionID := ""
+
+	userAccessToken, err := headers.GetUserAuthToken(req)
+	if err != nil && err != headers.ErrHeaderNotFound {
+		log.Event(ctx, "error getting user access token from header", log.Error(err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	collectionID, err := headers.GetCollectionID(req)
+	if err != nil && err != headers.ErrHeaderNotFound {
+		log.Event(ctx, "error getting collection ID from header", log.Error(err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	log.Event(ctx, "calling get datasets")
 
