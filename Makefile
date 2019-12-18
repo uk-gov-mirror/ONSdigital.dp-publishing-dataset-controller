@@ -1,8 +1,9 @@
 BINPATH ?= build
+VERSION ?= $(shell git rev-parse --short HEAD)
 
 .PHONY: build
 build:
-	go build -tags 'production' -o $(BINPATH)/dp-publishing-dataset-controller
+	go build -tags 'production' -ldflags "-X main.version=$(VERSION)" -o $(BINPATH)/dp-publishing-dataset-controller 
 
 .PHONY: debug
 debug:
