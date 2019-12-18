@@ -9,3 +9,7 @@ build:
 debug:
 	go build -tags 'debug' -o $(BINPATH)/dp-publishing-dataset-controller
 	HUMAN_LOG=1 DEBUG=1 $(BINPATH)/dp-publishing-dataset-controller
+
+.PHONY: test
+test: 
+	go test -race -cover ./...
