@@ -8,7 +8,6 @@ import (
 	"syscall"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
-	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/config"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/routes"
@@ -35,11 +34,10 @@ func main() {
 	router := mux.NewRouter()
 
 	dc := dataset.NewAPIClient(cfg.DatasetAPIURL)
-	zc := zebedee.NewZebedeeClient(cfg.ZebedeeURL)
 
 	hc := healthcheck.Create(version, cfg.HealthCheckCritialTimeout, cfg.HealthCheckInterval)
 
-	routes.Init(router, cfg, hc, dc, zc)
+	routes.Init(router, cfg, hc, dc)
 
 	s := server.New(cfg.BindAddr, router)
 	hc.Start(nil)
