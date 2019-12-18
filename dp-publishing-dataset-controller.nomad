@@ -26,7 +26,7 @@ job "dp-publishing-dataset-controller" {
       mode     = "delay"
     }
 
-    task "dp-publishing-dataset-controller-publishing" {
+    task "dp-publishing-dataset-controller" {
       driver = "docker"
 
       artifact {
@@ -66,7 +66,7 @@ job "dp-publishing-dataset-controller" {
       }
 
       vault {
-        policies = ["dp-publishing-dataset-controller-publishing"]
+        policies = ["dp-publishing-dataset-controller"]
       }
     }
   }
