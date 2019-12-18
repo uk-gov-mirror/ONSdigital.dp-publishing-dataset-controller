@@ -1,0 +1,21 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: golang
+    tags: 1.13.0
+
+inputs:
+  - name: dp-publishing-dataset-controller
+
+outputs:
+  - name: build
+
+caches:
+  - path: go/
+
+run:
+  path: dp-publishing-dataset-controller/ci/scripts/build.sh

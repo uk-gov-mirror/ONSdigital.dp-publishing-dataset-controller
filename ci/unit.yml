@@ -1,0 +1,18 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: golang
+    tag: 1.13.0
+
+inputs:
+  - name: dp-publishing-dataset-controller
+
+caches:
+  - path: go/
+
+run:
+  path: dp-publishing-dataset-controller/ci/scripts/unit.sh
