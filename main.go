@@ -9,12 +9,15 @@ import (
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	"github.com/ONSdigital/dp-healthcheck/healthcheck"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/config"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/routes"
 	"github.com/ONSdigital/go-ns/server"
 	"github.com/ONSdigital/log.go/log"
 	"github.com/gorilla/mux"
 )
+
+var version string
 
 func main() {
 	log.Namespace = "dp-publishing-dataset-controller"
@@ -34,9 +37,12 @@ func main() {
 	dc := dataset.NewAPIClient(cfg.DatasetAPIURL)
 	zc := zebedee.NewZebedeeClient(cfg.ZebedeeURL)
 
-	routes.Init(router, cfg, dc, zc)
+	hc := healthcheck.Create(version, cfg.HealthCheckCritialTimeout, cfg.HealthCheckInterval)
+
+	routes.Init(router, cfg, hc, dc, zc)
 
 	s := server.New(cfg.BindAddr, router)
+	hc.Start(nil)
 
 	go func() {
 		if err := s.ListenAndServe(); err != nil {
@@ -49,19 +55,19 @@ func main() {
 		select {
 		case <-signals:
 			log.Event(nil, "os signal received")
-			gracefulShutdown(cfg, s)
+			gracefulShutdown(cfg, s, hc)
 		}
 	}
 }
 
-func gracefulShutdown(cfg *config.Config, s *server.Server) {
+func gracefulShutdown(cfg *config.Config, s *server.Server, hc healthcheck.HealthCheck) {
 	log.Event(nil, fmt.Sprintf("shutdown with timeout: %s", cfg.GracefulShutdownTimeout))
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.GracefulShutdownTimeout)
 	if err := s.Shutdown(ctx); err != nil {
 		log.Event(nil, "failed to gracefully shutdown http server", log.Error(err))
 	}
 	log.Event(nil, "graceful shutdown of http server complete", nil)
-	// TODO: health check shut down here
+	hc.Stop()
 	log.Event(nil, "shutdown complete", nil)
 	cancel()
 	os.Exit(1)
