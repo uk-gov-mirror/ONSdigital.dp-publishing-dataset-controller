@@ -13,5 +13,4 @@ func Init(router *mux.Router, cfg *config.Config, hc healthcheck.HealthCheck, dc
 	router.StrictSlash(true).Path("/health").HandlerFunc(hc.Handler)
 
 	router.StrictSlash(true).Path("/datasets").HandlerFunc(dataset.GetAll(dc))
-	router.StrictSlash(true).Path("/datasets/{datasetID}").HandlerFunc(dataset.Get(dc))
 }
