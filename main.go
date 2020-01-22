@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
+	"time"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
@@ -16,7 +18,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var version string
+var BuildTime, GitCommit, Version string
 
 func main() {
 	log.Namespace = "dp-publishing-dataset-controller"
@@ -35,16 +37,24 @@ func main() {
 
 	dc := dataset.NewAPIClient(cfg.DatasetAPIURL)
 
-	hc := healthcheck.Create(version, cfg.HealthCheckCritialTimeout, cfg.HealthCheckInterval)
+	buildTime, err := strconv.ParseInt(BuildTime, 10, 64)
+	if err != nil {
+		log.Event(nil, "failed to parse build time", log.Error(err), log.Data{"buildTime": BuildTime})
+	}
+	versionInfo := healthcheck.CreateVersionInfo(
+		time.Unix(buildTime, 0),
+		GitCommit,
+		Version,
+	)
+
+	hc := healthcheck.Create(versionInfo, cfg.HealthCheckCritialTimeout, cfg.HealthCheckInterval, nil)
 
 	routes.Init(router, cfg, hc, dc)
 
 	s := server.New(cfg.BindAddr, router)
 
-	// TODO: passing nil here because library requires context.Context()
-	// but it's currently up for discussion whether app should pass it,
-	// or library creates it. fix this as causes app to crash on shut down
-	hc.Start(nil)
+	ctx := context.Context(context.Background())
+	hc.Start(ctx)
 
 	go func() {
 		if err := s.ListenAndServe(); err != nil {
