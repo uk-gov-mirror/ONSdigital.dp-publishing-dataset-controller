@@ -3,6 +3,21 @@ dp-publishing-dataset-controller
 
 Controller to coordinate all requests between frontend CMS and APIs involved in dataset upload, creation and editing. 
 
+### Getting started
+
+To run Florence you must have [Golang](https://golang.org/) installed on a UNIX machine.
+
+Once you have installed those dependencies and cloned this repo you need to run the following:
+
+1. Move into the correct directory
+```
+cd dp-publishing-dataset-controller
+```
+2. Run the service
+```
+make debug
+```
+
 
 ### Configuration
 
@@ -22,6 +37,6 @@ See [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ### License
 
-Copyright © 2016-2019, Office for National Statistics (https://www.ons.gov.uk)
+Copyright © 2016-2020, Office for National Statistics (https://www.ons.gov.uk)
 
 Released under MIT license, see [LICENSE](LICENSE.md) for details.
