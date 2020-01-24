@@ -5,7 +5,7 @@ Controller to coordinate all requests between frontend CMS and APIs involved in 
 
 ### Getting started
 
-To run Florence you must have [Golang](https://golang.org/) installed on a UNIX machine.
+To run this service you must have [Golang](https://golang.org/) installed on a UNIX machine.
 
 Once you have installed those dependencies and cloned this repo you need to run the following:
 
