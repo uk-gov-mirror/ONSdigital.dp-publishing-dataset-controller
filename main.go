@@ -103,5 +103,5 @@ func main() {
 		log.Event(ctx, "graceful shutdown complete", log.Data{"context": ctx.Err()})
 	}
 
-	os.Exit(1)
+	os.Exit(0)
 }
