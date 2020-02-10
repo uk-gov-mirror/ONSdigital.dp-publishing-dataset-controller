@@ -6,6 +6,8 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
+var cfg *Config
+
 // Config represents the configuration required for florence
 type Config struct {
 	BindAddr                  string        `envconfig:"BIND_ADDR"`
@@ -15,8 +17,6 @@ type Config struct {
 	HealthCheckInterval       time.Duration `envconfig:"HEALTHCHECK_INTERVAL"`
 	HealthCheckCritialTimeout time.Duration `envconfig:"HEALTHCHECK_CRITICAL_TIMEOUT"`
 }
-
-var cfg *Config
 
 // Get retrieves the config from the environment for florence
 func Get() (*Config, error) {
@@ -29,7 +29,7 @@ func Get() (*Config, error) {
 		ZebedeeURL:                "http://localhost:8082",
 		DatasetAPIURL:             "http://localhost:22000",
 		GracefulShutdownTimeout:   5 * time.Second,
-		HealthCheckInterval:       30 * time.Second,
+		HealthCheckInterval:       10 * time.Second,
 		HealthCheckCritialTimeout: 60 * time.Second,
 	}
 

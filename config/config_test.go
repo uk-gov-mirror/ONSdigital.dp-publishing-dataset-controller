@@ -22,7 +22,7 @@ func TestSpec(t *testing.T) {
 				So(cfg.ZebedeeURL, ShouldEqual, "http://localhost:8082")
 				So(cfg.DatasetAPIURL, ShouldEqual, "http://localhost:22000")
 				So(cfg.GracefulShutdownTimeout, ShouldEqual, 5*time.Second)
-				So(cfg.HealthCheckInterval, ShouldEqual, 30*time.Second)
+				So(cfg.HealthCheckInterval, ShouldEqual, 10*time.Second)
 				So(cfg.HealthCheckCritialTimeout, ShouldEqual, 60*time.Second)
 			})
 		})
