@@ -22,24 +22,24 @@ func getAll(w http.ResponseWriter, req *http.Request, dc Client) {
 
 	userAccessToken, err := headers.GetUserAuthToken(req)
 	if err == headers.ErrHeaderNotFound {
-		log.Event(ctx, "no user access token header set", log.Error(err))
+		log.Event(ctx, "no user access token header set", log.ERROR, log.Error(err))
 		http.Error(w, "no user access token header set", http.StatusBadRequest)
 		return
 	}
 	if err != nil {
-		log.Event(ctx, "error getting user access token from header", log.Error(err))
+		log.Event(ctx, "error getting user access token from header", log.ERROR, log.Error(err))
 		http.Error(w, "error getting user access token from header", http.StatusBadRequest)
 		return
 	}
 
 	collectionID, err := headers.GetCollectionID(req)
 	if err == headers.ErrHeaderNotFound {
-		log.Event(ctx, "no collection ID header set", log.Error(err))
+		log.Event(ctx, "no collection ID header set", log.ERROR, log.Error(err))
 		http.Error(w, "no collection ID header set", http.StatusBadRequest)
 		return
 	}
 	if err != nil {
-		log.Event(ctx, "error getting collection ID from header", log.Error(err))
+		log.Event(ctx, "error getting collection ID from header", log.ERROR, log.Error(err))
 		http.Error(w, "error getting collection ID from header", http.StatusBadRequest)
 		return
 	}
@@ -47,7 +47,7 @@ func getAll(w http.ResponseWriter, req *http.Request, dc Client) {
 
 	datasets, err := dc.GetDatasets(ctx, userAccessToken, "", collectionID)
 	if err != nil {
-		log.Event(ctx, "error getting all datasets from dataset API", log.Error(err))
+		log.Event(ctx, "error getting all datasets from dataset API", log.ERROR, log.Error(err))
 		http.Error(w, "error getting all datasets from dataset API", http.StatusInternalServerError)
 		return
 	}
@@ -56,7 +56,7 @@ func getAll(w http.ResponseWriter, req *http.Request, dc Client) {
 
 	b, err := json.Marshal(mapped)
 	if err != nil {
-		log.Event(ctx, "error marshalling response to json", log.Error(err))
+		log.Event(ctx, "error marshalling response to json", log.ERROR, log.Error(err))
 		http.Error(w, "error marshalling response to json", http.StatusInternalServerError)
 		return
 	}
