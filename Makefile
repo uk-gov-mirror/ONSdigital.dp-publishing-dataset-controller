@@ -3,6 +3,10 @@ BUILD_TIME=$(shell date +%s)
 GIT_COMMIT=$(shell git rev-parse HEAD)
 VERSION ?= $(shell git tag --points-at HEAD | grep ^v | head -n 1)
 
+.PHONY: audit
+audit:
+	nancy go.sum
+
 .PHONY: build
 build:
 	go build -tags 'production' -ldflags "-X main.BuildTime=$(BUILD_TIME) -X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(VERSION)" -o $(BINPATH)/dp-publishing-dataset-controller
