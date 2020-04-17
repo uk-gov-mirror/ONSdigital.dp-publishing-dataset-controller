@@ -27,8 +27,8 @@ make debug
 | DATASET_API_URL                | http://localhost:22000            | The host name for [Dataset API](https://github.com/ONSdigital/dp-dataset-api)
 | ZEBEDEE_URL                    | http://localhost:8081             | The host name for [Zebedee](https://github.com/ONSdigital/zebedee)
 | GRACEFUL_SHUTDOWN_TIMEOUT      | 5s                                | The graceful shutdown timeout in seconds
-| HEALTHCHECK_INTERVAL           | 10s                               | Healthcheck interval in seconds
-| HEALTHCHECK_CRITICAL_TIMEOUT   | 60s                               | Healthcheck timeout in seconds
+| HEALTHCHECK_INTERVAL           | 30s                               | Healthcheck interval in seconds
+| HEALTHCHECK_CRITICAL_TIMEOUT   | 90s                               | Healthcheck timeout in seconds
 
 
 ### Contributing
