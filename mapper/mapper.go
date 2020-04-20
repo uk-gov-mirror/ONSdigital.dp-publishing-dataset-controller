@@ -5,6 +5,7 @@ import (
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
+	"github.com/davecgh/go-spew/spew"
 )
 
 func AllDatasets(datasets dataset.List) []model.Dataset {
@@ -20,8 +21,13 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	}
 
 	sort.Slice(mappedDatasets, func(i, j int) bool {
+		if mappedDatasets[j].Title == "" {
+			return true
+		}
 		return mappedDatasets[i].Title < mappedDatasets[j].Title
 	})
+
+	spew.Dump(mappedDatasets)
 
 	return mappedDatasets
 }

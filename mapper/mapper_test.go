@@ -66,6 +66,7 @@ func TestUnitMapper(t *testing.T) {
 		So(mapped[0].Title, ShouldEqual, "1st Title")
 		So(mapped[1].Title, ShouldEqual, "2nd Title")
 		So(mapped[2].Title, ShouldEqual, "3rd Title")
+		So(mapped[3].Title, ShouldEqual, "")
 		So(len(mapped), ShouldEqual, 3)
 	})
 
