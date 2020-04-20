@@ -40,22 +40,22 @@ func TestUnitMapper(t *testing.T) {
 		So(len(mapped), ShouldEqual, 2)
 	})
 
-	Convey("that datasets are ordered alphabetically by Title, when the list is unordered", t, func() {
+	Convey("that datasets are ordered alphabetically by Title", t, func() {
 		ds := dataset.List{
 			Items: []dataset.Dataset{},
 		}
 		ds.Items = append(ds.Items, dataset.Dataset{
-			ID: "test-id-1",
+			ID: "test-id-3",
 			Next: &dataset.DatasetDetails{
 				Title: "3rd Title",
 			},
 		}, dataset.Dataset{
-			ID: "test-id-2",
+			ID: "test-id-1",
 			Next: &dataset.DatasetDetails{
 				Title: "1st Title",
 			},
 		}, dataset.Dataset{
-			ID: "test-id-3",
+			ID: "test-id-2",
 			Next: &dataset.DatasetDetails{
 				Title: "2nd Title",
 			},
