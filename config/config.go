@@ -29,8 +29,8 @@ func Get() (*Config, error) {
 		ZebedeeURL:                "http://localhost:8082",
 		DatasetAPIURL:             "http://localhost:22000",
 		GracefulShutdownTimeout:   5 * time.Second,
-		HealthCheckInterval:       10 * time.Second,
-		HealthCheckCritialTimeout: 60 * time.Second,
+		HealthCheckInterval:       30 * time.Second,
+		HealthCheckCritialTimeout: 90 * time.Second,
 	}
 
 	return cfg, envconfig.Process("", cfg)
