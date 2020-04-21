@@ -69,4 +69,39 @@ func TestUnitMapper(t *testing.T) {
 		So(len(mapped), ShouldEqual, 3)
 	})
 
+	Convey("that datasets with an empty title are pushed to the end of the datasets slice", t, func() {
+		ds := dataset.List{
+			Items: []dataset.Dataset{},
+		}
+		ds.Items = append(ds.Items, dataset.Dataset{
+			ID: "test-id-3",
+			Next: &dataset.DatasetDetails{
+				Title: "DFG",
+			},
+		}, dataset.Dataset{
+			ID: "test-id-1",
+			Next: &dataset.DatasetDetails{
+				Title: "",
+			},
+		}, dataset.Dataset{
+			ID: "test-id-2",
+			Next: &dataset.DatasetDetails{
+				Title: "",
+			},
+		}, dataset.Dataset{
+			ID: "test-id-2",
+			Next: &dataset.DatasetDetails{
+				Title: "ABC",
+			},
+		})
+
+		mapped := AllDatasets(ds)
+
+		So(mapped[0].Title, ShouldEqual, "ABC")
+		So(mapped[1].Title, ShouldEqual, "DFG")
+		So(mapped[2].Title, ShouldEqual, "")
+		So(mapped[3].Title, ShouldEqual, "")
+		So(len(mapped), ShouldEqual, 4)
+	})
+
 }
