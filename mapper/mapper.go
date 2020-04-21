@@ -5,19 +5,138 @@ import (
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 )
 
+type related struct {
+	publications  []model.RelatedContent
+	methodologies []model.RelatedContent
+	datasets      []model.RelatedContent
+}
+
+func AllDatasets(datasets dataset.List) []model.Dataset {
+	var mappedDatasets []model.Dataset
+	for _, ds := range datasets.Items {
+		if &ds == nil || ds.Next == nil {
+			continue
+		}
+		mappedDatasets = append(mappedDatasets, model.Dataset{
+			ID:    ds.ID,
+			Title: ds.Next.Title,
+		})
+	}
+
+	sort.Slice(mappedDatasets, func(i, j int) bool {
+		if mappedDatasets[i].Title == "" {
+			return false
+		} else if mappedDatasets[j].Title == "" {
+			return true
+		}
+		return mappedDatasets[i].Title < mappedDatasets[j].Title
+	})
+
+	return mappedDatasets
+}
+
 func EditDatasetVersionMetaData(req *http.Request, d dataset.DatasetDetails, v dataset.Version) model.EditVersionMetaData {
-	var notices []model.Notice
+	var latestChanges []model.LatestChanges
+
+	keywords := *d.Keywords
+	keywordsString := fmt.Sprintf(strings.Join(keywords[:], ", "))
+	relatedContent := mapRelatedContent(*d.RelatedDatasets, *d.Methodologies, *d.Publications)
+	contacts := *d.Contacts
 
 	releaseDate := model.ReleaseDate{
 		ReleaseDate: v.ReleaseDate,
 		Error:       "",
 	}
 
+	mappedMetaData := model.MetaData{
+		Edition:       v.Edition,
+		Version:       v.Version,
+		ReleaseDate:   releaseDate,
+		Notices:       mapAlerts(v),
+		Dimensions:    v.Dimensions,
+		UsageNotes:    mapUsageNotes(*d.UsageNotes),
+		LatestChanges: mapLatestChanges(v.LatestChanges),
+
+		Title:                d.Title,
+		Summary:              d.Description,
+		Keywords:             keywordsString,
+		NationalStatistic:    d.NationalStatistic,
+		License:              d.License,
+		ContactName:          contacts[0].Name,
+		ContactEmail:         contacts[0].Email,
+		ContactTelephone:     contacts[0].Telephone,
+		RelatedDatasets:      relatedContent.datasets,
+		RelatedPublications:  relatedContent.publications,
+		RelatedMethodologies: relatedContent.methodologies,
+		ReleaseFrequency:     d.ReleaseFrequency,
+		NextReleaseDate:      d.NextRelease,
+		UnitOfMeassure:       d.UnitOfMeasure,
+		QMI:                  d.QMI.URL,
+	}
+	var mappedCollectionValue string
+	if v.CollectionID == "" {
+		mappedCollectionValue = "false" // todo check it is a string false
+	} else {
+		mappedCollectionValue = v.CollectionID
+	}
+	mappedEditVersionMetaData := model.EditVersionMetaData{
+		MetaData:   mappedMetaData,
+		Collection: mappedCollectionValue,
+		InstanceID: v.ID,
+		Published:  v.State == "published",
+	}
+
+	return mappedEditVersionMetaData
+}
+
+// TODO make DRY - cast to a common type maybe
+func mapRelatedContent(rd []dataset.RelatedDataset, rm []dataset.Methodology, rp []dataset.Publication) related {
+	var relatedContent related
+
+	for i, content := range rd {
+		relatedContent.methodologies = append(relatedContent.methodologies, model.RelatedContent{
+			ID:                    i,
+			Title:                 content.Title,
+			Description:           content.Description,
+			Href:                  content.URL,
+			SimpleListHeading:     content.Title,
+			SimpleListDescription: content.Description,
+		})
+	}
+
+	for i, content := range rm {
+		relatedContent.methodologies = append(relatedContent.methodologies, model.RelatedContent{
+			ID:                    i,
+			Title:                 content.Title,
+			Description:           content.Description,
+			Href:                  content.URL,
+			SimpleListHeading:     content.Title,
+			SimpleListDescription: content.Description,
+		})
+	}
+
+	for i, content := range rp {
+		relatedContent.methodologies = append(relatedContent.methodologies, model.RelatedContent{
+			ID:                    i,
+			Title:                 content.Title,
+			Description:           content.Description,
+			Href:                  content.URL,
+			SimpleListHeading:     content.Title,
+			SimpleListDescription: content.Description,
+		})
+	}
+	return relatedContent
+}
+
+func mapAlerts(v dataset.Version) []model.Notice {
 	layout := "2006-01-02T15:04:05.000Z" // TODO check this is the right layout for the dates
+	var notices []model.Notice
+
 	for i, alert := range *v.Alerts {
 		alertDateInDateFormat, err := time.Parse(layout, alert.Date)
 		if err != nil {
@@ -34,9 +153,12 @@ func EditDatasetVersionMetaData(req *http.Request, d dataset.DatasetDetails, v d
 			SimpleListDescription: alert.Description,
 		})
 	}
+	return notices
+}
 
+func mapUsageNotes(un []dataset.UsageNote) []model.UsageNote {
 	var usageNotes []model.UsageNote
-	for i, note := range *d.UsageNotes {
+	for i, note := range un {
 		usageNotes = append(usageNotes, model.UsageNote{
 			ID:                    i,
 			Title:                 note.Title,
@@ -45,9 +167,12 @@ func EditDatasetVersionMetaData(req *http.Request, d dataset.DatasetDetails, v d
 			SimpleListDescription: note.Note,
 		})
 	}
+	return usageNotes
+}
 
+func mapLatestChanges(un []dataset.Change) []model.LatestChanges{
 	var latestChanges []model.LatestChanges
-	for i, change := range v.LatestChanges {
+	for i, change := range un {
 		latestChanges = append(latestChanges, model.LatestChanges{
 			ID:                    i,
 			Title:                 change.Name,
@@ -56,81 +181,5 @@ func EditDatasetVersionMetaData(req *http.Request, d dataset.DatasetDetails, v d
 			SimpleListDescription: change.Description,
 		})
 	}
-
-	keywordsString, err := fmt.Println(strings.Join(d.Keywords[:], ", "))
-	if err != nil {
-		// TODO log error with the version that failed
-	}
-	// TODO all below
-
-	// TODO all above
-
-	mappedMetaData := model.MetaData{
-		Edition:       v.Edition,
-		Version:       v.Version,
-		ReleaseDate:   releaseDate,
-		Notices:       notices,
-		Dimensions:    v.Dimensions,
-		UsageNotes:    usageNotes,
-		LatestChanges: latestChanges,
-
-		Title:                d.Title,
-		Summary:              d.Description,
-		Keywords:             keywordsString,
-		NationalStatistic:    d.NationalStatistic,
-		License:              d.License,
-		ContactName:          d.Contacts[0].Name,
-		ContactEmail:         d.Contacts[0].Email,
-		ContactTelephone:     d.Contacts[0].Telephone,
-		RelatedDatasets:      relatedDatasets,
-		RelatedPublications:  relatedPublications,
-		RelatedMethodologies: relatedMethodologies,
-		ReleaseFrequency:     d.ReleaseFrequency,
-		NextReleaseDate:      d.NextRelease,
-		UnitOfMeassure:       d.UnitOfMeasure,
-		//QMI: , todo
-	}
-
-	mappedEditVersionMetaData := model.EditVersionMetaData{
-		MetaData:   mappedMetaData,
-		Collection: "", // TODO
-		InstanceID: v.ID,
-		Published:  v.State == "published", // TODO enum
-	}
-
-	//Alerts        *[]Alert            `json:"alerts"`
-	//	CollectionID  string              `json:"collection_id"`
-	//	Downloads     map[string]Download `json:"downloads"`
-	//	Edition       string              `json:"edition"`
-	//	Dimensions    []Dimension         `json:"dimensions"`
-	//	ID            string              `json:"id"`
-	//	InstanceID    string              `json:"instance_id"`
-	//	LatestChanges []Change            `json:"latest_changes"`
-	//	Links         Links               `json:"links"`
-	//	ReleaseDate   string              `json:"release_date"`
-	//	State         string              `json:"state"`
-	//	Temporal      []Temporal          `json:"temporal"`
-	//	Version       int                 `json:"version"`
-	//  			edition: version.edition,
-	//                version: version.version,
-	//                releaseDate: { value: version.release_date || "", error: "" },
-	//                notices: version.alerts ? this.mapNoticesToState(version.alerts, version.version || version.id) : [],
-	//                dimensions: version.dimensions || [],
-	//                usageNotes: version.usage_notes ? this.mapUsageNotesToState(version.usage_notes, version.version || version.id) : [],
-	//                latestChanges: version.latest_changes ? this.mapLatestChangesToState(version.latest_changes, version.version || version.id) : []
-	return mappedEditVersionMetaData
-}
-
-func mapRelatedContent() []model.RelatedContent{
-	var latestChanges []model.RelatedContent
-	for i, content := range v.LatestChanges {
-		latestChanges = append(latestChanges, model.RelatedContent{
-			ID:                    i,
-			Title:                 "",
-			Description:           "",
-			Href:                  "",
-			SimpleListHeading:     "",
-			SimpleListDescription: "",
-		})
-	}
+	return latestChanges
 }
