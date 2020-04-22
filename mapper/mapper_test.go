@@ -63,9 +63,9 @@ func TestUnitMapper(t *testing.T) {
 
 		mapped := AllDatasets(ds)
 
-		So(mapped[0].Title, ShouldEqual, "1st Title")
-		So(mapped[1].Title, ShouldEqual, "2nd Title")
-		So(mapped[2].Title, ShouldEqual, "3rd Title")
+		So(mapped[0].ID, ShouldEqual, "test-id-1")
+		So(mapped[1].ID, ShouldEqual, "test-id-2")
+		So(mapped[2].ID, ShouldEqual, "test-id-3")
 		So(len(mapped), ShouldEqual, 3)
 	})
 
@@ -97,10 +97,10 @@ func TestUnitMapper(t *testing.T) {
 
 		mapped := AllDatasets(ds)
 
-		So(mapped[0].Title, ShouldEqual, "ABC")
-		So(mapped[1].Title, ShouldEqual, "DFG")
-		So(mapped[2].Title, ShouldEqual, "test-id-1")
-		So(mapped[3].Title, ShouldEqual, "test-id-2")
+		So(mapped[0].ID, ShouldEqual, "test-id-3")
+		So(mapped[1].ID, ShouldEqual, "test-id-4")
+		So(mapped[2].ID, ShouldEqual, "test-id-1")
+		So(mapped[3].ID, ShouldEqual, "test-id-2")
 		So(len(mapped), ShouldEqual, 4)
 	})
 
