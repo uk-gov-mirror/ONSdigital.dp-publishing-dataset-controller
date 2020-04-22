@@ -21,9 +21,10 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 
 	sort.Slice(mappedDatasets, func(i, j int) bool {
 		if mappedDatasets[i].Title == "" {
-			return false
-		} else if mappedDatasets[j].Title == "" {
-			return true
+			mappedDatasets[i].Title = mappedDatasets[i].ID
+		}
+		if mappedDatasets[j].Title == "" {
+			mappedDatasets[j].Title = mappedDatasets[j].ID
 		}
 		return mappedDatasets[i].Title < mappedDatasets[j].Title
 	})

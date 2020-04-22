@@ -74,7 +74,7 @@ func TestUnitMapper(t *testing.T) {
 			Items: []dataset.Dataset{},
 		}
 		ds.Items = append(ds.Items, dataset.Dataset{
-			ID: "test-id-3",
+			ID: "test-id-4",
 			Next: &dataset.DatasetDetails{
 				Title: "DFG",
 			},
@@ -89,7 +89,7 @@ func TestUnitMapper(t *testing.T) {
 				Title: "",
 			},
 		}, dataset.Dataset{
-			ID: "test-id-2",
+			ID: "test-id-3",
 			Next: &dataset.DatasetDetails{
 				Title: "ABC",
 			},
@@ -99,8 +99,8 @@ func TestUnitMapper(t *testing.T) {
 
 		So(mapped[0].Title, ShouldEqual, "ABC")
 		So(mapped[1].Title, ShouldEqual, "DFG")
-		So(mapped[2].Title, ShouldEqual, "")
-		So(mapped[3].Title, ShouldEqual, "")
+		So(mapped[2].Title, ShouldEqual, "test-id-1")
+		So(mapped[3].Title, ShouldEqual, "test-id-2")
 		So(len(mapped), ShouldEqual, 4)
 	})
 
