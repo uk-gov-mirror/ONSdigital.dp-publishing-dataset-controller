@@ -65,18 +65,18 @@ func TestUnitMapper(t *testing.T) {
 
 		mapped := AllDatasets(ds)
 
-		So(mapped[0].Title, ShouldEqual, "1st Title")
-		So(mapped[1].Title, ShouldEqual, "2nd Title")
-		So(mapped[2].Title, ShouldEqual, "3rd Title")
+		So(mapped[0].ID, ShouldEqual, "test-id-1")
+		So(mapped[1].ID, ShouldEqual, "test-id-2")
+		So(mapped[2].ID, ShouldEqual, "test-id-3")
 		So(len(mapped), ShouldEqual, 3)
 	})
 
-	Convey("that datasets with an empty title are pushed to the end of the datasets slice", t, func() {
+	Convey("that datasets with an empty title still sorted alphabetically using their ID instead", t, func() {
 		ds := dataset.List{
 			Items: []dataset.Dataset{},
 		}
 		ds.Items = append(ds.Items, dataset.Dataset{
-			ID: "test-id-3",
+			ID: "test-id-4",
 			Next: &dataset.DatasetDetails{
 				Title: "DFG",
 			},
@@ -91,7 +91,7 @@ func TestUnitMapper(t *testing.T) {
 				Title: "",
 			},
 		}, dataset.Dataset{
-			ID: "test-id-2",
+			ID: "test-id-3",
 			Next: &dataset.DatasetDetails{
 				Title: "ABC",
 			},
@@ -99,10 +99,10 @@ func TestUnitMapper(t *testing.T) {
 
 		mapped := AllDatasets(ds)
 
-		So(mapped[0].Title, ShouldEqual, "ABC")
-		So(mapped[1].Title, ShouldEqual, "DFG")
-		So(mapped[2].Title, ShouldEqual, "")
-		So(mapped[3].Title, ShouldEqual, "")
+		So(mapped[0].ID, ShouldEqual, "test-id-3")
+		So(mapped[1].ID, ShouldEqual, "test-id-4")
+		So(mapped[2].ID, ShouldEqual, "test-id-1")
+		So(mapped[3].ID, ShouldEqual, "test-id-2")
 		So(len(mapped), ShouldEqual, 4)
 	})
 
