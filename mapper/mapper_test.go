@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"testing"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
@@ -9,6 +10,7 @@ import (
 )
 
 func TestUnitMapper(t *testing.T) {
+	t.Parallel()
 	Convey("test AllDatasets", t, func() {
 		ds := dataset.List{
 			Items: []dataset.Dataset{},
@@ -104,4 +106,143 @@ func TestUnitMapper(t *testing.T) {
 		So(len(mapped), ShouldEqual, 4)
 	})
 
+	mockContacts := []dataset.Contact{
+		{
+			Name:      "foo",
+			Telephone: "bar",
+			Email:     "baz",
+		},
+		{
+			Name:      "bad-foo",
+			Telephone: "bad-bar",
+			Email:     "bad-baz",
+		},
+	}
+	mockMethodology := []dataset.Methodology{
+		{
+			Description: "foo",
+			URL:         "bar",
+			Title:       "baz",
+		},
+		{
+			Description: "qux",
+			URL:         "quux",
+			Title:       "grault",
+		},
+	}
+	mockPublications := []dataset.Publication{
+		{
+			Description: "bar",
+			URL:         "baz",
+			Title:       "foo",
+		},
+		{
+			Description: "quux",
+			URL:         "grault",
+			Title:       "qux",
+		},
+	}
+	mockRelatedDataset := []dataset.RelatedDataset{
+		{
+			URL:         "foo",
+			Title:       "bar",
+		},
+		{
+			URL:         "baz",
+			Title:       "qux",
+		},
+	}
+	mockKeywords := []string{"foo", "bar", "baz"}
+	mockUsageNotes := []dataset.UsageNote{
+		{
+			Title: "foo",
+			Note: "bar",
+		},
+		{
+			Title: "baz",
+			Note: "qux",
+		},
+	}
+	mockDatasetDetails := dataset.DatasetDetails{
+		ID:                "foo",
+		CollectionID:      "bar",
+		Contacts:          &mockContacts,
+		Description:       "baz",
+		Keywords:          &mockKeywords,
+		License:           "qux",
+		Links:             dataset.Links{},
+		Methodologies:     &mockMethodology,
+		NationalStatistic: false,
+		NextRelease:       "quux",
+		Publications:      &mockPublications,
+		Publisher:         &dataset.Publisher{},
+		QMI: dataset.Publication{
+			Description: "foo",
+			URL:         "bar",
+			Title:       "baz",
+		},
+		RelatedDatasets:  &mockRelatedDataset,
+		ReleaseFrequency: "grault",
+		State:            "garply",
+		Theme:            "waldo",
+		Title:            "fred",
+		UnitOfMeasure:    "plugh",
+		URI:              "xyzzy",
+		UsageNotes:       &mockUsageNotes,
+	}
+	mockVersion := dataset.Version{
+		Alerts:        nil,
+		CollectionID:  "foo",
+		Downloads:     nil,
+		Edition:       "bar",
+		Dimensions:    nil,
+		ID:            "baz",
+		InstanceID:    "qux",
+		LatestChanges: nil,
+		Links:         dataset.Links{},
+		ReleaseDate:   "quux",
+		State:         "grault",
+		Temporal:      nil,
+		Version:       1,
+	}
+
+	expectedEditVersionMetaData := model.EditVersionMetaData{
+		MetaData: model.MetaData{
+			Edition: "bar",
+			Version: 1,
+			ReleaseDate: model.ReleaseDate{
+				ReleaseDate: "quux",
+				Error:       "",
+			},
+			Notices:              nil,
+			Dimensions:           nil,
+			UsageNotes:           nil,
+			LatestChanges:        nil,
+			Title:                "fred",
+			Summary:              "baz",
+			Keywords:             "",
+			NationalStatistic:    false,
+			License:              "qux",
+			ContactName:          "foo",
+			ContactEmail:         "bar",
+			ContactTelephone:     "baz",
+			RelatedDatasets:      nil,
+			RelatedPublications:  nil,
+			RelatedMethodologies: nil,
+			ReleaseFrequency:     "grault",
+			NextReleaseDate:      "quux",
+			UnitOfMeassure:       "plugh",
+			QMI:                  "bar",
+		},
+		Collection: "bar",
+		InstanceID: "foo",
+		Published:  false,
+	}
+
+	Convey("test EditDatasetVersionMetaData", t, func() {
+		Convey("when working", func() {
+			outcome := EditDatasetVersionMetaData(mockDatasetDetails, mockVersion)
+			So(outcome, ShouldResemble, expectedEditVersionMetaData)
+		})
+	})
 }

@@ -2,8 +2,6 @@ package handlers // FilterableLanding will load a filterable landing page
 import (
 	"context"
 	"encoding/json"
-	"github.com/ONSdigital/dp-api-clients-go/dataset"
-	"github.com/ONSdigital/dp-publishing-dataset-controller/config"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/go-ns/common"
 	"github.com/ONSdigital/log.go/log"
@@ -12,32 +10,19 @@ import (
 	"net/http"
 )
 
-// DatasetClient is an interface with methods required for a dataset client
-type DatasetClient interface {
-	Get(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m dataset.DatasetDetails, err error)
-	GetByPath(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, path string) (m dataset.DatasetDetails, err error)
-	GetEditions(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m []dataset.Edition, err error)
-	GetEdition(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition string) (dataset.Edition, error)
-	GetVersions(ctx context.Context, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition string) (m []dataset.Version, err error)
-	GetVersion(ctx context.Context, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version string) (m dataset.Version, err error)
-	GetVersionMetadata(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, id, edition, version string) (m dataset.Metadata, err error)
-	GetDimensions(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, id, edition, version string) (m dataset.Dimensions, err error)
-	GetOptions(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, id, edition, version, dimension string) (m dataset.Options, err error)
-}
-
 // ClientError implements error interface with additional code method
 type ClientError interface {
 	error
 	Code() int
 }
 
-func GetMetadataHandler(dc DatasetClient, cfg config.Config) http.HandlerFunc {
+func GetMetadataHandler(dc DatasetClient, ) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		getMetadataHandler(w, req, dc, cfg)
+		getMetadataHandler(w, req, dc)
 	}
 }
 
-func getMetadataHandler(w http.ResponseWriter, req *http.Request, dc DatasetClient, cfg config.Config) {
+func getMetadataHandler(w http.ResponseWriter, req *http.Request, dc DatasetClient) {
 	vars := mux.Vars(req)
 	datasetID := vars["datasetID"]
 	edition := vars["editionID"]
@@ -57,7 +42,7 @@ func getMetadataHandler(w http.ResponseWriter, req *http.Request, dc DatasetClie
 		setStatusCode(req, w, err)
 		return
 	}
-	p := mapper.EditDatasetVersionMetaData(req, d, v)
+	p := mapper.EditDatasetVersionMetaData(d, v)
 	b, err := json.Marshal(p)
 	if err != nil {
 		setStatusCode(req, w, err)

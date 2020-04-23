@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
-	"net/http"
 	"sort"
 	"strings"
 	"time"
@@ -40,8 +39,7 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	return mappedDatasets
 }
 
-func EditDatasetVersionMetaData(req *http.Request, d dataset.DatasetDetails, v dataset.Version) model.EditVersionMetaData {
-	var latestChanges []model.LatestChanges
+func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) model.EditVersionMetaData {
 
 	keywords := *d.Keywords
 	keywordsString := fmt.Sprintf(strings.Join(keywords[:], ", "))
@@ -102,10 +100,10 @@ func mapRelatedContent(rd []dataset.RelatedDataset, rm []dataset.Methodology, rp
 		relatedContent.methodologies = append(relatedContent.methodologies, model.RelatedContent{
 			ID:                    i,
 			Title:                 content.Title,
-			Description:           content.Description,
+			//Description:           content.Description, // TODO is it always empty?
 			Href:                  content.URL,
 			SimpleListHeading:     content.Title,
-			SimpleListDescription: content.Description,
+			//SimpleListDescription: content.Description, // TODO is it always empty?
 		})
 	}
 
@@ -140,7 +138,7 @@ func mapAlerts(v dataset.Version) []model.Notice {
 	for i, alert := range *v.Alerts {
 		alertDateInDateFormat, err := time.Parse(layout, alert.Date)
 		if err != nil {
-			//TODO log error with the version that failed
+			//TODO log error with the version that failed and return
 		}
 		noticeDate := alertDateInDateFormat.Format("01 Jan 2006")
 		simpleListHeading := fmt.Sprintf(`%s (%s)`, alert.Type, noticeDate)
@@ -172,6 +170,7 @@ func mapUsageNotes(un []dataset.UsageNote) []model.UsageNote {
 
 func mapLatestChanges(un []dataset.Change) []model.LatestChanges{
 	var latestChanges []model.LatestChanges
+
 	for i, change := range un {
 		latestChanges = append(latestChanges, model.LatestChanges{
 			ID:                    i,
