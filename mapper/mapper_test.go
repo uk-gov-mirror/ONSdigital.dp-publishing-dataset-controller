@@ -109,20 +109,20 @@ func TestUnitMapper(t *testing.T) {
 	mockContacts := []dataset.Contact{
 		{
 			Name:      "foo",
-			Telephone: "bar",
-			Email:     "baz",
+			Telephone: "Bar",
+			Email:     "bAz",
 		},
 		{
 			Name:      "bad-foo",
-			Telephone: "bad-bar",
-			Email:     "bad-baz",
+			Telephone: "bad-Bar",
+			Email:     "bad-bAz",
 		},
 	}
 	mockMethodology := []dataset.Methodology{
 		{
 			Description: "foo",
-			URL:         "bar",
-			Title:       "baz",
+			URL:         "Bar",
+			Title:       "bAz",
 		},
 		{
 			Description: "qux",
@@ -132,8 +132,8 @@ func TestUnitMapper(t *testing.T) {
 	}
 	mockPublications := []dataset.Publication{
 		{
-			Description: "bar",
-			URL:         "baz",
+			Description: "Bar",
+			URL:         "bAz",
 			Title:       "foo",
 		},
 		{
@@ -144,30 +144,30 @@ func TestUnitMapper(t *testing.T) {
 	}
 	mockRelatedDataset := []dataset.RelatedDataset{
 		{
-			URL:         "foo",
-			Title:       "bar",
+			URL:   "foo",
+			Title: "Bar",
 		},
 		{
-			URL:         "baz",
-			Title:       "qux",
+			URL:   "bAz",
+			Title: "qux",
 		},
 	}
-	mockKeywords := []string{"foo", "bar", "baz"}
+	mockKeywords := []string{"foo", "Bar", "bAz"}
 	mockUsageNotes := []dataset.UsageNote{
 		{
 			Title: "foo",
-			Note: "bar",
+			Note:  "Bar",
 		},
 		{
-			Title: "baz",
-			Note: "qux",
+			Title: "bAz",
+			Note:  "qux",
 		},
 	}
 	mockDatasetDetails := dataset.DatasetDetails{
 		ID:                "foo",
-		CollectionID:      "bar",
+		CollectionID:      "Bar",
 		Contacts:          &mockContacts,
-		Description:       "baz",
+		Description:       "bAz",
 		Keywords:          &mockKeywords,
 		License:           "qux",
 		Links:             dataset.Links{},
@@ -178,8 +178,8 @@ func TestUnitMapper(t *testing.T) {
 		Publisher:         &dataset.Publisher{},
 		QMI: dataset.Publication{
 			Description: "foo",
-			URL:         "bar",
-			Title:       "baz",
+			URL:         "Bar",
+			Title:       "bAz",
 		},
 		RelatedDatasets:  &mockRelatedDataset,
 		ReleaseFrequency: "grault",
@@ -190,15 +190,57 @@ func TestUnitMapper(t *testing.T) {
 		URI:              "xyzzy",
 		UsageNotes:       &mockUsageNotes,
 	}
+
+	mockAlerts := []dataset.Alert{
+		{
+			Date:        "2020-02-04T11:05:06.000Z",
+			Description: "Bar",
+			Type:        "bAz",
+		},
+		{
+			Date:        "2001-04-02T23:04:02.000Z",
+			Description: "quux",
+			Type:        "grault",
+		},
+	}
+	mockDimensions := []dataset.Dimension{
+		{
+			Name:        "foo",
+			Links:       dataset.Links{},
+			Description: "Bar",
+			Label:       "bAz",
+			URL:         "qux",
+		},
+		{
+			Name:        "quux",
+			Links:       dataset.Links{},
+			Description: "grault",
+			Label:       "plaugh",
+			URL:         "fred",
+		},
+	}
+
+	mockLatestChanges := []dataset.Change{
+		{
+			Description: "foo",
+			Name:        "Bar",
+			Type:        "bAz",
+		},
+		{
+			Description: "qux",
+			Name:        "quux",
+			Type:        "grault",
+		},
+	}
 	mockVersion := dataset.Version{
-		Alerts:        nil,
+		Alerts:        &mockAlerts,
 		CollectionID:  "foo",
 		Downloads:     nil,
-		Edition:       "bar",
-		Dimensions:    nil,
-		ID:            "baz",
+		Edition:       "Bar",
+		Dimensions:    mockDimensions,
+		ID:            "bAz",
 		InstanceID:    "qux",
-		LatestChanges: nil,
+		LatestChanges: mockLatestChanges,
 		Links:         dataset.Links{},
 		ReleaseDate:   "quux",
 		State:         "grault",
@@ -206,37 +248,90 @@ func TestUnitMapper(t *testing.T) {
 		Version:       1,
 	}
 
+	expectedNotices := []model.Notice{
+		{
+			ID:                    0,
+			Date:                  "04 Feb 2020",
+			Description:           "Bar",
+			SimpleListHeading:     "bAz (04 Feb 2020)",
+			SimpleListDescription: "Bar",
+			Type:                  "bAz",
+		},
+		{
+			ID:                    1,
+			Date:                  "02 Apr 2001",
+			Description:           "quux",
+			SimpleListHeading:     "grault (02 Apr 2001)",
+			SimpleListDescription: "quux",
+			Type:                  "grault",
+		},
+	}
+
+	expectedUsageNotes := []model.UsageNote{
+		{
+			ID:                    0,
+			Title:                 mockUsageNotes[0].Title,
+			Note:                  mockUsageNotes[0].Note,
+			SimpleListHeading:     mockUsageNotes[0].Title,
+			SimpleListDescription: mockUsageNotes[0].Note,
+		},
+		{
+			ID:                    1,
+			Title:                 mockUsageNotes[1].Title,
+			Note:                  mockUsageNotes[1].Note,
+			SimpleListHeading:     mockUsageNotes[1].Title,
+			SimpleListDescription: mockUsageNotes[1].Note,
+		},
+	}
+
+	expectedLatestChanges := []model.LatestChanges{
+		{
+			ID:                    0,
+			Title:                 mockLatestChanges[0].Name,
+			Description:           mockLatestChanges[0].Description,
+			SimpleListHeading:     mockLatestChanges[0].Name,
+			SimpleListDescription: mockLatestChanges[0].Description,
+		},
+		{
+			ID:                    1,
+			Title:                 mockLatestChanges[1].Name,
+			Description:           mockLatestChanges[1].Description,
+			SimpleListHeading:     mockLatestChanges[1].Name,
+			SimpleListDescription: mockLatestChanges[1].Description,
+		},
+	}
+
 	expectedEditVersionMetaData := model.EditVersionMetaData{
 		MetaData: model.MetaData{
-			Edition: "bar",
-			Version: 1,
+			Edition: mockVersion.Edition,
+			Version: mockVersion.Version,
 			ReleaseDate: model.ReleaseDate{
-				ReleaseDate: "quux",
+				ReleaseDate: mockVersion.ReleaseDate,
 				Error:       "",
 			},
-			Notices:              nil,
-			Dimensions:           nil,
-			UsageNotes:           nil,
-			LatestChanges:        nil,
-			Title:                "fred",
-			Summary:              "baz",
-			Keywords:             "",
-			NationalStatistic:    false,
-			License:              "qux",
-			ContactName:          "foo",
-			ContactEmail:         "bar",
-			ContactTelephone:     "baz",
+			Notices:              expectedNotices,
+			Dimensions:           mockVersion.Dimensions,
+			UsageNotes:           expectedUsageNotes,
+			LatestChanges:        expectedLatestChanges,
+			Title:                mockDatasetDetails.Title,
+			Summary:              mockDatasetDetails.Description,
+			Keywords:             "foo, Bar, bAz",
+			NationalStatistic:    mockDatasetDetails.NationalStatistic,
+			License:              mockDatasetDetails.License,
+			ContactName:          mockContacts[0].Name,
+			ContactEmail:         mockContacts[0].Email,
+			ContactTelephone:     mockContacts[0].Telephone,
 			RelatedDatasets:      nil,
 			RelatedPublications:  nil,
 			RelatedMethodologies: nil,
-			ReleaseFrequency:     "grault",
-			NextReleaseDate:      "quux",
-			UnitOfMeassure:       "plugh",
-			QMI:                  "bar",
+			ReleaseFrequency:     mockDatasetDetails.ReleaseFrequency,
+			NextReleaseDate:      mockDatasetDetails.NextRelease,
+			UnitOfMeassure:       mockDatasetDetails.UnitOfMeasure,
+			QMI:                  mockDatasetDetails.QMI.URL,
 		},
-		Collection: "bar",
-		InstanceID: "foo",
-		Published:  false,
+		Collection: mockDatasetDetails.CollectionID,
+		InstanceID: mockVersion.ID,
+		Published:  mockVersion.State == "published",
 	}
 
 	Convey("test EditDatasetVersionMetaData", t, func() {
