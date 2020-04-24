@@ -251,17 +251,17 @@ func TestUnitMapper(t *testing.T) {
 	expectedNotices := []model.Notice{
 		{
 			ID:                    0,
-			Date:                  "04 Feb 2020",
+			Date:                  "04 Apr 2020",
 			Description:           "Bar",
-			SimpleListHeading:     "bAz (04 Feb 2020)",
+			SimpleListHeading:     "bAz (02 Apr 2020)",
 			SimpleListDescription: "Bar",
 			Type:                  "bAz",
 		},
 		{
 			ID:                    1,
-			Date:                  "02 Apr 2001",
+			Date:                  "02 Feb 2001",
 			Description:           "quux",
-			SimpleListHeading:     "grault (02 Apr 2001)",
+			SimpleListHeading:     "grault (04 Feb 2001)",
 			SimpleListDescription: "quux",
 			Type:                  "grault",
 		},
@@ -301,6 +301,65 @@ func TestUnitMapper(t *testing.T) {
 		},
 	}
 
+	expectedRelatedDataset := []model.RelatedContent{
+		{
+			ID:                    0,
+			Title:                 mockRelatedDataset[0].Title,
+			Description:           "",
+			Href:                  mockRelatedDataset[0].URL,
+			SimpleListHeading:     mockRelatedDataset[0].Title,
+			SimpleListDescription: "",
+		},
+		{
+			ID:                    1,
+			Title:                 mockRelatedDataset[1].Title,
+			Description:           "",
+			Href:                  mockRelatedDataset[1].URL,
+			SimpleListHeading:     mockRelatedDataset[1].Title,
+			SimpleListDescription: "",
+		},
+	}
+
+	expectedRelatedMethodologies := []model.RelatedContent{
+		{
+			ID:                    0,
+			Title:                 mockMethodology[0].Title,
+			Description:           mockMethodology[0].Description,
+			Href:                  mockMethodology[0].URL,
+			SimpleListHeading:     mockMethodology[0].Title,
+			SimpleListDescription: mockMethodology[0].Description,
+		},
+		{
+			ID:                    1,
+			Title:                 mockMethodology[1].Title,
+			Description:           mockMethodology[1].Description,
+			Href:                  mockMethodology[1].URL,
+			SimpleListHeading:     mockMethodology[1].Title,
+			SimpleListDescription: mockMethodology[1].Description,
+		},
+	}
+
+	expectedRelatedPublcation := []model.RelatedContent{
+		{
+			ID:                    0,
+			Title:                 mockPublications[0].Title,
+			Description:           mockPublications[0].Description,
+			Href:                  mockPublications[0].URL,
+			SimpleListHeading:     mockPublications[0].Title,
+			SimpleListDescription: mockPublications[0].Description,
+		},
+		{
+			ID:                    1,
+			Title:                 mockPublications[1].Title,
+			Description:           mockPublications[1].Description,
+			Href:                  mockPublications[1].URL,
+			SimpleListHeading:     mockPublications[1].Title,
+			SimpleListDescription: mockPublications[1].Description,
+		},
+	}
+
+
+
 	expectedEditVersionMetaData := model.EditVersionMetaData{
 		MetaData: model.MetaData{
 			Edition: mockVersion.Edition,
@@ -321,9 +380,9 @@ func TestUnitMapper(t *testing.T) {
 			ContactName:          mockContacts[0].Name,
 			ContactEmail:         mockContacts[0].Email,
 			ContactTelephone:     mockContacts[0].Telephone,
-			RelatedDatasets:      nil,
-			RelatedPublications:  nil,
-			RelatedMethodologies: nil,
+			RelatedDatasets:      expectedRelatedDataset,
+			RelatedPublications:  expectedRelatedPublcation,
+			RelatedMethodologies: expectedRelatedMethodologies,
 			ReleaseFrequency:     mockDatasetDetails.ReleaseFrequency,
 			NextReleaseDate:      mockDatasetDetails.NextRelease,
 			UnitOfMeassure:       mockDatasetDetails.UnitOfMeasure,

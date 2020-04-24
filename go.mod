@@ -10,6 +10,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9 // indirect
 	github.com/fatih/color v1.9.0 // indirect
+	github.com/golang/mock v1.3.1
 	github.com/gopherjs/gopherjs v0.0.0-20191106031601-ce3c9ade29de // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/justinas/alice v1.2.0 // indirect
