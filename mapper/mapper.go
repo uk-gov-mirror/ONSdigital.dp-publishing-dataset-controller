@@ -2,6 +2,7 @@ package mapper
 
 import (
 	"sort"
+	"strings"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
@@ -20,7 +21,7 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	}
 
 	sort.Slice(mappedDatasets, func(i, j int) bool {
-		return mappedDatasets[i].GetTitle() < mappedDatasets[j].GetTitle()
+		return strings.ToLower(mappedDatasets[i].GetLabel()) < strings.ToLower(mappedDatasets[j].GetLabel())
 	})
 
 	return mappedDatasets
