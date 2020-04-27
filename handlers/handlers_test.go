@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
@@ -29,17 +28,17 @@ func doTestRequest(target string, req *http.Request, handlerFunc http.HandlerFun
 
 func TestUnitHandlers(t *testing.T) {
 	t.Parallel()
-	mockUserAuthToken := ""
-	mockServiceAuthToken := ""
-	mockDownloadToken := ""
-	mockCollectionID := ""
-	mockDatasetID := "bar"
-	mockEdition := "baz"
-	mockVersionNum := "1"
+	const mockUserAuthToken = ""
+	const mockServiceAuthToken = ""
+	const mockDownloadToken = ""
+	const mockCollectionID = ""
+	const mockDatasetID = "bar"
+	const mockEdition = "baz"
+	const mockVersionNum = "1"
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	target := fmt.Sprintf("/datasets/%s/editions/%s/versions/%s", mockDatasetID, mockEdition, mockVersionNum)
+	//target := fmt.Sprintf("/datasets/%s/editions/%s/versions/%s", mockDatasetID, mockEdition, mockVersionNum)
 
 	Convey("test setStatusCode", t, func() {
 		Convey("test status code handles 404 response from client", func() {
@@ -54,12 +53,52 @@ func TestUnitHandlers(t *testing.T) {
 
 	Convey("test getEditMetadataHandler", t, func() {
 		Convey("when working", func() {
-			mockDatasetClient := NewMockDatasetClient(mockCtrl)
-			mockDatasetClient.EXPECT().GetVersion(gomock.Any(), mockUserAuthToken, mockServiceAuthToken, mockDownloadToken, mockCollectionID, mockDatasetID, mockEdition, mockVersionNum).Return(dataset.Version{}, nil)
-			mockDatasetClient.EXPECT().Get(gomock.Any(), mockUserAuthToken, mockServiceAuthToken, mockCollectionID, mockDatasetID).Return(dataset.DatasetDetails{}, nil)
 
-			req := httptest.NewRequest("GET", target, nil)
-			w := doTestRequest(target, req, GetEditMetadataHandler(mockDatasetClient), nil)
+			mockDatasetDetails := dataset.DatasetDetails{
+				ID:                "",
+				CollectionID:      "",
+				Contacts:          nil,
+				Description:       "",
+				Keywords:          nil,
+				License:           "",
+				Links:             dataset.Links{},
+				Methodologies:     nil,
+				NationalStatistic: false,
+				NextRelease:       "",
+				Publications:      nil,
+				Publisher:         nil,
+				QMI:               dataset.Publication{},
+				RelatedDatasets:   nil,
+				ReleaseFrequency:  "",
+				State:             "",
+				Theme:             "",
+				Title:             "",
+				UnitOfMeasure:     "",
+				URI:               "",
+				UsageNotes:        nil,
+			}
+
+			mockVersionDetails := dataset.Version{
+				Alerts:        nil,
+				CollectionID:  "",
+				Downloads:     nil,
+				Edition:       "",
+				Dimensions:    nil,
+				ID:            "",
+				InstanceID:    "",
+				LatestChanges: nil,
+				Links:         dataset.Links{},
+				ReleaseDate:   "",
+				State:         "",
+				Temporal:      nil,
+				Version:       0,
+			}
+			mockDatasetClient := NewMockDatasetClient(mockCtrl)
+			mockDatasetClient.EXPECT().Get(gomock.Any(), mockUserAuthToken, mockServiceAuthToken, mockCollectionID, mockDatasetID).Return(mockDatasetDetails, nil)
+			mockDatasetClient.EXPECT().GetVersion(gomock.Any(), mockUserAuthToken, mockServiceAuthToken, mockDownloadToken, mockCollectionID, mockDatasetID, mockEdition, mockVersionNum).Return(mockVersionDetails, nil)
+
+			req := httptest.NewRequest("GET", "/datasets/bar/editions/baz/versions/1", nil)
+			w := doTestRequest("/datasets/{datasetID}/editions/{editionID}/versions/{versionID}", req, GetEditMetadataHandler(mockDatasetClient), nil)
 
 			So(w.Code, ShouldEqual, http.StatusOK)
 			So(w.Body.String(), ShouldNotBeNil)

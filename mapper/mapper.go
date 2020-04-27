@@ -36,11 +36,24 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 }
 
 func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (model.EditVersionMetaData, error) {
+	keywordsString := ""
+	if d.Keywords != nil {
+		keywords := *d.Keywords
+		keywordsString = fmt.Sprintf(strings.Join(keywords[:], ", "))
+	}
 
-	keywords := *d.Keywords
-	keywordsString := fmt.Sprintf(strings.Join(keywords[:], ", "))
-	relatedContent := mapRelatedContent(*d.RelatedDatasets, *d.Methodologies, *d.Publications)
-	contacts := *d.Contacts
+	relatedContent := mapRelatedContent(d.RelatedDatasets, d.Methodologies, d.Publications)
+
+	var contacts = []dataset.Contact{
+		{
+			Name:      "",
+			Telephone: "",
+			Email:     "",
+		},
+	}
+	if d.Contacts != nil {
+		contacts = *d.Contacts
+	}
 
 	releaseDate := model.ReleaseDate{
 		ReleaseDate: v.ReleaseDate,
@@ -52,13 +65,13 @@ func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (mo
 		return model.EditVersionMetaData{}, errors.Wrap(err, "error whilst parsing alerts")
 	}
 
-	mappedMetaData := model.MetaData{
+		mappedMetaData := model.MetaData{
 		Edition:       v.Edition,
 		Version:       v.Version,
 		ReleaseDate:   releaseDate,
 		Notices:       notices,
 		Dimensions:    v.Dimensions,
-		UsageNotes:    mapUsageNotes(*d.UsageNotes),
+		UsageNotes:    mapUsageNotes(d.UsageNotes),
 		LatestChanges: mapLatestChanges(v.LatestChanges),
 
 		Title:                d.Title,
@@ -93,37 +106,44 @@ func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (mo
 	return mappedEditVersionMetaData, nil
 }
 
-func mapRelatedContent(rd []dataset.RelatedDataset, rm []dataset.Methodology, rp []dataset.Publication) related {
+func mapRelatedContent(rd *[]dataset.RelatedDataset, rm *[]dataset.Methodology, rp *[]dataset.Publication) related {
 	var relatedContent related
-	for i, content := range rd {
-		relatedContent.datasets = append(relatedContent.datasets, model.RelatedContent{
-			ID:                i,
-			Title:             content.Title,
-			Href:              content.URL,
-			SimpleListHeading: content.Title,
-		})
+	if rd != nil {
+		for i, content := range *rd {
+			relatedContent.datasets = append(relatedContent.datasets, model.RelatedContent{
+				ID:                i,
+				Title:             content.Title,
+				Href:              content.URL,
+				SimpleListHeading: content.Title,
+			})
+		}
+
 	}
 
-	for i, content := range rm {
-		relatedContent.methodologies = append(relatedContent.methodologies, model.RelatedContent{
-			ID:                    i,
-			Title:                 content.Title,
-			Description:           content.Description,
-			Href:                  content.URL,
-			SimpleListHeading:     content.Title,
-			SimpleListDescription: content.Description,
-		})
+	if rm != nil {
+		for i, content := range *rm {
+			relatedContent.methodologies = append(relatedContent.methodologies, model.RelatedContent{
+				ID:                    i,
+				Title:                 content.Title,
+				Description:           content.Description,
+				Href:                  content.URL,
+				SimpleListHeading:     content.Title,
+				SimpleListDescription: content.Description,
+			})
+		}
 	}
 
-	for i, content := range rp {
-		relatedContent.publications = append(relatedContent.publications, model.RelatedContent{
-			ID:                    i,
-			Title:                 content.Title,
-			Description:           content.Description,
-			Href:                  content.URL,
-			SimpleListHeading:     content.Title,
-			SimpleListDescription: content.Description,
-		})
+	if rp != nil {
+		for i, content := range *rp {
+			relatedContent.publications = append(relatedContent.publications, model.RelatedContent{
+				ID:                    i,
+				Title:                 content.Title,
+				Description:           content.Description,
+				Href:                  content.URL,
+				SimpleListHeading:     content.Title,
+				SimpleListDescription: content.Description,
+			})
+		}
 	}
 	return relatedContent
 }
@@ -132,6 +152,9 @@ func mapAlerts(v dataset.Version) ([]model.Notice, error) {
 	//layout := "2006-01-02T15:04:05.000Z"
 	var notices []model.Notice
 
+	if v.Alerts == nil {
+		return notices, nil
+	}
 	for i, alert := range *v.Alerts {
 		alertDateInDateFormat, err := time.Parse(time.RFC3339Nano, alert.Date)
 		if err != nil {
@@ -149,12 +172,17 @@ func mapAlerts(v dataset.Version) ([]model.Notice, error) {
 			SimpleListDescription: alert.Description,
 		})
 	}
+
 	return notices, nil
 }
 
-func mapUsageNotes(un []dataset.UsageNote) []model.UsageNote {
+func mapUsageNotes(un *[]dataset.UsageNote) []model.UsageNote {
 	var usageNotes []model.UsageNote
-	for i, note := range un {
+	if un == nil {
+		return usageNotes
+	}
+
+	for i, note := range *un {
 		usageNotes = append(usageNotes, model.UsageNote{
 			ID:                    i,
 			Title:                 note.Title,
