@@ -80,8 +80,8 @@ type RelatedContent struct {
 	SimpleListDescription string `json:"simple_list_description"`
 }
 
-// GetTitle will return the dataset's title. If the dataset does not have a title, it will instead return the ID
-func (d Dataset) GetTitle() string {
+// GetLabel will return the dataset's name. If the dataset does not have a title, it will instead return the ID
+func (d Dataset) GetLabel() string {
 	if d.Title == "" {
 		return d.ID
 	}

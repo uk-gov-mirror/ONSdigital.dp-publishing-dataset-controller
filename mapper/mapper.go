@@ -2,11 +2,12 @@ package mapper
 
 import (
 	"fmt"
+	"sort"
+	"strings"
+
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/pkg/errors"
-	"sort"
-	"strings"
 	"time"
 )
 
@@ -29,7 +30,7 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	}
 
 	sort.Slice(mappedDatasets, func(i, j int) bool {
-		return mappedDatasets[i].GetTitle() < mappedDatasets[j].GetTitle()
+		return strings.ToLower(mappedDatasets[i].GetLabel()) < strings.ToLower(mappedDatasets[j].GetLabel())
 	})
 
 	return mappedDatasets
@@ -65,7 +66,7 @@ func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (mo
 		return model.EditVersionMetaData{}, errors.Wrap(err, "error whilst parsing alerts")
 	}
 
-		mappedMetaData := model.MetaData{
+	mappedMetaData := model.MetaData{
 		Edition:       v.Edition,
 		Version:       v.Version,
 		ReleaseDate:   releaseDate,
