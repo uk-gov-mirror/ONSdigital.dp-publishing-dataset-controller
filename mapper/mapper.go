@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
+	"github.com/pkg/errors"
 	"sort"
 	"strings"
 	"time"
@@ -34,7 +35,7 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	return mappedDatasets
 }
 
-func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) model.EditVersionMetaData {
+func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (model.EditVersionMetaData, error) {
 
 	keywords := *d.Keywords
 	keywordsString := fmt.Sprintf(strings.Join(keywords[:], ", "))
@@ -46,11 +47,16 @@ func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) mod
 		Error:       "",
 	}
 
+	notices, err := mapAlerts(v)
+	if err != nil {
+		return model.EditVersionMetaData{}, errors.Wrap(err, "error whilst parsing alerts")
+	}
+
 	mappedMetaData := model.MetaData{
 		Edition:       v.Edition,
 		Version:       v.Version,
 		ReleaseDate:   releaseDate,
-		Notices:       mapAlerts(v),
+		Notices:       notices,
 		Dimensions:    v.Dimensions,
 		UsageNotes:    mapUsageNotes(*d.UsageNotes),
 		LatestChanges: mapLatestChanges(v.LatestChanges),
@@ -73,7 +79,7 @@ func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) mod
 	}
 	var mappedCollectionValue string
 	if v.CollectionID == "" {
-		mappedCollectionValue = "false" // todo check it is a string false
+		mappedCollectionValue = "false"
 	} else {
 		mappedCollectionValue = v.CollectionID
 	}
@@ -84,21 +90,17 @@ func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) mod
 		Published:  v.State == "published",
 	}
 
-	return mappedEditVersionMetaData
+	return mappedEditVersionMetaData, nil
 }
 
-// TODO make DRY - cast to a common type maybe
 func mapRelatedContent(rd []dataset.RelatedDataset, rm []dataset.Methodology, rp []dataset.Publication) related {
 	var relatedContent related
-
 	for i, content := range rd {
-		relatedContent.methodologies = append(relatedContent.methodologies, model.RelatedContent{
-			ID:                    i,
-			Title:                 content.Title,
-			//Description:           content.Description, // TODO is it always empty?
-			Href:                  content.URL,
-			SimpleListHeading:     content.Title,
-			//SimpleListDescription: content.Description, // TODO is it always empty?
+		relatedContent.datasets = append(relatedContent.datasets, model.RelatedContent{
+			ID:                i,
+			Title:             content.Title,
+			Href:              content.URL,
+			SimpleListHeading: content.Title,
 		})
 	}
 
@@ -114,7 +116,7 @@ func mapRelatedContent(rd []dataset.RelatedDataset, rm []dataset.Methodology, rp
 	}
 
 	for i, content := range rp {
-		relatedContent.methodologies = append(relatedContent.methodologies, model.RelatedContent{
+		relatedContent.publications = append(relatedContent.publications, model.RelatedContent{
 			ID:                    i,
 			Title:                 content.Title,
 			Description:           content.Description,
@@ -126,27 +128,28 @@ func mapRelatedContent(rd []dataset.RelatedDataset, rm []dataset.Methodology, rp
 	return relatedContent
 }
 
-func mapAlerts(v dataset.Version) []model.Notice {
-	layout := "2006-01-02T15:04:05.000Z" // TODO check this is the right layout for the dates
+func mapAlerts(v dataset.Version) ([]model.Notice, error) {
+	//layout := "2006-01-02T15:04:05.000Z"
 	var notices []model.Notice
 
 	for i, alert := range *v.Alerts {
-		alertDateInDateFormat, err := time.Parse(layout, alert.Date)
+		alertDateInDateFormat, err := time.Parse(time.RFC3339Nano, alert.Date)
 		if err != nil {
-			//TODO log error with the version that failed and return
+			return nil, errors.Wrap(err, "error whilst parsing time from alert date")
 		}
-		noticeDate := alertDateInDateFormat.Format("01 Jan 2006")
+
+		noticeDate := alertDateInDateFormat.Format("02 Jan 2006")
 		simpleListHeading := fmt.Sprintf(`%s (%s)`, alert.Type, noticeDate)
 		notices = append(notices, model.Notice{
 			ID:                    i,
 			Type:                  alert.Type,
-			Date:                  alert.Date,
+			Date:                  noticeDate,
 			Description:           alert.Description,
 			SimpleListHeading:     simpleListHeading,
 			SimpleListDescription: alert.Description,
 		})
 	}
-	return notices
+	return notices, nil
 }
 
 func mapUsageNotes(un []dataset.UsageNote) []model.UsageNote {
@@ -163,7 +166,7 @@ func mapUsageNotes(un []dataset.UsageNote) []model.UsageNote {
 	return usageNotes
 }
 
-func mapLatestChanges(un []dataset.Change) []model.LatestChanges{
+func mapLatestChanges(un []dataset.Change) []model.LatestChanges {
 	var latestChanges []model.LatestChanges
 
 	for i, change := range un {

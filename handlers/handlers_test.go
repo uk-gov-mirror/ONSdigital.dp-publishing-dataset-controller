@@ -30,12 +30,14 @@ func doTestRequest(target string, req *http.Request, handlerFunc http.HandlerFun
 func TestUnitHandlers(t *testing.T) {
 	t.Parallel()
 	mockUserAuthToken := ""
-	mockServiceAuthToken := "foo"
+	mockServiceAuthToken := ""
 	mockDownloadToken := ""
 	mockCollectionID := ""
 	mockDatasetID := "bar"
 	mockEdition := "baz"
 	mockVersionNum := "1"
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
 
 	target := fmt.Sprintf("/datasets/%s/editions/%s/versions/%s", mockDatasetID, mockEdition, mockVersionNum)
 
@@ -52,13 +54,12 @@ func TestUnitHandlers(t *testing.T) {
 
 	Convey("test getEditMetadataHandler", t, func() {
 		Convey("when working", func() {
-			mockCtrl := gomock.NewController(t)
 			mockDatasetClient := NewMockDatasetClient(mockCtrl)
 			mockDatasetClient.EXPECT().GetVersion(gomock.Any(), mockUserAuthToken, mockServiceAuthToken, mockDownloadToken, mockCollectionID, mockDatasetID, mockEdition, mockVersionNum).Return(dataset.Version{}, nil)
 			mockDatasetClient.EXPECT().Get(gomock.Any(), mockUserAuthToken, mockServiceAuthToken, mockCollectionID, mockDatasetID).Return(dataset.DatasetDetails{}, nil)
 
-			req := httptest.NewRequest("GET", "/cookies", nil)
-			w := doTestRequest(target, req, GetMetadataHandler(mockDatasetClient), nil)
+			req := httptest.NewRequest("GET", target, nil)
+			w := doTestRequest(target, req, GetEditMetadataHandler(mockDatasetClient), nil)
 
 			So(w.Code, ShouldEqual, http.StatusOK)
 			So(w.Body.String(), ShouldNotBeNil)

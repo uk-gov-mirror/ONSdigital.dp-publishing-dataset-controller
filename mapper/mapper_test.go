@@ -251,17 +251,17 @@ func TestUnitMapper(t *testing.T) {
 	expectedNotices := []model.Notice{
 		{
 			ID:                    0,
-			Date:                  "04 Apr 2020",
+			Date:                  "04 Feb 2020",
 			Description:           "Bar",
-			SimpleListHeading:     "bAz (02 Apr 2020)",
+			SimpleListHeading:     "bAz (04 Feb 2020)",
 			SimpleListDescription: "Bar",
 			Type:                  "bAz",
 		},
 		{
 			ID:                    1,
-			Date:                  "02 Feb 2001",
+			Date:                  "02 Apr 2001",
 			Description:           "quux",
-			SimpleListHeading:     "grault (04 Feb 2001)",
+			SimpleListHeading:     "grault (02 Apr 2001)",
 			SimpleListDescription: "quux",
 			Type:                  "grault",
 		},
@@ -358,8 +358,6 @@ func TestUnitMapper(t *testing.T) {
 		},
 	}
 
-
-
 	expectedEditVersionMetaData := model.EditVersionMetaData{
 		MetaData: model.MetaData{
 			Edition: mockVersion.Edition,
@@ -388,14 +386,15 @@ func TestUnitMapper(t *testing.T) {
 			UnitOfMeassure:       mockDatasetDetails.UnitOfMeasure,
 			QMI:                  mockDatasetDetails.QMI.URL,
 		},
-		Collection: mockDatasetDetails.CollectionID,
+		Collection: mockVersion.CollectionID,
 		InstanceID: mockVersion.ID,
 		Published:  mockVersion.State == "published",
 	}
 
 	Convey("test EditDatasetVersionMetaData", t, func() {
 		Convey("when working", func() {
-			outcome := EditDatasetVersionMetaData(mockDatasetDetails, mockVersion)
+			outcome, err := EditDatasetVersionMetaData(mockDatasetDetails, mockVersion)
+			So(err, ShouldBeNil)
 			So(outcome, ShouldResemble, expectedEditVersionMetaData)
 		})
 	})

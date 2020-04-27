@@ -16,13 +16,13 @@ type ClientError interface {
 	Code() int
 }
 
-func GetMetadataHandler(dc DatasetClient, ) http.HandlerFunc {
+func GetEditMetadataHandler(dc DatasetClient, ) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		getMetadataHandler(w, req, dc)
+		getEditMetadataHandler(w, req, dc)
 	}
 }
 
-func getMetadataHandler(w http.ResponseWriter, req *http.Request, dc DatasetClient) {
+func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc DatasetClient) {
 	vars := mux.Vars(req)
 	datasetID := vars["datasetID"]
 	edition := vars["editionID"]
@@ -31,26 +31,48 @@ func getMetadataHandler(w http.ResponseWriter, req *http.Request, dc DatasetClie
 	userAccessToken := getUserAccessTokenFromContext(ctx)
 	collectionID := getCollectionIDFromContext(ctx)
 
+	log.Event(ctx, "1 here")
 	v, err := dc.GetVersion(ctx, userAccessToken, "", "", collectionID, datasetID, edition, version)
 	if err != nil {
 		setStatusCode(req, w, err)
 		return
 	}
 
+	log.Event(ctx, "2 here")
 	d, err := dc.Get(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
+		log.Event(ctx, "failed Get dataset details", log.Error(err))
 		setStatusCode(req, w, err)
 		return
 	}
-	p := mapper.EditDatasetVersionMetaData(d, v)
+	log.Event(ctx, "3 here")
+	p, err := mapper.EditDatasetVersionMetaData(d, v)
+	if err != nil {
+		err := errors.Wrap(err, "failed to map EditDatasetVersionMetaData")
+		log.Event(ctx, "failed to map EditDatasetVersionMetaData", log.Error(err))
+		setStatusCode(req, w, err)
+		return
+	}
+
+	log.Event(ctx, "4 here")
 	b, err := json.Marshal(p)
 	if err != nil {
+
 		setStatusCode(req, w, err)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 
-	w.Write(b)
+	log.Event(ctx, "5 here")
+	_, err = w.Write(b)
+	if err != nil {
+
+		log.Event(ctx, "failed to write bytes for http response", log.Error(err))
+		setStatusCode(req, w, err)
+		return
+	}
+	log.Event(ctx, "6 here", )
+
 }
 
 func setStatusCode(req *http.Request, w http.ResponseWriter, err error) {
