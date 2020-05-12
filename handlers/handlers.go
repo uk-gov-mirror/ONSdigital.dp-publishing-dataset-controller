@@ -33,17 +33,22 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	ctx := req.Context()
 	userAccessToken := getUserAccessTokenFromContext(ctx)
 	collectionID := getCollectionIDFromContext(ctx)
+	logInfo := map[string]interface{}{
+		"datasetID": datasetID,
+		"edition": edition,
+		"version": version,
+	}
 
 	v, err := dc.GetVersion(ctx, userAccessToken, "", "", collectionID, datasetID, edition, version)
 	if err != nil {
-		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data{"datasetID": datasetID, "edition": edition, "version": version})
+		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
 
 	d, err := dc.Get(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
-		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data{"datasetID": datasetID})
+		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
@@ -51,7 +56,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	p, err := mapper.EditDatasetVersionMetaData(d, v)
 	if err != nil {
 		err := errors.Wrap(err, "failed to map EditDatasetVersionMetaData")
-		log.Event(ctx, "failed to map EditDatasetVersionMetaData", log.Error(err), log.Data{"datasetID": datasetID, "edition": edition, "version": version})
+		log.Event(ctx, "failed to map EditDatasetVersionMetaData", log.Error(err), log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
@@ -66,7 +71,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 
 	_, err = w.Write(b)
 	if err != nil {
-		log.Event(ctx, "failed to write bytes for http response", log.Error(err), log.Data{"datasetID": datasetID, "edition": edition, "version": version})
+		log.Event(ctx, "failed to write bytes for http response", log.Error(err), log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
