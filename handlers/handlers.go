@@ -36,50 +36,51 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 
 	v, err := dc.GetVersion(ctx, userAccessToken, "", "", collectionID, datasetID, edition, version)
 	if err != nil {
-		setStatusCode(req, w, err)
+		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data{"datasetID": datasetID, "edition": edition, "version": version})
+		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
 
 	d, err := dc.Get(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
-		log.Event(ctx, "failed Get dataset details", log.Error(err))
-		setStatusCode(req, w, err)
+		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data{"datasetID": datasetID})
+		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
+
 	p, err := mapper.EditDatasetVersionMetaData(d, v)
 	if err != nil {
 		err := errors.Wrap(err, "failed to map EditDatasetVersionMetaData")
-		log.Event(ctx, "failed to map EditDatasetVersionMetaData", log.Error(err))
-		setStatusCode(req, w, err)
+		log.Event(ctx, "failed to map EditDatasetVersionMetaData", log.Error(err), log.Data{"datasetID": datasetID, "edition": edition, "version": version})
+		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
 
 	b, err := json.Marshal(p)
 	if err != nil {
-
-		setStatusCode(req, w, err)
+		log.Event(ctx, "failed marshalling page into bytes", log.Error(err))
+		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 
 	_, err = w.Write(b)
 	if err != nil {
-
-		log.Event(ctx, "failed to write bytes for http response", log.Error(err))
-		setStatusCode(req, w, err)
+		log.Event(ctx, "failed to write bytes for http response", log.Error(err), log.Data{"datasetID": datasetID, "edition": edition, "version": version})
+		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
 
 }
 
-func setStatusCode(req *http.Request, w http.ResponseWriter, err error) {
+func setErrorStatusCode(req *http.Request, w http.ResponseWriter, err error, datasetID string) {
 	status := http.StatusInternalServerError
 	if err, ok := err.(ClientError); ok {
 		if err.Code() == http.StatusNotFound {
 			status = err.Code()
 		}
 	}
-	log.Event(req.Context(), "client error", log.ERROR, log.Error(err), log.Data{"setting-response-status": status})
+	log.Event(req.Context(), "client error", log.ERROR, log.Error(err), log.Data{"setting-response-status": status, "datasetID": datasetID})
 	w.WriteHeader(status)
 }
 

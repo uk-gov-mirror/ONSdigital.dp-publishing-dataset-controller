@@ -43,7 +43,7 @@ func TestUnitHandlers(t *testing.T) {
 			req := httptest.NewRequest("GET", "http://localhost:24000", nil)
 			w := httptest.NewRecorder()
 			err := &testCliError{}
-			setStatusCode(req, w, err)
+			setErrorStatusCode(req, w, err, mockDatasetID)
 
 			So(w.Code, ShouldEqual, http.StatusNotFound)
 		})

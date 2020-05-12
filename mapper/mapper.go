@@ -150,7 +150,6 @@ func mapRelatedContent(rd *[]dataset.RelatedDataset, rm *[]dataset.Methodology, 
 }
 
 func mapAlerts(v dataset.Version) ([]model.Notice, error) {
-	//layout := "2006-01-02T15:04:05.000Z"
 	var notices []model.Notice
 
 	if v.Alerts == nil {
