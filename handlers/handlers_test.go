@@ -38,8 +38,6 @@ func TestUnitHandlers(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	//target := fmt.Sprintf("/datasets/%s/editions/%s/versions/%s", mockDatasetID, mockEdition, mockVersionNum)
-
 	Convey("test setStatusCode", t, func() {
 		Convey("test status code handles 404 response from client", func() {
 			req := httptest.NewRequest("GET", "http://localhost:24000", nil)

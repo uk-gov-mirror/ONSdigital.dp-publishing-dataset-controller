@@ -1,4 +1,5 @@
-package handlers // FilterableLanding will load a filterable landing page
+package handlers
+
 import (
 	"context"
 	"encoding/json"
@@ -16,12 +17,14 @@ type ClientError interface {
 	Code() int
 }
 
-func GetEditMetadataHandler(dc DatasetClient, ) http.HandlerFunc {
+// GetEditMetadataHandler is a handler that wraps getEditMetadataHandler passing in addition arguments
+func GetEditMetadataHandler(dc DatasetClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		getEditMetadataHandler(w, req, dc)
 	}
 }
 
+// getEditMetadataHandler gets the Edit Metadata page information used on the edit metadata screens
 func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc DatasetClient) {
 	vars := mux.Vars(req)
 	datasetID := vars["datasetID"]
@@ -31,21 +34,18 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	userAccessToken := getUserAccessTokenFromContext(ctx)
 	collectionID := getCollectionIDFromContext(ctx)
 
-	log.Event(ctx, "1 here")
 	v, err := dc.GetVersion(ctx, userAccessToken, "", "", collectionID, datasetID, edition, version)
 	if err != nil {
 		setStatusCode(req, w, err)
 		return
 	}
 
-	log.Event(ctx, "2 here")
 	d, err := dc.Get(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
 		log.Event(ctx, "failed Get dataset details", log.Error(err))
 		setStatusCode(req, w, err)
 		return
 	}
-	log.Event(ctx, "3 here")
 	p, err := mapper.EditDatasetVersionMetaData(d, v)
 	if err != nil {
 		err := errors.Wrap(err, "failed to map EditDatasetVersionMetaData")
@@ -54,7 +54,6 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		return
 	}
 
-	log.Event(ctx, "4 here")
 	b, err := json.Marshal(p)
 	if err != nil {
 
@@ -63,7 +62,6 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	}
 	w.Header().Set("Content-Type", "application/json")
 
-	log.Event(ctx, "5 here")
 	_, err = w.Write(b)
 	if err != nil {
 
@@ -71,7 +69,6 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		setStatusCode(req, w, err)
 		return
 	}
-	log.Event(ctx, "6 here", )
 
 }
 
