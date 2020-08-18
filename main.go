@@ -9,9 +9,9 @@ import (
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
+	dpnethttp "github.com/ONSdigital/dp-net/http"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/config"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/routes"
-	"github.com/ONSdigital/go-ns/server"
 	"github.com/ONSdigital/log.go/log"
 	"github.com/gorilla/mux"
 )
@@ -62,7 +62,7 @@ func main() {
 	router := mux.NewRouter()
 	routes.Init(router, cfg, hc, dc)
 
-	s := server.New(cfg.BindAddr, router)
+	s := dpnethttp.NewServer(cfg.BindAddr, router)
 
 	go func() {
 		if err := s.ListenAndServe(); err != nil {
