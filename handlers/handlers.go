@@ -3,8 +3,8 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"github.com/ONSdigital/dp-net/request"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
-	"github.com/ONSdigital/go-ns/common"
 	"github.com/ONSdigital/log.go/log"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -35,8 +35,8 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	collectionID := getCollectionIDFromContext(ctx)
 	logInfo := map[string]interface{}{
 		"datasetID": datasetID,
-		"edition": edition,
-		"version": version,
+		"edition":   edition,
+		"version":   version,
 	}
 
 	v, err := dc.GetVersion(ctx, userAccessToken, "", "", collectionID, datasetID, edition, version)
@@ -90,8 +90,8 @@ func setErrorStatusCode(req *http.Request, w http.ResponseWriter, err error, dat
 }
 
 func getUserAccessTokenFromContext(ctx context.Context) string {
-	if ctx.Value(common.FlorenceIdentityKey) != nil {
-		accessToken, ok := ctx.Value(common.FlorenceIdentityKey).(string)
+	if ctx.Value(request.FlorenceIdentityKey) != nil {
+		accessToken, ok := ctx.Value(request.FlorenceIdentityKey).(string)
 		if !ok {
 			log.Event(ctx, "error retrieving user access token", log.WARN, log.Error(errors.New("error casting access token context value to string")))
 		}
@@ -101,8 +101,8 @@ func getUserAccessTokenFromContext(ctx context.Context) string {
 }
 
 func getCollectionIDFromContext(ctx context.Context) string {
-	if ctx.Value(common.CollectionIDHeaderKey) != nil {
-		collectionID, ok := ctx.Value(common.CollectionIDHeaderKey).(string)
+	if ctx.Value(request.CollectionIDHeaderKey) != nil {
+		collectionID, ok := ctx.Value(request.CollectionIDHeaderKey).(string)
 		if !ok {
 			log.Event(ctx, "error retrieving collection ID", log.WARN, log.Error(errors.New("error casting collection ID context value to string")))
 		}
