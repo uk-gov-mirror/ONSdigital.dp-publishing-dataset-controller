@@ -27,7 +27,7 @@ func Get() (*Config, error) {
 	cfg = &Config{
 		BindAddr:                  ":24000",
 		ZebedeeURL:                "http://localhost:8082",
-		APIRouterURL:              "http://localhost:23200",
+		APIRouterURL:              "http://localhost:23200/v1",
 		GracefulShutdownTimeout:   5 * time.Second,
 		HealthCheckInterval:       30 * time.Second,
 		HealthCheckCritialTimeout: 90 * time.Second,
