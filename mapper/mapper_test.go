@@ -238,20 +238,14 @@ func TestUnitMapper(t *testing.T) {
 			Type:        "grault",
 		},
 	}
-	mockDimensions := []dataset.Dimension{
+	mockDimensions := []dataset.VersionDimension{
 		{
-			Name:        "foo",
-			Links:       dataset.Links{},
-			Description: "Bar",
-			Label:       "bAz",
-			URL:         "qux",
+			Links: dataset.Links{},
+			Label: "bAz",
 		},
 		{
-			Name:        "quux",
-			Links:       dataset.Links{},
-			Description: "grault",
-			Label:       "plaugh",
-			URL:         "fred",
+			Links: dataset.Links{},
+			Label: "plaugh",
 		},
 	}
 

@@ -11,8 +11,8 @@ var cfg *Config
 // Config represents the configuration required for florence
 type Config struct {
 	BindAddr                  string        `envconfig:"BIND_ADDR"`
+	APIRouterURL              string        `envconfig:"API_ROUTER_URL"`
 	ZebedeeURL                string        `envconfig:"ZEBEDEE_URL"`
-	DatasetAPIURL             string        `envconfig:"DATASET_API_URL"`
 	GracefulShutdownTimeout   time.Duration `envconfig:"GRACEFUL_SHUTDOWN_TIMEOUT"`
 	HealthCheckInterval       time.Duration `envconfig:"HEALTHCHECK_INTERVAL"`
 	HealthCheckCritialTimeout time.Duration `envconfig:"HEALTHCHECK_CRITICAL_TIMEOUT"`
@@ -27,7 +27,7 @@ func Get() (*Config, error) {
 	cfg = &Config{
 		BindAddr:                  ":24000",
 		ZebedeeURL:                "http://localhost:8082",
-		DatasetAPIURL:             "http://localhost:22000",
+		APIRouterURL:              "http://localhost:23200",
 		GracefulShutdownTimeout:   5 * time.Second,
 		HealthCheckInterval:       30 * time.Second,
 		HealthCheckCritialTimeout: 90 * time.Second,

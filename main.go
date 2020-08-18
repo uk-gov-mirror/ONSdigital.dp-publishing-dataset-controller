@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	"github.com/ONSdigital/dp-api-clients-go/health"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
 	dpnethttp "github.com/ONSdigital/dp-net/http"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/config"
@@ -51,7 +52,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	dc := dataset.NewAPIClient(cfg.DatasetAPIURL)
+	apiRouterCli := health.NewClient("api-router", cfg.APIRouterURL)
+	dc := dataset.NewWithHealthClient(apiRouterCli)
 
 	hc := healthcheck.New(versionInfo, cfg.HealthCheckCritialTimeout, cfg.HealthCheckInterval)
 	if err = hc.AddCheck("dataset API", dc.Checker); err != nil {
