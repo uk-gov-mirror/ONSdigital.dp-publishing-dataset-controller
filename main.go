@@ -56,7 +56,7 @@ func main() {
 	dc := dataset.NewWithHealthClient(apiRouterCli)
 
 	hc := healthcheck.New(versionInfo, cfg.HealthCheckCritialTimeout, cfg.HealthCheckInterval)
-	if err = hc.AddCheck("dataset API", dc.Checker); err != nil {
+	if err = hc.AddCheck("API router", apiRouterCli.Checker); err != nil {
 		log.Event(ctx, "failed to add dataset API checker", log.FATAL, log.Error(err))
 		os.Exit(1)
 	}
