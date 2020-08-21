@@ -19,7 +19,6 @@ func TestSpec(t *testing.T) {
 
 			Convey("The values should be set to the expected defaults", func() {
 				So(cfg.BindAddr, ShouldEqual, ":24000")
-				So(cfg.ZebedeeURL, ShouldEqual, "http://localhost:8082")
 				So(cfg.APIRouterURL, ShouldEqual, "http://localhost:23200/v1")
 				So(cfg.GracefulShutdownTimeout, ShouldEqual, 5*time.Second)
 				So(cfg.HealthCheckInterval, ShouldEqual, 30*time.Second)
