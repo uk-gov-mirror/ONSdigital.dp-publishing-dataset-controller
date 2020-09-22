@@ -8,10 +8,11 @@ import (
 	"syscall"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	"github.com/ONSdigital/dp-api-clients-go/health"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
+	dpnethttp "github.com/ONSdigital/dp-net/http"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/config"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/routes"
-	"github.com/ONSdigital/go-ns/server"
 	"github.com/ONSdigital/log.go/log"
 	"github.com/gorilla/mux"
 )
@@ -51,10 +52,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	dc := dataset.NewAPIClient(cfg.DatasetAPIURL)
+	apiRouterCli := health.NewClient("api-router", cfg.APIRouterURL)
+	dc := dataset.NewWithHealthClient(apiRouterCli)
 
 	hc := healthcheck.New(versionInfo, cfg.HealthCheckCritialTimeout, cfg.HealthCheckInterval)
-	if err = hc.AddCheck("dataset API", dc.Checker); err != nil {
+	if err = hc.AddCheck("API router", apiRouterCli.Checker); err != nil {
 		log.Event(ctx, "failed to add dataset API checker", log.FATAL, log.Error(err))
 		os.Exit(1)
 	}
@@ -62,7 +64,7 @@ func main() {
 	router := mux.NewRouter()
 	routes.Init(router, cfg, hc, dc)
 
-	s := server.New(cfg.BindAddr, router)
+	s := dpnethttp.NewServer(cfg.BindAddr, router)
 
 	go func() {
 		if err := s.ListenAndServe(); err != nil {

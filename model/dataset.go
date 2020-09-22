@@ -2,7 +2,6 @@ package model
 
 import "github.com/ONSdigital/dp-api-clients-go/dataset"
 
-
 type Dataset struct {
 	ID    string `json:"id"`
 	Title string `json:"title"`
@@ -16,13 +15,13 @@ type EditVersionMetaData struct {
 }
 
 type MetaData struct {
-	Edition       string              `json:"edition"`
-	Version       int                 `json:"version"`
-	ReleaseDate   ReleaseDate         `json:"release-date"`
-	Notices       []Notice            `json:"notices"`
-	Dimensions    []dataset.Dimension `json:"dimensions"`
-	UsageNotes    []UsageNote         `json:"usage_notes"`
-	LatestChanges []LatestChanges     `json:"latest_changes"`
+	Edition       string                     `json:"edition"`
+	Version       int                        `json:"version"`
+	ReleaseDate   ReleaseDate                `json:"release-date"`
+	Notices       []Notice                   `json:"notices"`
+	Dimensions    []dataset.VersionDimension `json:"dimensions"`
+	UsageNotes    []UsageNote                `json:"usage_notes"`
+	LatestChanges []LatestChanges            `json:"latest_changes"`
 
 	Title                string           `json:"title"`
 	Summary              string           `json:"summary"`
