@@ -1,11 +1,11 @@
 package mapper
 
 import (
-	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"testing"
 
+	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
+
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
-	"github.com/davecgh/go-spew/spew"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -29,11 +29,7 @@ func TestUnitMapper(t *testing.T) {
 			ID: "test-id-3",
 		})
 
-		spew.Dump(ds)
-
 		mapped := AllDatasets(ds)
-
-		spew.Dump(mapped)
 
 		So(mapped[0].ID, ShouldEqual, "test-id-1")
 		So(mapped[0].Title, ShouldEqual, "test title 1")

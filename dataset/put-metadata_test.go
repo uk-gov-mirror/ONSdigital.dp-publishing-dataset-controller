@@ -8,7 +8,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 
 	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
@@ -108,7 +107,6 @@ func TestUnitPutMetadata(t *testing.T) {
 				Convey("returns error body", func() {
 					router.ServeHTTP(rec, req)
 					response := rec.Body.String()
-					spew.Dump(response)
 					So(response, ShouldResemble, "no collection ID header set\n")
 				})
 			})
@@ -128,7 +126,6 @@ func TestUnitPutMetadata(t *testing.T) {
 				Convey("returns error body", func() {
 					router.ServeHTTP(rec, req)
 					response := rec.Body.String()
-					spew.Dump(response)
 					So(response, ShouldResemble, "no user access token header set\n")
 				})
 			})
