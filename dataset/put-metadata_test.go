@@ -136,10 +136,10 @@ func TestUnitPutMetadata(t *testing.T) {
 
 			mockDatasetClient := &DatasetClientMock{
 				PutDatasetFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string, d datasetclient.DatasetDetails) error {
-					return nil
+					return errors.New("test dataset API error")
 				},
 				PutVersionFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version string, v datasetclient.Version) error {
-					return errors.New("test dataset API error")
+					return nil
 				},
 				PutInstanceFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.Instance) error {
 					return nil
