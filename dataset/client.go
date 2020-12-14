@@ -11,7 +11,7 @@ import (
 type DatasetClient interface {
 	//healthcheck.Client
 	GetDatasets(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (m datasetclient.List, err error)
-	PutDataset(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string, d datasetclient.Dataset) error
+	PutDataset(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string, d datasetclient.DatasetDetails) error
 	PutVersion(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version string, v datasetclient.Version) error
 	PutInstance(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.Instance) error
 }
