@@ -37,7 +37,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 	Convey("test getAllDatasets", t, func() {
 		Convey("on success", func() {
 
-			mockDatasetClient := &ClientMock{
+			mockDatasetClient := &DatasetClientMock{
 				GetDatasetsFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (datasetclient.List, error) {
 					return datasetclient.List{Items: mockedDatasetResponse}, nil
 				},
@@ -65,7 +65,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 
 		Convey("errors if no headers are passed", func() {
 
-			mockDatasetClient := &ClientMock{
+			mockDatasetClient := &DatasetClientMock{
 				GetDatasetsFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (datasetclient.List, error) {
 					return datasetclient.List{}, nil
 				},
@@ -114,7 +114,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 
 		Convey("handles error from dataset client", func() {
 
-			mockDatasetClient := &ClientMock{
+			mockDatasetClient := &DatasetClientMock{
 				GetDatasetsFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (datasetclient.List, error) {
 					return datasetclient.List{}, errors.New("test dataset API error")
 				},
