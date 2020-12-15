@@ -3,7 +3,6 @@ package dataset
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -12,25 +11,13 @@ import (
 	"github.com/gorilla/mux"
 
 	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
-	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestUnitPutMetadata(t *testing.T) {
 
-	putBody, _ := json.Marshal(model.EditMetadata{
-		Dataset: datasetclient.DatasetDetails{
-			ID: "test-dataset",
-		},
-		Version: datasetclient.Version{
-			ID: "1",
-		},
-		Instance:        datasetclient.Instance{},
-		CollectionID:    "testcollection",
-		CollectionState: "InProgress",
-	})
-
+	putBody := []byte(`{"dataset": {"id": "test-dataset"}, "version": {"id": "1" }, "instance": {}, "collection_id": "testcollection", "collection_state": "InProgress"}`)
 	mockedPutBody := bytes.NewReader(putBody)
 
 	Convey("test putMetadata", t, func() {
