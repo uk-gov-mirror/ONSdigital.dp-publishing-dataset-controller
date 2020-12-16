@@ -15,10 +15,13 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+var (
+	metadataBody = `{"dataset":{"id":"test-dataset"},"version":{"id":"1"},"instance":{},"collection_id":"testcollection","collection_state":"InProgress"}`
+)
+
 func TestUnitPutMetadata(t *testing.T) {
 
-	putBody := []byte(`{"dataset": {"id": "test-dataset"}, "version": {"id": "1" }, "instance": {}, "collection_id": "testcollection", "collection_state": "InProgress"}`)
-	mockedPutBody := bytes.NewReader(putBody)
+	b := metadataBody
 
 	Convey("test putMetadata", t, func() {
 		Convey("on success", func() {
@@ -44,7 +47,7 @@ func TestUnitPutMetadata(t *testing.T) {
 				},
 			}
 
-			req := httptest.NewRequest("PUT", "/datasets/test-dataset/editions/test-edition/versions/1", mockedPutBody)
+			req := httptest.NewRequest("PUT", "/datasets/test-dataset/editions/test-edition/versions/1", bytes.NewBufferString(b))
 			req.Header.Set("Collection-Id", "testcollection")
 			req.Header.Set("X-Florence-Token", "testuser")
 			rec := httptest.NewRecorder()
@@ -81,7 +84,7 @@ func TestUnitPutMetadata(t *testing.T) {
 			}
 
 			Convey("collection id not set", func() {
-				req := httptest.NewRequest("PUT", "/datasets/test-dataset/editions/test-edition/versions/1", mockedPutBody)
+				req := httptest.NewRequest("PUT", "/datasets/test-dataset/editions/test-edition/versions/1", bytes.NewBufferString(b))
 				req.Header.Set("X-Florence-Token", "testuser")
 				rec := httptest.NewRecorder()
 				router := mux.NewRouter()
@@ -100,7 +103,7 @@ func TestUnitPutMetadata(t *testing.T) {
 			})
 
 			Convey("user auth token not set", func() {
-				req := httptest.NewRequest("PUT", "/datasets/test-dataset/editions/test-edition/versions/1", mockedPutBody)
+				req := httptest.NewRequest("PUT", "/datasets/test-dataset/editions/test-edition/versions/1", bytes.NewBufferString(b))
 				req.Header.Set("Collection-Id", "testcollection")
 				rec := httptest.NewRecorder()
 				router := mux.NewRouter()
@@ -142,7 +145,7 @@ func TestUnitPutMetadata(t *testing.T) {
 				},
 			}
 
-			req := httptest.NewRequest("PUT", "/datasets/test-dataset/editions/test-edition/versions/1", mockedPutBody)
+			req := httptest.NewRequest("PUT", "/datasets/test-dataset/editions/test-edition/versions/1", bytes.NewBufferString(b))
 			req.Header.Set("Collection-Id", "testcollection")
 			req.Header.Set("X-Florence-Token", "testuser")
 			rec := httptest.NewRecorder()
@@ -153,7 +156,7 @@ func TestUnitPutMetadata(t *testing.T) {
 				router.ServeHTTP(rec, req)
 				So(rec.Code, ShouldEqual, http.StatusInternalServerError)
 				response := rec.Body.String()
-				So(response, ShouldResemble, "error updating version\n")
+				So(response, ShouldResemble, "error updating dataset\n")
 			})
 
 		})
