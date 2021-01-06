@@ -1,13 +1,14 @@
-package handlers
+package dataset
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	. "github.com/smartystreets/goconvey/convey"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 type testCliError struct{}
