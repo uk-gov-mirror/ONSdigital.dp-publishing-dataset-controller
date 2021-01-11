@@ -5,10 +5,12 @@ import (
 	"sort"
 	"strings"
 
+	"time"
+
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/pkg/errors"
-	"time"
 )
 
 type related struct {
@@ -34,6 +36,26 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	})
 
 	return mappedDatasets
+}
+
+func EditMetadata(d dataset.DatasetDetails, v dataset.Version, i dataset.Instance, c zebedee.Collection) model.EditMetadata {
+	mappedMetadata := model.EditMetadata{
+		Dataset:      d,
+		Version:      v,
+		Instance:     i,
+		CollectionID: c.ID,
+	}
+
+	if len(c.Datasets) > 0 {
+		for _, dataset := range c.Datasets {
+			if dataset.ID == d.ID {
+				mappedMetadata.CollectionState = dataset.State
+			}
+		}
+	}
+
+	return mappedMetadata
+
 }
 
 func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (model.EditVersionMetaData, error) {

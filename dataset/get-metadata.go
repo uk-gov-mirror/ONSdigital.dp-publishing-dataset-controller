@@ -8,7 +8,6 @@ import (
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/log"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 )
 
 // ClientError implements error interface with additional code method
@@ -53,7 +52,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 
 	v, err := dc.GetVersion(ctx, userAccessToken, "", "", collectionID, datasetID, edition, version)
 	if err != nil {
-		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data(logInfo))
+		log.Event(ctx, "failed Get version details", log.Error(err), log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
@@ -65,13 +64,21 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		return
 	}
 
-	p, err := mapper.EditDatasetVersionMetaData(d, v)
+	i, err := dc.GetInstance(ctx, userAccessToken, "", collectionID, v.InstanceID)
 	if err != nil {
-		err := errors.Wrap(err, "failed to map EditDatasetVersionMetaData")
-		log.Event(ctx, "failed to map EditDatasetVersionMetaData", log.Error(err), log.Data(logInfo))
+		log.Event(ctx, "failed Get instance details", log.Error(err), log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
+
+	c, err := zc.GetCollection(ctx, userAccessToken, collectionID)
+	if err != nil {
+		log.Event(ctx, "failed Get collection details", log.Error(err), log.Data(logInfo))
+		setErrorStatusCode(req, w, err, datasetID)
+		return
+	}
+
+	p := mapper.EditMetadata(d, v, i, c)
 
 	b, err := json.Marshal(p)
 	if err != nil {
