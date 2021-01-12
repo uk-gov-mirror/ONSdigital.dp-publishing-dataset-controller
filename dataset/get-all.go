@@ -47,4 +47,6 @@ func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAcce
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
+
+	log.Event(ctx, "get all: request successful", log.INFO)
 }
