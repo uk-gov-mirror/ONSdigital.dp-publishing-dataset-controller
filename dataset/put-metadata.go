@@ -90,5 +90,5 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
 
-	log.Event(ctx, "put metadta: request successful", log.INFO, log.Data(logInfo))
+	log.Event(ctx, "put metadata: request successful", log.INFO, log.Data(logInfo))
 }
