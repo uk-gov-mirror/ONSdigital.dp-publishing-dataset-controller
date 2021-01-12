@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 
 	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
@@ -37,7 +36,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 	Convey("test getAllDatasets", t, func() {
 		Convey("on success", func() {
 
-			mockDatasetClient := &ClientMock{
+			mockDatasetClient := &DatasetClientMock{
 				GetDatasetsFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (datasetclient.List, error) {
 					return datasetclient.List{Items: mockedDatasetResponse}, nil
 				},
@@ -58,14 +57,13 @@ func TestUnitGetAllDatasets(t *testing.T) {
 			Convey("returns JSON response", func() {
 				router.ServeHTTP(rec, req)
 				response := rec.Body.String()
-				spew.Dump(response)
 				So(response, ShouldEqual, expectedSuccessResponse)
 			})
 		})
 
 		Convey("errors if no headers are passed", func() {
 
-			mockDatasetClient := &ClientMock{
+			mockDatasetClient := &DatasetClientMock{
 				GetDatasetsFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (datasetclient.List, error) {
 					return datasetclient.List{}, nil
 				},
@@ -86,7 +84,6 @@ func TestUnitGetAllDatasets(t *testing.T) {
 				Convey("returns error body", func() {
 					router.ServeHTTP(rec, req)
 					response := rec.Body.String()
-					spew.Dump(response)
 					So(response, ShouldResemble, "no collection ID header set\n")
 				})
 			})
@@ -106,7 +103,6 @@ func TestUnitGetAllDatasets(t *testing.T) {
 				Convey("returns error body", func() {
 					router.ServeHTTP(rec, req)
 					response := rec.Body.String()
-					spew.Dump(response)
 					So(response, ShouldResemble, "no user access token header set\n")
 				})
 			})
@@ -114,7 +110,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 
 		Convey("handles error from dataset client", func() {
 
-			mockDatasetClient := &ClientMock{
+			mockDatasetClient := &DatasetClientMock{
 				GetDatasetsFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (datasetclient.List, error) {
 					return datasetclient.List{}, errors.New("test dataset API error")
 				},
@@ -135,7 +131,6 @@ func TestUnitGetAllDatasets(t *testing.T) {
 			Convey("returns error body", func() {
 				router.ServeHTTP(rec, req)
 				response := rec.Body.String()
-				spew.Dump(response)
 				So(response, ShouldResemble, "error getting all datasets from dataset API\n")
 			})
 

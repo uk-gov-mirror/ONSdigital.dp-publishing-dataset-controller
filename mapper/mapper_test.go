@@ -1,11 +1,11 @@
 package mapper
 
 import (
-	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"testing"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
-	"github.com/davecgh/go-spew/spew"
+	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -29,11 +29,7 @@ func TestUnitMapper(t *testing.T) {
 			ID: "test-id-3",
 		})
 
-		spew.Dump(ds)
-
 		mapped := AllDatasets(ds)
-
-		spew.Dump(mapped)
 
 		So(mapped[0].ID, ShouldEqual, "test-id-1")
 		So(mapped[0].Title, ShouldEqual, "test title 1")
@@ -225,7 +221,6 @@ func TestUnitMapper(t *testing.T) {
 		URI:              "xyzzy",
 		UsageNotes:       &mockUsageNotes,
 	}
-
 	mockAlerts := []dataset.Alert{
 		{
 			Date:        "2020-02-04T11:05:06.000Z",
@@ -276,155 +271,30 @@ func TestUnitMapper(t *testing.T) {
 		Temporal:      nil,
 		Version:       1,
 	}
-
-	expectedNotices := []model.Notice{
-		{
-			ID:                    0,
-			Date:                  "04 Feb 2020",
-			Description:           "Bar",
-			SimpleListHeading:     "bAz (04 Feb 2020)",
-			SimpleListDescription: "Bar",
-			Type:                  "bAz",
-		},
-		{
-			ID:                    1,
-			Date:                  "02 Apr 2001",
-			Description:           "quux",
-			SimpleListHeading:     "grault (02 Apr 2001)",
-			SimpleListDescription: "quux",
-			Type:                  "grault",
-		},
+	mockInstance := dataset.Instance{
+		mockVersion,
 	}
 
-	expectedUsageNotes := []model.UsageNote{
-		{
-			ID:                    0,
-			Title:                 mockUsageNotes[0].Title,
-			Note:                  mockUsageNotes[0].Note,
-			SimpleListHeading:     mockUsageNotes[0].Title,
-			SimpleListDescription: mockUsageNotes[0].Note,
-		},
-		{
-			ID:                    1,
-			Title:                 mockUsageNotes[1].Title,
-			Note:                  mockUsageNotes[1].Note,
-			SimpleListHeading:     mockUsageNotes[1].Title,
-			SimpleListDescription: mockUsageNotes[1].Note,
-		},
-	}
-
-	expectedLatestChanges := []model.LatestChanges{
-		{
-			ID:                    0,
-			Title:                 mockLatestChanges[0].Name,
-			Description:           mockLatestChanges[0].Description,
-			SimpleListHeading:     mockLatestChanges[0].Name,
-			SimpleListDescription: mockLatestChanges[0].Description,
-		},
-		{
-			ID:                    1,
-			Title:                 mockLatestChanges[1].Name,
-			Description:           mockLatestChanges[1].Description,
-			SimpleListHeading:     mockLatestChanges[1].Name,
-			SimpleListDescription: mockLatestChanges[1].Description,
-		},
-	}
-
-	expectedRelatedDataset := []model.RelatedContent{
-		{
-			ID:                    0,
-			Title:                 mockRelatedDataset[0].Title,
-			Description:           "",
-			Href:                  mockRelatedDataset[0].URL,
-			SimpleListHeading:     mockRelatedDataset[0].Title,
-			SimpleListDescription: "",
-		},
-		{
-			ID:                    1,
-			Title:                 mockRelatedDataset[1].Title,
-			Description:           "",
-			Href:                  mockRelatedDataset[1].URL,
-			SimpleListHeading:     mockRelatedDataset[1].Title,
-			SimpleListDescription: "",
-		},
-	}
-
-	expectedRelatedMethodologies := []model.RelatedContent{
-		{
-			ID:                    0,
-			Title:                 mockMethodology[0].Title,
-			Description:           mockMethodology[0].Description,
-			Href:                  mockMethodology[0].URL,
-			SimpleListHeading:     mockMethodology[0].Title,
-			SimpleListDescription: mockMethodology[0].Description,
-		},
-		{
-			ID:                    1,
-			Title:                 mockMethodology[1].Title,
-			Description:           mockMethodology[1].Description,
-			Href:                  mockMethodology[1].URL,
-			SimpleListHeading:     mockMethodology[1].Title,
-			SimpleListDescription: mockMethodology[1].Description,
-		},
-	}
-
-	expectedRelatedPublcation := []model.RelatedContent{
-		{
-			ID:                    0,
-			Title:                 mockPublications[0].Title,
-			Description:           mockPublications[0].Description,
-			Href:                  mockPublications[0].URL,
-			SimpleListHeading:     mockPublications[0].Title,
-			SimpleListDescription: mockPublications[0].Description,
-		},
-		{
-			ID:                    1,
-			Title:                 mockPublications[1].Title,
-			Description:           mockPublications[1].Description,
-			Href:                  mockPublications[1].URL,
-			SimpleListHeading:     mockPublications[1].Title,
-			SimpleListDescription: mockPublications[1].Description,
-		},
-	}
-
-	expectedEditVersionMetaData := model.EditVersionMetaData{
-		MetaData: model.MetaData{
-			Edition: mockVersion.Edition,
-			Version: mockVersion.Version,
-			ReleaseDate: model.ReleaseDate{
-				ReleaseDate: mockVersion.ReleaseDate,
-				Error:       "",
+	mockCollection := zebedee.Collection{
+		ID: "test-collection",
+		Datasets: []zebedee.CollectionItem{
+			{
+				ID:    "foo",
+				State: "inProgress",
 			},
-			Notices:              expectedNotices,
-			Dimensions:           mockVersion.Dimensions,
-			UsageNotes:           expectedUsageNotes,
-			LatestChanges:        expectedLatestChanges,
-			Title:                mockDatasetDetails.Title,
-			Summary:              mockDatasetDetails.Description,
-			Keywords:             "foo, Bar, bAz",
-			NationalStatistic:    mockDatasetDetails.NationalStatistic,
-			License:              mockDatasetDetails.License,
-			ContactName:          mockContacts[0].Name,
-			ContactEmail:         mockContacts[0].Email,
-			ContactTelephone:     mockContacts[0].Telephone,
-			RelatedDatasets:      expectedRelatedDataset,
-			RelatedPublications:  expectedRelatedPublcation,
-			RelatedMethodologies: expectedRelatedMethodologies,
-			ReleaseFrequency:     mockDatasetDetails.ReleaseFrequency,
-			NextReleaseDate:      mockDatasetDetails.NextRelease,
-			UnitOfMeassure:       mockDatasetDetails.UnitOfMeasure,
-			QMI:                  mockDatasetDetails.QMI.URL,
 		},
-		Collection: mockVersion.CollectionID,
-		InstanceID: mockVersion.ID,
-		Published:  mockVersion.State == "published",
 	}
 
-	Convey("test EditDatasetVersionMetaData", t, func() {
-		Convey("when working", func() {
-			outcome, err := EditDatasetVersionMetaData(mockDatasetDetails, mockVersion)
-			So(err, ShouldBeNil)
-			So(outcome, ShouldResemble, expectedEditVersionMetaData)
-		})
+	expectedEditMetadata := model.EditMetadata{
+		Dataset:         mockDatasetDetails,
+		Version:         mockVersion,
+		Instance:        mockInstance,
+		CollectionID:    "test-collection",
+		CollectionState: "inProgress",
+	}
+
+	Convey("test EditMetadata", t, func() {
+		outcome := EditMetadata(mockDatasetDetails, mockVersion, mockInstance, mockCollection)
+		So(outcome, ShouldResemble, expectedEditMetadata)
 	})
 }

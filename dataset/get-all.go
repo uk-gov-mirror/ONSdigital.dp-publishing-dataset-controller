@@ -5,44 +5,29 @@ import (
 	"net/http"
 
 	//datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
-	"github.com/ONSdigital/dp-api-clients-go/headers"
+
+	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/log"
 )
 
 // GetAll returns a mapped list of all datasets
-func GetAll(dc Client) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		getAll(w, req, dc)
-	}
+func GetAll(dc DatasetClient) http.HandlerFunc {
+	return dphandlers.ControllerHandler(func(w http.ResponseWriter, r *http.Request, lang, collectionID, accessToken string) {
+		getAll(w, r, dc, accessToken, collectionID, lang)
+	})
 }
 
-func getAll(w http.ResponseWriter, req *http.Request, dc Client) {
+func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAccessToken, collectionID, lang string) {
 	ctx := req.Context()
 
-	userAccessToken, err := headers.GetUserAuthToken(req)
-	if err == headers.ErrHeaderNotFound {
-		log.Event(ctx, "no user access token header set", log.ERROR, log.Error(err))
-		http.Error(w, "no user access token header set", http.StatusBadRequest)
-		return
-	}
+	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
 	if err != nil {
-		log.Event(ctx, "error getting user access token from header", log.ERROR, log.Error(err))
-		http.Error(w, "error getting user access token from header", http.StatusBadRequest)
+		log.Event(ctx, err.Error(), log.ERROR)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	collectionID, err := headers.GetCollectionID(req)
-	if err == headers.ErrHeaderNotFound {
-		log.Event(ctx, "no collection ID header set", log.ERROR, log.Error(err))
-		http.Error(w, "no collection ID header set", http.StatusBadRequest)
-		return
-	}
-	if err != nil {
-		log.Event(ctx, "error getting collection ID from header", log.ERROR, log.Error(err))
-		http.Error(w, "error getting collection ID from header", http.StatusBadRequest)
-		return
-	}
 	log.Event(ctx, "calling get datasets")
 
 	datasets, err := dc.GetDatasets(ctx, userAccessToken, "", collectionID)
@@ -62,4 +47,6 @@ func getAll(w http.ResponseWriter, req *http.Request, dc Client) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
+
+	log.Event(ctx, "get all: request successful", log.INFO)
 }

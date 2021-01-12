@@ -1,13 +1,18 @@
-package handlers
+package dataset
 
 import (
-	"github.com/ONSdigital/dp-api-clients-go/dataset"
-	"github.com/golang/mock/gomock"
-	"github.com/gorilla/mux"
-	. "github.com/smartystreets/goconvey/convey"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
+	"github.com/ONSdigital/dp-api-clients-go/zebedee"
+	zebedeeclient "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	"github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 type testCliError struct{}
@@ -91,12 +96,42 @@ func TestUnitHandlers(t *testing.T) {
 				Temporal:      nil,
 				Version:       0,
 			}
-			mockDatasetClient := NewMockDatasetClient(mockCtrl)
-			mockDatasetClient.EXPECT().Get(gomock.Any(), mockUserAuthToken, mockServiceAuthToken, mockCollectionID, mockDatasetID).Return(mockDatasetDetails, nil)
-			mockDatasetClient.EXPECT().GetVersion(gomock.Any(), mockUserAuthToken, mockServiceAuthToken, mockDownloadToken, mockCollectionID, mockDatasetID, mockEdition, mockVersionNum).Return(mockVersionDetails, nil)
+
+			mockInstance := dataset.Instance{
+				mockVersionDetails,
+			}
+
+			mockCollection := zebedee.Collection{
+				ID: "test-collection",
+				Datasets: []zebedee.CollectionItem{
+					{
+						ID:    "foo",
+						State: "inProgress",
+					},
+				},
+			}
+			mockDatasetClient := &DatasetClientMock{
+				GetFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m datasetclient.DatasetDetails, err error) {
+					return mockDatasetDetails, nil
+				},
+				GetVersionFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version string) (m datasetclient.Version, err error) {
+					return mockVersionDetails, nil
+				},
+				GetInstanceFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string) (i datasetclient.Instance, err error) {
+					return mockInstance, nil
+				},
+			}
+
+			mockZebedeeClient := &ZebedeeClientMock{
+				GetCollectionFunc: func(ctx context.Context, userAccessToken, collectionID string) (c zebedeeclient.Collection, err error) {
+					return mockCollection, nil
+				},
+			}
 
 			req := httptest.NewRequest("GET", "/datasets/bar/editions/baz/versions/1", nil)
-			w := doTestRequest("/datasets/{datasetID}/editions/{editionID}/versions/{versionID}", req, GetEditMetadataHandler(mockDatasetClient), nil)
+			req.Header.Set("Collection-Id", "testcollection")
+			req.Header.Set("X-Florence-Token", "testuser")
+			w := doTestRequest("/datasets/{datasetID}/editions/{editionID}/versions/{versionID}", req, GetMetadataHandler(mockDatasetClient, mockZebedeeClient), nil)
 
 			So(w.Code, ShouldEqual, http.StatusOK)
 			So(w.Body.String(), ShouldNotBeNil)
