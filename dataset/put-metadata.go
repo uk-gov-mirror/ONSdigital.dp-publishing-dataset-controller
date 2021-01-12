@@ -72,7 +72,7 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 		return
 	}
 
-	err = dc.PutInstance(ctx, userAccessToken, "", collectionID, datasetID, body.Instance)
+	err = dc.PutInstance(ctx, userAccessToken, "", collectionID, body.Instance.InstanceID, body.Instance)
 	if err != nil {
 		log.Event(ctx, "error updating dimensions", log.ERROR, log.Error(err), log.Data(logInfo))
 		http.Error(w, "error updating dimensions", http.StatusInternalServerError)
@@ -92,4 +92,8 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 		http.Error(w, "error adding version to collection", http.StatusInternalServerError)
 	}
 
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+
+	log.Event(ctx, "put metadta: request successful", log.INFO, log.Data(logInfo))
 }
