@@ -21,15 +21,10 @@ func PutMetadata(dc DatasetClient, zc ZebedeeClient) http.HandlerFunc {
 func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc ZebedeeClient, userAccessToken, collectionID, lang string) {
 	ctx := req.Context()
 
-	if userAccessToken == "" {
-		log.Event(ctx, "no user access token header set", log.ERROR)
-		http.Error(w, "no user access token header set", http.StatusBadRequest)
-		return
-	}
-
-	if collectionID == "" {
-		log.Event(ctx, "no collection ID header set", log.ERROR)
-		http.Error(w, "no collection ID header set", http.StatusBadRequest)
+	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
+	if err != nil {
+		log.Event(ctx, err.Error(), log.ERROR)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
