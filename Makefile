@@ -5,7 +5,7 @@ VERSION ?= $(shell git tag --points-at HEAD | grep ^v | head -n 1)
 
 .PHONY: audit
 audit:
-	nancy go.sum
+	go list -m all | nancy sleuth
 
 .PHONY: build
 build:
