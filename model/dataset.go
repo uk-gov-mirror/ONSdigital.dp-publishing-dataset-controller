@@ -11,11 +11,12 @@ type Dataset struct {
 }
 
 type EditMetadata struct {
-	Dataset         datasetclient.DatasetDetails `json:"dataset"`
-	Version         datasetclient.Version        `json:"version"`
-	Instance        datasetclient.Instance       `json:"instance"`
-	CollectionID    string                       `json:"collection_id"`
-	CollectionState string                       `json:"collection_state"`
+	Dataset                datasetclient.DatasetDetails     `json:"dataset"`
+	Version                datasetclient.Version            `json:"version"`
+	Dimensions             []datasetclient.VersionDimension `json:"dimensions"`
+	CollectionID           string                           `json:"collection_id"`
+	CollectionState        string                           `json:"collection_state"`
+	CollectionLastEditedBy string                           `json:"collection_last_edited_by"`
 }
 
 type EditVersionMetaData struct {

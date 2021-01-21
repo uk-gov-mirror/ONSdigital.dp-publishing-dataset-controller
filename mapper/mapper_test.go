@@ -271,9 +271,7 @@ func TestUnitMapper(t *testing.T) {
 		Temporal:      nil,
 		Version:       1,
 	}
-	mockInstance := dataset.Instance{
-		mockVersion,
-	}
+	mockDimensions = []dataset.VersionDimension{}
 
 	mockCollection := zebedee.Collection{
 		ID: "test-collection",
@@ -288,13 +286,13 @@ func TestUnitMapper(t *testing.T) {
 	expectedEditMetadata := model.EditMetadata{
 		Dataset:         mockDatasetDetails,
 		Version:         mockVersion,
-		Instance:        mockInstance,
+		Dimensions:      mockDimensions,
 		CollectionID:    "test-collection",
 		CollectionState: "inProgress",
 	}
 
 	Convey("test EditMetadata", t, func() {
-		outcome := EditMetadata(mockDatasetDetails, mockVersion, mockInstance, mockCollection)
+		outcome := EditMetadata(mockDatasetDetails, mockVersion, mockDimensions, mockCollection)
 		So(outcome, ShouldResemble, expectedEditMetadata)
 	})
 }

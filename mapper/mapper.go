@@ -38,11 +38,11 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	return mappedDatasets
 }
 
-func EditMetadata(d dataset.DatasetDetails, v dataset.Version, i dataset.Instance, c zebedee.Collection) model.EditMetadata {
+func EditMetadata(d dataset.DatasetDetails, v dataset.Version, dim []dataset.VersionDimension, c zebedee.Collection) model.EditMetadata {
 	mappedMetadata := model.EditMetadata{
 		Dataset:      d,
 		Version:      v,
-		Instance:     i,
+		Dimensions:   dim,
 		CollectionID: c.ID,
 	}
 
@@ -50,6 +50,7 @@ func EditMetadata(d dataset.DatasetDetails, v dataset.Version, i dataset.Instanc
 		for _, dataset := range c.Datasets {
 			if dataset.ID == d.ID {
 				mappedMetadata.CollectionState = dataset.State
+				mappedMetadata.CollectionLastEditedBy = dataset.LastEditedBy
 			}
 		}
 	}
