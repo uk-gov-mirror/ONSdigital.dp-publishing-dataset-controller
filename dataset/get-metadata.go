@@ -21,7 +21,7 @@ type ClientError interface {
 	Code() int
 }
 
-var EDITION_CONFIRMED_STATE = "edition-confirmed"
+const editionConfirmedState = "edition-confirmed"
 
 // GetEditMetadataHandler is a handler that wraps getEditMetadataHandler passing in addition arguments
 func GetMetadataHandler(dc DatasetClient, zc ZebedeeClient) http.HandlerFunc {
@@ -70,7 +70,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	// published version's dimensions and return those so that they are pre-populated in the browser
 	// to prevent the user having to fill these in again
 	dims := []datasetclient.VersionDimension{}
-	if v.State == EDITION_CONFIRMED_STATE && v.Version > 1 {
+	if v.State == editionConfirmedState && v.Version > 1 {
 		dimensions := getLatestPublishedVersionDimensions(ctx, w, req, dc, userAccessToken, collectionID, d.Links.LatestVersion.URL)
 		dims = append(dims, dimensions...)
 	}
