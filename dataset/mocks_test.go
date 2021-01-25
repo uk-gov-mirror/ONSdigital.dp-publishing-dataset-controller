@@ -11,13 +11,14 @@ import (
 )
 
 var (
-	lockDatasetClientMockGet         sync.RWMutex
-	lockDatasetClientMockGetDatasets sync.RWMutex
-	lockDatasetClientMockGetInstance sync.RWMutex
-	lockDatasetClientMockGetVersion  sync.RWMutex
-	lockDatasetClientMockPutDataset  sync.RWMutex
-	lockDatasetClientMockPutInstance sync.RWMutex
-	lockDatasetClientMockPutVersion  sync.RWMutex
+	lockDatasetClientMockGet                      sync.RWMutex
+	lockDatasetClientMockGetDatasetCurrentAndNext sync.RWMutex
+	lockDatasetClientMockGetDatasets              sync.RWMutex
+	lockDatasetClientMockGetInstance              sync.RWMutex
+	lockDatasetClientMockGetVersion               sync.RWMutex
+	lockDatasetClientMockPutDataset               sync.RWMutex
+	lockDatasetClientMockPutInstance              sync.RWMutex
+	lockDatasetClientMockPutVersion               sync.RWMutex
 )
 
 // Ensure, that DatasetClientMock does implement DatasetClient.
@@ -32,6 +33,9 @@ var _ DatasetClient = &DatasetClientMock{}
 //         mockedDatasetClient := &DatasetClientMock{
 //             GetFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.DatasetDetails, error) {
 // 	               panic("mock out the Get method")
+//             },
+//             GetDatasetCurrentAndNextFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.Dataset, error) {
+// 	               panic("mock out the GetDatasetCurrentAndNext method")
 //             },
 //             GetDatasetsFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string) (dataset.List, error) {
 // 	               panic("mock out the GetDatasets method")
@@ -61,6 +65,9 @@ type DatasetClientMock struct {
 	// GetFunc mocks the Get method.
 	GetFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.DatasetDetails, error)
 
+	// GetDatasetCurrentAndNextFunc mocks the GetDatasetCurrentAndNext method.
+	GetDatasetCurrentAndNextFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.Dataset, error)
+
 	// GetDatasetsFunc mocks the GetDatasets method.
 	GetDatasetsFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string) (dataset.List, error)
 
@@ -83,6 +90,19 @@ type DatasetClientMock struct {
 	calls struct {
 		// Get holds details about calls to the Get method.
 		Get []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAuthToken is the userAuthToken argument value.
+			UserAuthToken string
+			// ServiceAuthToken is the serviceAuthToken argument value.
+			ServiceAuthToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// DatasetID is the datasetID argument value.
+			DatasetID string
+		}
+		// GetDatasetCurrentAndNext holds details about calls to the GetDatasetCurrentAndNext method.
+		GetDatasetCurrentAndNext []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// UserAuthToken is the userAuthToken argument value.
@@ -233,6 +253,53 @@ func (mock *DatasetClientMock) GetCalls() []struct {
 	lockDatasetClientMockGet.RLock()
 	calls = mock.calls.Get
 	lockDatasetClientMockGet.RUnlock()
+	return calls
+}
+
+// GetDatasetCurrentAndNext calls GetDatasetCurrentAndNextFunc.
+func (mock *DatasetClientMock) GetDatasetCurrentAndNext(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.Dataset, error) {
+	if mock.GetDatasetCurrentAndNextFunc == nil {
+		panic("DatasetClientMock.GetDatasetCurrentAndNextFunc: method is nil but DatasetClient.GetDatasetCurrentAndNext was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+	}{
+		Ctx:              ctx,
+		UserAuthToken:    userAuthToken,
+		ServiceAuthToken: serviceAuthToken,
+		CollectionID:     collectionID,
+		DatasetID:        datasetID,
+	}
+	lockDatasetClientMockGetDatasetCurrentAndNext.Lock()
+	mock.calls.GetDatasetCurrentAndNext = append(mock.calls.GetDatasetCurrentAndNext, callInfo)
+	lockDatasetClientMockGetDatasetCurrentAndNext.Unlock()
+	return mock.GetDatasetCurrentAndNextFunc(ctx, userAuthToken, serviceAuthToken, collectionID, datasetID)
+}
+
+// GetDatasetCurrentAndNextCalls gets all the calls that were made to GetDatasetCurrentAndNext.
+// Check the length with:
+//     len(mockedDatasetClient.GetDatasetCurrentAndNextCalls())
+func (mock *DatasetClientMock) GetDatasetCurrentAndNextCalls() []struct {
+	Ctx              context.Context
+	UserAuthToken    string
+	ServiceAuthToken string
+	CollectionID     string
+	DatasetID        string
+} {
+	var calls []struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+	}
+	lockDatasetClientMockGetDatasetCurrentAndNext.RLock()
+	calls = mock.calls.GetDatasetCurrentAndNext
+	lockDatasetClientMockGetDatasetCurrentAndNext.RUnlock()
 	return calls
 }
 

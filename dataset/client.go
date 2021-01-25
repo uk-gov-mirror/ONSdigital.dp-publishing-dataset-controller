@@ -13,6 +13,7 @@ type DatasetClient interface {
 	//healthcheck.Client
 	GetDatasets(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (m datasetclient.List, err error)
 	Get(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m datasetclient.DatasetDetails, err error)
+	GetDatasetCurrentAndNext(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m datasetclient.Dataset, err error)
 	GetVersion(ctx context.Context, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version string) (m datasetclient.Version, err error)
 	GetInstance(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string) (i datasetclient.Instance, err error)
 	PutDataset(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string, d datasetclient.DatasetDetails) error
