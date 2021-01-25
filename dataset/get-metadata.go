@@ -59,7 +59,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		return
 	}
 
-	d, err := dc.Get(ctx, userAccessToken, "", collectionID, datasetID)
+	d, err := dc.GetDatasetCurrentAndNext(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
 		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
@@ -71,7 +71,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	// to prevent the user having to fill these in again
 	dims := []datasetclient.VersionDimension{}
 	if v.State == editionConfirmedState && v.Version > 1 {
-		dimensions := getLatestPublishedVersionDimensions(ctx, w, req, dc, userAccessToken, collectionID, d.Links.LatestVersion.URL)
+		dimensions := getLatestPublishedVersionDimensions(ctx, w, req, dc, userAccessToken, collectionID, d.Current.Links.LatestVersion.URL)
 		dims = append(dims, dimensions...)
 	}
 
@@ -82,7 +82,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		return
 	}
 
-	p := mapper.EditMetadata(d, v, dims, c)
+	p := mapper.EditMetadata(d.Next, v, dims, c)
 
 	b, err := json.Marshal(p)
 	if err != nil {

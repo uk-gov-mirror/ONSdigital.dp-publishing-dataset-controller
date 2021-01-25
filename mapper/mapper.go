@@ -38,9 +38,9 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	return mappedDatasets
 }
 
-func EditMetadata(d dataset.DatasetDetails, v dataset.Version, dim []dataset.VersionDimension, c zebedee.Collection) model.EditMetadata {
+func EditMetadata(d *dataset.DatasetDetails, v dataset.Version, dim []dataset.VersionDimension, c zebedee.Collection) model.EditMetadata {
 	mappedMetadata := model.EditMetadata{
-		Dataset:      d,
+		Dataset:      *d,
 		Version:      v,
 		Dimensions:   dim,
 		CollectionID: c.ID,

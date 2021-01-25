@@ -194,7 +194,7 @@ func TestUnitMapper(t *testing.T) {
 			Note:  "qux",
 		},
 	}
-	mockDatasetDetails := dataset.DatasetDetails{
+	mockDatasetDetails := &dataset.DatasetDetails{
 		ID:                "foo",
 		CollectionID:      "Bar",
 		Contacts:          &mockContacts,
@@ -284,7 +284,7 @@ func TestUnitMapper(t *testing.T) {
 	}
 
 	expectedEditMetadata := model.EditMetadata{
-		Dataset:         mockDatasetDetails,
+		Dataset:         *mockDatasetDetails,
 		Version:         mockVersion,
 		Dimensions:      mockDimensions,
 		CollectionID:    "test-collection",
