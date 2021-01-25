@@ -3,7 +3,7 @@ module github.com/ONSdigital/dp-publishing-dataset-controller
 go 1.13
 
 require (
-	github.com/ONSdigital/dp-api-clients-go v1.32.5
+	github.com/ONSdigital/dp-api-clients-go v1.32.7
 	github.com/ONSdigital/dp-healthcheck v1.0.5
 	github.com/ONSdigital/dp-net v1.0.10
 	github.com/ONSdigital/log.go v1.0.1
