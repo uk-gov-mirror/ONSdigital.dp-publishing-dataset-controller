@@ -59,6 +59,8 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		return
 	}
 
+	// we get the next and current doc so that we have info relating to latest published version
+	// on the current doc
 	d, err := dc.GetDatasetCurrentAndNext(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
 		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data(logInfo))

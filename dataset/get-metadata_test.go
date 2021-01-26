@@ -84,6 +84,11 @@ func TestUnitHandlers(t *testing.T) {
 			UsageNotes:        nil,
 		}
 
+		mockDataset := dataset.Dataset{
+			Current: &mockDatasetDetails,
+			Next:    &mockDatasetDetails,
+		}
+
 		mockVersionDetails := dataset.Version{
 			Alerts:        nil,
 			CollectionID:  "",
@@ -119,8 +124,8 @@ func TestUnitHandlers(t *testing.T) {
 		Convey("when Version.State is NOT edition-confirmed returns correctly with empty dimensions struct", func() {
 
 			mockDatasetClient := &DatasetClientMock{
-				GetFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m datasetclient.DatasetDetails, err error) {
-					return mockDatasetDetails, nil
+				GetDatasetCurrentAndNextFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m datasetclient.Dataset, err error) {
+					return mockDataset, nil
 				},
 				GetVersionFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version string) (m datasetclient.Version, err error) {
 					return mockVersionDetails, nil
@@ -144,8 +149,8 @@ func TestUnitHandlers(t *testing.T) {
 
 			var count int
 			mockDatasetClient := &DatasetClientMock{
-				GetFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m datasetclient.DatasetDetails, err error) {
-					return mockDatasetDetails, nil
+				GetDatasetCurrentAndNextFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m datasetclient.Dataset, err error) {
+					return mockDataset, nil
 				},
 				GetVersionFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version string) (m datasetclient.Version, err error) {
 					var data datasetclient.Version
