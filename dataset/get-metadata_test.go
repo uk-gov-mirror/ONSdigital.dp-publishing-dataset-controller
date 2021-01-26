@@ -61,27 +61,8 @@ func TestUnitHandlers(t *testing.T) {
 	Convey("test getEditMetadataHandler", t, func() {
 
 		mockDatasetDetails := dataset.DatasetDetails{
-			ID:                "test-dataset",
-			CollectionID:      "",
-			Contacts:          nil,
-			Description:       "",
-			Keywords:          nil,
-			License:           "",
-			Links:             dataset.Links{LatestVersion: dataset.Link{URL: "/v1/datasets/test/editions/test/version/1"}},
-			Methodologies:     nil,
-			NationalStatistic: false,
-			NextRelease:       "",
-			Publications:      nil,
-			Publisher:         nil,
-			QMI:               dataset.Publication{},
-			RelatedDatasets:   nil,
-			ReleaseFrequency:  "",
-			State:             "",
-			Theme:             "",
-			Title:             "",
-			UnitOfMeasure:     "",
-			URI:               "",
-			UsageNotes:        nil,
+			ID:    "test-dataset",
+			Links: dataset.Links{LatestVersion: dataset.Link{URL: "/v1/datasets/test/editions/test/version/1"}},
 		}
 
 		mockDataset := dataset.Dataset{
@@ -90,19 +71,8 @@ func TestUnitHandlers(t *testing.T) {
 		}
 
 		mockVersionDetails := dataset.Version{
-			Alerts:        nil,
-			CollectionID:  "",
-			Downloads:     nil,
-			Edition:       "",
-			Dimensions:    nil,
-			ID:            "test-version",
-			InstanceID:    "",
-			LatestChanges: nil,
-			Links:         dataset.Links{},
-			ReleaseDate:   "",
-			State:         "",
-			Temporal:      nil,
-			Version:       1,
+			ID:      "test-version",
+			Version: 1,
 		}
 
 		mockCollection := zebedee.Collection{
