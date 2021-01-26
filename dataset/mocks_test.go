@@ -6,45 +6,94 @@ package dataset
 import (
 	"context"
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	"github.com/ONSdigital/dp-api-clients-go/zebedee"
 	"sync"
 )
 
 var (
-	lockClientMockGetDatasets sync.RWMutex
-	lockClientMockHealthcheck sync.RWMutex
+	lockDatasetClientMockGet         sync.RWMutex
+	lockDatasetClientMockGetDatasets sync.RWMutex
+	lockDatasetClientMockGetInstance sync.RWMutex
+	lockDatasetClientMockGetVersion  sync.RWMutex
+	lockDatasetClientMockPutDataset  sync.RWMutex
+	lockDatasetClientMockPutInstance sync.RWMutex
+	lockDatasetClientMockPutVersion  sync.RWMutex
 )
 
-// Ensure, that ClientMock does implement Client.
+// Ensure, that DatasetClientMock does implement DatasetClient.
 // If this is not the case, regenerate this file with moq.
-var _ Client = &ClientMock{}
+var _ DatasetClient = &DatasetClientMock{}
 
-// ClientMock is a mock implementation of Client.
+// DatasetClientMock is a mock implementation of DatasetClient.
 //
-//     func TestSomethingThatUsesClient(t *testing.T) {
+//     func TestSomethingThatUsesDatasetClient(t *testing.T) {
 //
-//         // make and configure a mocked Client
-//         mockedClient := &ClientMock{
+//         // make and configure a mocked DatasetClient
+//         mockedDatasetClient := &DatasetClientMock{
+//             GetFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.DatasetDetails, error) {
+// 	               panic("mock out the Get method")
+//             },
 //             GetDatasetsFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string) (dataset.List, error) {
 // 	               panic("mock out the GetDatasets method")
 //             },
-//             HealthcheckFunc: func() (string, error) {
-// 	               panic("mock out the Healthcheck method")
+//             GetInstanceFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string) (dataset.Instance, error) {
+// 	               panic("mock out the GetInstance method")
+//             },
+//             GetVersionFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, edition string, version string) (dataset.Version, error) {
+// 	               panic("mock out the GetVersion method")
+//             },
+//             PutDatasetFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, d dataset.DatasetDetails) error {
+// 	               panic("mock out the PutDataset method")
+//             },
+//             PutInstanceFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string, i dataset.Instance) error {
+// 	               panic("mock out the PutInstance method")
+//             },
+//             PutVersionFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, edition string, version string, v dataset.Version) error {
+// 	               panic("mock out the PutVersion method")
 //             },
 //         }
 //
-//         // use mockedClient in code that requires Client
+//         // use mockedDatasetClient in code that requires DatasetClient
 //         // and then make assertions.
 //
 //     }
-type ClientMock struct {
+type DatasetClientMock struct {
+	// GetFunc mocks the Get method.
+	GetFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.DatasetDetails, error)
+
 	// GetDatasetsFunc mocks the GetDatasets method.
 	GetDatasetsFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string) (dataset.List, error)
 
-	// HealthcheckFunc mocks the Healthcheck method.
-	HealthcheckFunc func() (string, error)
+	// GetInstanceFunc mocks the GetInstance method.
+	GetInstanceFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string) (dataset.Instance, error)
+
+	// GetVersionFunc mocks the GetVersion method.
+	GetVersionFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, edition string, version string) (dataset.Version, error)
+
+	// PutDatasetFunc mocks the PutDataset method.
+	PutDatasetFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, d dataset.DatasetDetails) error
+
+	// PutInstanceFunc mocks the PutInstance method.
+	PutInstanceFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string, i dataset.Instance) error
+
+	// PutVersionFunc mocks the PutVersion method.
+	PutVersionFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, edition string, version string, v dataset.Version) error
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// Get holds details about calls to the Get method.
+		Get []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAuthToken is the userAuthToken argument value.
+			UserAuthToken string
+			// ServiceAuthToken is the serviceAuthToken argument value.
+			ServiceAuthToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// DatasetID is the datasetID argument value.
+			DatasetID string
+		}
 		// GetDatasets holds details about calls to the GetDatasets method.
 		GetDatasets []struct {
 			// Ctx is the ctx argument value.
@@ -56,16 +105,141 @@ type ClientMock struct {
 			// CollectionID is the collectionID argument value.
 			CollectionID string
 		}
-		// Healthcheck holds details about calls to the Healthcheck method.
-		Healthcheck []struct {
+		// GetInstance holds details about calls to the GetInstance method.
+		GetInstance []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAuthToken is the userAuthToken argument value.
+			UserAuthToken string
+			// ServiceAuthToken is the serviceAuthToken argument value.
+			ServiceAuthToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// InstanceID is the instanceID argument value.
+			InstanceID string
+		}
+		// GetVersion holds details about calls to the GetVersion method.
+		GetVersion []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAuthToken is the userAuthToken argument value.
+			UserAuthToken string
+			// ServiceAuthToken is the serviceAuthToken argument value.
+			ServiceAuthToken string
+			// DownloadServiceAuthToken is the downloadServiceAuthToken argument value.
+			DownloadServiceAuthToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// DatasetID is the datasetID argument value.
+			DatasetID string
+			// Edition is the edition argument value.
+			Edition string
+			// Version is the version argument value.
+			Version string
+		}
+		// PutDataset holds details about calls to the PutDataset method.
+		PutDataset []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAuthToken is the userAuthToken argument value.
+			UserAuthToken string
+			// ServiceAuthToken is the serviceAuthToken argument value.
+			ServiceAuthToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// DatasetID is the datasetID argument value.
+			DatasetID string
+			// D is the d argument value.
+			D dataset.DatasetDetails
+		}
+		// PutInstance holds details about calls to the PutInstance method.
+		PutInstance []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAuthToken is the userAuthToken argument value.
+			UserAuthToken string
+			// ServiceAuthToken is the serviceAuthToken argument value.
+			ServiceAuthToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// InstanceID is the instanceID argument value.
+			InstanceID string
+			// I is the i argument value.
+			I dataset.Instance
+		}
+		// PutVersion holds details about calls to the PutVersion method.
+		PutVersion []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAuthToken is the userAuthToken argument value.
+			UserAuthToken string
+			// ServiceAuthToken is the serviceAuthToken argument value.
+			ServiceAuthToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// DatasetID is the datasetID argument value.
+			DatasetID string
+			// Edition is the edition argument value.
+			Edition string
+			// Version is the version argument value.
+			Version string
+			// V is the v argument value.
+			V dataset.Version
 		}
 	}
 }
 
+// Get calls GetFunc.
+func (mock *DatasetClientMock) Get(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.DatasetDetails, error) {
+	if mock.GetFunc == nil {
+		panic("DatasetClientMock.GetFunc: method is nil but DatasetClient.Get was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+	}{
+		Ctx:              ctx,
+		UserAuthToken:    userAuthToken,
+		ServiceAuthToken: serviceAuthToken,
+		CollectionID:     collectionID,
+		DatasetID:        datasetID,
+	}
+	lockDatasetClientMockGet.Lock()
+	mock.calls.Get = append(mock.calls.Get, callInfo)
+	lockDatasetClientMockGet.Unlock()
+	return mock.GetFunc(ctx, userAuthToken, serviceAuthToken, collectionID, datasetID)
+}
+
+// GetCalls gets all the calls that were made to Get.
+// Check the length with:
+//     len(mockedDatasetClient.GetCalls())
+func (mock *DatasetClientMock) GetCalls() []struct {
+	Ctx              context.Context
+	UserAuthToken    string
+	ServiceAuthToken string
+	CollectionID     string
+	DatasetID        string
+} {
+	var calls []struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+	}
+	lockDatasetClientMockGet.RLock()
+	calls = mock.calls.Get
+	lockDatasetClientMockGet.RUnlock()
+	return calls
+}
+
 // GetDatasets calls GetDatasetsFunc.
-func (mock *ClientMock) GetDatasets(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string) (dataset.List, error) {
+func (mock *DatasetClientMock) GetDatasets(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string) (dataset.List, error) {
 	if mock.GetDatasetsFunc == nil {
-		panic("ClientMock.GetDatasetsFunc: method is nil but Client.GetDatasets was just called")
+		panic("DatasetClientMock.GetDatasetsFunc: method is nil but DatasetClient.GetDatasets was just called")
 	}
 	callInfo := struct {
 		Ctx              context.Context
@@ -78,16 +252,16 @@ func (mock *ClientMock) GetDatasets(ctx context.Context, userAuthToken string, s
 		ServiceAuthToken: serviceAuthToken,
 		CollectionID:     collectionID,
 	}
-	lockClientMockGetDatasets.Lock()
+	lockDatasetClientMockGetDatasets.Lock()
 	mock.calls.GetDatasets = append(mock.calls.GetDatasets, callInfo)
-	lockClientMockGetDatasets.Unlock()
+	lockDatasetClientMockGetDatasets.Unlock()
 	return mock.GetDatasetsFunc(ctx, userAuthToken, serviceAuthToken, collectionID)
 }
 
 // GetDatasetsCalls gets all the calls that were made to GetDatasets.
 // Check the length with:
-//     len(mockedClient.GetDatasetsCalls())
-func (mock *ClientMock) GetDatasetsCalls() []struct {
+//     len(mockedDatasetClient.GetDatasetsCalls())
+func (mock *DatasetClientMock) GetDatasetsCalls() []struct {
 	Ctx              context.Context
 	UserAuthToken    string
 	ServiceAuthToken string
@@ -99,34 +273,513 @@ func (mock *ClientMock) GetDatasetsCalls() []struct {
 		ServiceAuthToken string
 		CollectionID     string
 	}
-	lockClientMockGetDatasets.RLock()
+	lockDatasetClientMockGetDatasets.RLock()
 	calls = mock.calls.GetDatasets
-	lockClientMockGetDatasets.RUnlock()
+	lockDatasetClientMockGetDatasets.RUnlock()
 	return calls
 }
 
-// Healthcheck calls HealthcheckFunc.
-func (mock *ClientMock) Healthcheck() (string, error) {
-	if mock.HealthcheckFunc == nil {
-		panic("ClientMock.HealthcheckFunc: method is nil but Client.Healthcheck was just called")
+// GetInstance calls GetInstanceFunc.
+func (mock *DatasetClientMock) GetInstance(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string) (dataset.Instance, error) {
+	if mock.GetInstanceFunc == nil {
+		panic("DatasetClientMock.GetInstanceFunc: method is nil but DatasetClient.GetInstance was just called")
 	}
 	callInfo := struct {
-	}{}
-	lockClientMockHealthcheck.Lock()
-	mock.calls.Healthcheck = append(mock.calls.Healthcheck, callInfo)
-	lockClientMockHealthcheck.Unlock()
-	return mock.HealthcheckFunc()
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		InstanceID       string
+	}{
+		Ctx:              ctx,
+		UserAuthToken:    userAuthToken,
+		ServiceAuthToken: serviceAuthToken,
+		CollectionID:     collectionID,
+		InstanceID:       instanceID,
+	}
+	lockDatasetClientMockGetInstance.Lock()
+	mock.calls.GetInstance = append(mock.calls.GetInstance, callInfo)
+	lockDatasetClientMockGetInstance.Unlock()
+	return mock.GetInstanceFunc(ctx, userAuthToken, serviceAuthToken, collectionID, instanceID)
 }
 
-// HealthcheckCalls gets all the calls that were made to Healthcheck.
+// GetInstanceCalls gets all the calls that were made to GetInstance.
 // Check the length with:
-//     len(mockedClient.HealthcheckCalls())
-func (mock *ClientMock) HealthcheckCalls() []struct {
+//     len(mockedDatasetClient.GetInstanceCalls())
+func (mock *DatasetClientMock) GetInstanceCalls() []struct {
+	Ctx              context.Context
+	UserAuthToken    string
+	ServiceAuthToken string
+	CollectionID     string
+	InstanceID       string
 } {
 	var calls []struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		InstanceID       string
 	}
-	lockClientMockHealthcheck.RLock()
-	calls = mock.calls.Healthcheck
-	lockClientMockHealthcheck.RUnlock()
+	lockDatasetClientMockGetInstance.RLock()
+	calls = mock.calls.GetInstance
+	lockDatasetClientMockGetInstance.RUnlock()
+	return calls
+}
+
+// GetVersion calls GetVersionFunc.
+func (mock *DatasetClientMock) GetVersion(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, edition string, version string) (dataset.Version, error) {
+	if mock.GetVersionFunc == nil {
+		panic("DatasetClientMock.GetVersionFunc: method is nil but DatasetClient.GetVersion was just called")
+	}
+	callInfo := struct {
+		Ctx                      context.Context
+		UserAuthToken            string
+		ServiceAuthToken         string
+		DownloadServiceAuthToken string
+		CollectionID             string
+		DatasetID                string
+		Edition                  string
+		Version                  string
+	}{
+		Ctx:                      ctx,
+		UserAuthToken:            userAuthToken,
+		ServiceAuthToken:         serviceAuthToken,
+		DownloadServiceAuthToken: downloadServiceAuthToken,
+		CollectionID:             collectionID,
+		DatasetID:                datasetID,
+		Edition:                  edition,
+		Version:                  version,
+	}
+	lockDatasetClientMockGetVersion.Lock()
+	mock.calls.GetVersion = append(mock.calls.GetVersion, callInfo)
+	lockDatasetClientMockGetVersion.Unlock()
+	return mock.GetVersionFunc(ctx, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version)
+}
+
+// GetVersionCalls gets all the calls that were made to GetVersion.
+// Check the length with:
+//     len(mockedDatasetClient.GetVersionCalls())
+func (mock *DatasetClientMock) GetVersionCalls() []struct {
+	Ctx                      context.Context
+	UserAuthToken            string
+	ServiceAuthToken         string
+	DownloadServiceAuthToken string
+	CollectionID             string
+	DatasetID                string
+	Edition                  string
+	Version                  string
+} {
+	var calls []struct {
+		Ctx                      context.Context
+		UserAuthToken            string
+		ServiceAuthToken         string
+		DownloadServiceAuthToken string
+		CollectionID             string
+		DatasetID                string
+		Edition                  string
+		Version                  string
+	}
+	lockDatasetClientMockGetVersion.RLock()
+	calls = mock.calls.GetVersion
+	lockDatasetClientMockGetVersion.RUnlock()
+	return calls
+}
+
+// PutDataset calls PutDatasetFunc.
+func (mock *DatasetClientMock) PutDataset(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, d dataset.DatasetDetails) error {
+	if mock.PutDatasetFunc == nil {
+		panic("DatasetClientMock.PutDatasetFunc: method is nil but DatasetClient.PutDataset was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+		D                dataset.DatasetDetails
+	}{
+		Ctx:              ctx,
+		UserAuthToken:    userAuthToken,
+		ServiceAuthToken: serviceAuthToken,
+		CollectionID:     collectionID,
+		DatasetID:        datasetID,
+		D:                d,
+	}
+	lockDatasetClientMockPutDataset.Lock()
+	mock.calls.PutDataset = append(mock.calls.PutDataset, callInfo)
+	lockDatasetClientMockPutDataset.Unlock()
+	return mock.PutDatasetFunc(ctx, userAuthToken, serviceAuthToken, collectionID, datasetID, d)
+}
+
+// PutDatasetCalls gets all the calls that were made to PutDataset.
+// Check the length with:
+//     len(mockedDatasetClient.PutDatasetCalls())
+func (mock *DatasetClientMock) PutDatasetCalls() []struct {
+	Ctx              context.Context
+	UserAuthToken    string
+	ServiceAuthToken string
+	CollectionID     string
+	DatasetID        string
+	D                dataset.DatasetDetails
+} {
+	var calls []struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+		D                dataset.DatasetDetails
+	}
+	lockDatasetClientMockPutDataset.RLock()
+	calls = mock.calls.PutDataset
+	lockDatasetClientMockPutDataset.RUnlock()
+	return calls
+}
+
+// PutInstance calls PutInstanceFunc.
+func (mock *DatasetClientMock) PutInstance(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string, i dataset.Instance) error {
+	if mock.PutInstanceFunc == nil {
+		panic("DatasetClientMock.PutInstanceFunc: method is nil but DatasetClient.PutInstance was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		InstanceID       string
+		I                dataset.Instance
+	}{
+		Ctx:              ctx,
+		UserAuthToken:    userAuthToken,
+		ServiceAuthToken: serviceAuthToken,
+		CollectionID:     collectionID,
+		InstanceID:       instanceID,
+		I:                i,
+	}
+	lockDatasetClientMockPutInstance.Lock()
+	mock.calls.PutInstance = append(mock.calls.PutInstance, callInfo)
+	lockDatasetClientMockPutInstance.Unlock()
+	return mock.PutInstanceFunc(ctx, userAuthToken, serviceAuthToken, collectionID, instanceID, i)
+}
+
+// PutInstanceCalls gets all the calls that were made to PutInstance.
+// Check the length with:
+//     len(mockedDatasetClient.PutInstanceCalls())
+func (mock *DatasetClientMock) PutInstanceCalls() []struct {
+	Ctx              context.Context
+	UserAuthToken    string
+	ServiceAuthToken string
+	CollectionID     string
+	InstanceID       string
+	I                dataset.Instance
+} {
+	var calls []struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		InstanceID       string
+		I                dataset.Instance
+	}
+	lockDatasetClientMockPutInstance.RLock()
+	calls = mock.calls.PutInstance
+	lockDatasetClientMockPutInstance.RUnlock()
+	return calls
+}
+
+// PutVersion calls PutVersionFunc.
+func (mock *DatasetClientMock) PutVersion(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, edition string, version string, v dataset.Version) error {
+	if mock.PutVersionFunc == nil {
+		panic("DatasetClientMock.PutVersionFunc: method is nil but DatasetClient.PutVersion was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+		Edition          string
+		Version          string
+		V                dataset.Version
+	}{
+		Ctx:              ctx,
+		UserAuthToken:    userAuthToken,
+		ServiceAuthToken: serviceAuthToken,
+		CollectionID:     collectionID,
+		DatasetID:        datasetID,
+		Edition:          edition,
+		Version:          version,
+		V:                v,
+	}
+	lockDatasetClientMockPutVersion.Lock()
+	mock.calls.PutVersion = append(mock.calls.PutVersion, callInfo)
+	lockDatasetClientMockPutVersion.Unlock()
+	return mock.PutVersionFunc(ctx, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version, v)
+}
+
+// PutVersionCalls gets all the calls that were made to PutVersion.
+// Check the length with:
+//     len(mockedDatasetClient.PutVersionCalls())
+func (mock *DatasetClientMock) PutVersionCalls() []struct {
+	Ctx              context.Context
+	UserAuthToken    string
+	ServiceAuthToken string
+	CollectionID     string
+	DatasetID        string
+	Edition          string
+	Version          string
+	V                dataset.Version
+} {
+	var calls []struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+		Edition          string
+		Version          string
+		V                dataset.Version
+	}
+	lockDatasetClientMockPutVersion.RLock()
+	calls = mock.calls.PutVersion
+	lockDatasetClientMockPutVersion.RUnlock()
+	return calls
+}
+
+var (
+	lockZebedeeClientMockGetCollection                 sync.RWMutex
+	lockZebedeeClientMockPutDatasetInCollection        sync.RWMutex
+	lockZebedeeClientMockPutDatasetVersionInCollection sync.RWMutex
+)
+
+// Ensure, that ZebedeeClientMock does implement ZebedeeClient.
+// If this is not the case, regenerate this file with moq.
+var _ ZebedeeClient = &ZebedeeClientMock{}
+
+// ZebedeeClientMock is a mock implementation of ZebedeeClient.
+//
+//     func TestSomethingThatUsesZebedeeClient(t *testing.T) {
+//
+//         // make and configure a mocked ZebedeeClient
+//         mockedZebedeeClient := &ZebedeeClientMock{
+//             GetCollectionFunc: func(ctx context.Context, userAccessToken string, collectionID string) (zebedee.Collection, error) {
+// 	               panic("mock out the GetCollection method")
+//             },
+//             PutDatasetInCollectionFunc: func(ctx context.Context, userAccessToken string, collectionID string, lang string, datasetID string, state string) error {
+// 	               panic("mock out the PutDatasetInCollection method")
+//             },
+//             PutDatasetVersionInCollectionFunc: func(ctx context.Context, userAccessToken string, collectionID string, lang string, datasetID string, edition string, version string, state string) error {
+// 	               panic("mock out the PutDatasetVersionInCollection method")
+//             },
+//         }
+//
+//         // use mockedZebedeeClient in code that requires ZebedeeClient
+//         // and then make assertions.
+//
+//     }
+type ZebedeeClientMock struct {
+	// GetCollectionFunc mocks the GetCollection method.
+	GetCollectionFunc func(ctx context.Context, userAccessToken string, collectionID string) (zebedee.Collection, error)
+
+	// PutDatasetInCollectionFunc mocks the PutDatasetInCollection method.
+	PutDatasetInCollectionFunc func(ctx context.Context, userAccessToken string, collectionID string, lang string, datasetID string, state string) error
+
+	// PutDatasetVersionInCollectionFunc mocks the PutDatasetVersionInCollection method.
+	PutDatasetVersionInCollectionFunc func(ctx context.Context, userAccessToken string, collectionID string, lang string, datasetID string, edition string, version string, state string) error
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// GetCollection holds details about calls to the GetCollection method.
+		GetCollection []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAccessToken is the userAccessToken argument value.
+			UserAccessToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+		}
+		// PutDatasetInCollection holds details about calls to the PutDatasetInCollection method.
+		PutDatasetInCollection []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAccessToken is the userAccessToken argument value.
+			UserAccessToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// Lang is the lang argument value.
+			Lang string
+			// DatasetID is the datasetID argument value.
+			DatasetID string
+			// State is the state argument value.
+			State string
+		}
+		// PutDatasetVersionInCollection holds details about calls to the PutDatasetVersionInCollection method.
+		PutDatasetVersionInCollection []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAccessToken is the userAccessToken argument value.
+			UserAccessToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// Lang is the lang argument value.
+			Lang string
+			// DatasetID is the datasetID argument value.
+			DatasetID string
+			// Edition is the edition argument value.
+			Edition string
+			// Version is the version argument value.
+			Version string
+			// State is the state argument value.
+			State string
+		}
+	}
+}
+
+// GetCollection calls GetCollectionFunc.
+func (mock *ZebedeeClientMock) GetCollection(ctx context.Context, userAccessToken string, collectionID string) (zebedee.Collection, error) {
+	if mock.GetCollectionFunc == nil {
+		panic("ZebedeeClientMock.GetCollectionFunc: method is nil but ZebedeeClient.GetCollection was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		UserAccessToken string
+		CollectionID    string
+	}{
+		Ctx:             ctx,
+		UserAccessToken: userAccessToken,
+		CollectionID:    collectionID,
+	}
+	lockZebedeeClientMockGetCollection.Lock()
+	mock.calls.GetCollection = append(mock.calls.GetCollection, callInfo)
+	lockZebedeeClientMockGetCollection.Unlock()
+	return mock.GetCollectionFunc(ctx, userAccessToken, collectionID)
+}
+
+// GetCollectionCalls gets all the calls that were made to GetCollection.
+// Check the length with:
+//     len(mockedZebedeeClient.GetCollectionCalls())
+func (mock *ZebedeeClientMock) GetCollectionCalls() []struct {
+	Ctx             context.Context
+	UserAccessToken string
+	CollectionID    string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		UserAccessToken string
+		CollectionID    string
+	}
+	lockZebedeeClientMockGetCollection.RLock()
+	calls = mock.calls.GetCollection
+	lockZebedeeClientMockGetCollection.RUnlock()
+	return calls
+}
+
+// PutDatasetInCollection calls PutDatasetInCollectionFunc.
+func (mock *ZebedeeClientMock) PutDatasetInCollection(ctx context.Context, userAccessToken string, collectionID string, lang string, datasetID string, state string) error {
+	if mock.PutDatasetInCollectionFunc == nil {
+		panic("ZebedeeClientMock.PutDatasetInCollectionFunc: method is nil but ZebedeeClient.PutDatasetInCollection was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		UserAccessToken string
+		CollectionID    string
+		Lang            string
+		DatasetID       string
+		State           string
+	}{
+		Ctx:             ctx,
+		UserAccessToken: userAccessToken,
+		CollectionID:    collectionID,
+		Lang:            lang,
+		DatasetID:       datasetID,
+		State:           state,
+	}
+	lockZebedeeClientMockPutDatasetInCollection.Lock()
+	mock.calls.PutDatasetInCollection = append(mock.calls.PutDatasetInCollection, callInfo)
+	lockZebedeeClientMockPutDatasetInCollection.Unlock()
+	return mock.PutDatasetInCollectionFunc(ctx, userAccessToken, collectionID, lang, datasetID, state)
+}
+
+// PutDatasetInCollectionCalls gets all the calls that were made to PutDatasetInCollection.
+// Check the length with:
+//     len(mockedZebedeeClient.PutDatasetInCollectionCalls())
+func (mock *ZebedeeClientMock) PutDatasetInCollectionCalls() []struct {
+	Ctx             context.Context
+	UserAccessToken string
+	CollectionID    string
+	Lang            string
+	DatasetID       string
+	State           string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		UserAccessToken string
+		CollectionID    string
+		Lang            string
+		DatasetID       string
+		State           string
+	}
+	lockZebedeeClientMockPutDatasetInCollection.RLock()
+	calls = mock.calls.PutDatasetInCollection
+	lockZebedeeClientMockPutDatasetInCollection.RUnlock()
+	return calls
+}
+
+// PutDatasetVersionInCollection calls PutDatasetVersionInCollectionFunc.
+func (mock *ZebedeeClientMock) PutDatasetVersionInCollection(ctx context.Context, userAccessToken string, collectionID string, lang string, datasetID string, edition string, version string, state string) error {
+	if mock.PutDatasetVersionInCollectionFunc == nil {
+		panic("ZebedeeClientMock.PutDatasetVersionInCollectionFunc: method is nil but ZebedeeClient.PutDatasetVersionInCollection was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		UserAccessToken string
+		CollectionID    string
+		Lang            string
+		DatasetID       string
+		Edition         string
+		Version         string
+		State           string
+	}{
+		Ctx:             ctx,
+		UserAccessToken: userAccessToken,
+		CollectionID:    collectionID,
+		Lang:            lang,
+		DatasetID:       datasetID,
+		Edition:         edition,
+		Version:         version,
+		State:           state,
+	}
+	lockZebedeeClientMockPutDatasetVersionInCollection.Lock()
+	mock.calls.PutDatasetVersionInCollection = append(mock.calls.PutDatasetVersionInCollection, callInfo)
+	lockZebedeeClientMockPutDatasetVersionInCollection.Unlock()
+	return mock.PutDatasetVersionInCollectionFunc(ctx, userAccessToken, collectionID, lang, datasetID, edition, version, state)
+}
+
+// PutDatasetVersionInCollectionCalls gets all the calls that were made to PutDatasetVersionInCollection.
+// Check the length with:
+//     len(mockedZebedeeClient.PutDatasetVersionInCollectionCalls())
+func (mock *ZebedeeClientMock) PutDatasetVersionInCollectionCalls() []struct {
+	Ctx             context.Context
+	UserAccessToken string
+	CollectionID    string
+	Lang            string
+	DatasetID       string
+	Edition         string
+	Version         string
+	State           string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		UserAccessToken string
+		CollectionID    string
+		Lang            string
+		DatasetID       string
+		Edition         string
+		Version         string
+		State           string
+	}
+	lockZebedeeClientMockPutDatasetVersionInCollection.RLock()
+	calls = mock.calls.PutDatasetVersionInCollection
+	lockZebedeeClientMockPutDatasetVersionInCollection.RUnlock()
 	return calls
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-api-clients-go/health"
+	"github.com/ONSdigital/dp-api-clients-go/zebedee"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
 	dpnethttp "github.com/ONSdigital/dp-net/http"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/config"
@@ -54,6 +55,7 @@ func main() {
 
 	apiRouterCli := health.NewClient("api-router", cfg.APIRouterURL)
 	dc := dataset.NewWithHealthClient(apiRouterCli)
+	zc := zebedee.NewWithHealthClient(apiRouterCli)
 
 	hc := healthcheck.New(versionInfo, cfg.HealthCheckCritialTimeout, cfg.HealthCheckInterval)
 	if err = hc.AddCheck("API router", apiRouterCli.Checker); err != nil {
@@ -62,7 +64,7 @@ func main() {
 	}
 
 	router := mux.NewRouter()
-	routes.Init(router, cfg, hc, dc)
+	routes.Init(router, cfg, hc, dc, zc)
 
 	s := dpnethttp.NewServer(cfg.BindAddr, router)
 

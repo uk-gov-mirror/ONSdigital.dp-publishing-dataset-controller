@@ -1,10 +1,21 @@
 package model
 
-import "github.com/ONSdigital/dp-api-clients-go/dataset"
+import (
+	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
+)
 
 type Dataset struct {
 	ID    string `json:"id"`
 	Title string `json:"title"`
+}
+
+type EditMetadata struct {
+	Dataset         datasetclient.DatasetDetails `json:"dataset"`
+	Version         datasetclient.Version        `json:"version"`
+	Instance        datasetclient.Instance       `json:"instance"`
+	CollectionID    string                       `json:"collection_id"`
+	CollectionState string                       `json:"collection_state"`
 }
 
 type EditVersionMetaData struct {
