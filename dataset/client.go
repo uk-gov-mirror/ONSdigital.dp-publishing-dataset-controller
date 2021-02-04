@@ -18,7 +18,7 @@ type DatasetClient interface {
 	GetInstance(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string) (i datasetclient.Instance, err error)
 	PutDataset(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string, d datasetclient.DatasetDetails) error
 	PutVersion(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version string, v datasetclient.Version) error
-	PutInstance(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.Instance) error
+	PutInstance(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.UpdateInstance) error
 }
 
 type ZebedeeClient interface {

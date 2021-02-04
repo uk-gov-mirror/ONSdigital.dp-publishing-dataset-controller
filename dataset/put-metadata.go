@@ -9,6 +9,7 @@ import (
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/ONSdigital/log.go/log"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 )
 
@@ -68,7 +69,8 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 		return
 	}
 
-	instance := datasetclient.Instance{}
+	instance := datasetclient.UpdateInstance{}
+	instance.InstanceID = body.Version.ID
 	instance.Dimensions = body.Dimensions
 
 	err = dc.PutInstance(ctx, userAccessToken, "", collectionID, body.Version.ID, instance)
@@ -78,7 +80,9 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 		return
 	}
 
-	err = zc.PutDatasetInCollection(ctx, userAccessToken, "", collectionID, datasetID, body.CollectionState)
+	spew.Dump(collectionID)
+
+	err = zc.PutDatasetInCollection(ctx, userAccessToken, "", collectionID, "", datasetID, body.CollectionState)
 	if err != nil {
 		log.Event(ctx, "error adding dataset to collection", log.ERROR, log.Error(err), log.Data(logInfo))
 		http.Error(w, "error adding dataset to collection", http.StatusInternalServerError)
