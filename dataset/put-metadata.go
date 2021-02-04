@@ -82,14 +82,14 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 
 	spew.Dump(collectionID)
 
-	err = zc.PutDatasetInCollection(ctx, userAccessToken, "", collectionID, "", datasetID, body.CollectionState)
+	err = zc.PutDatasetInCollection(ctx, userAccessToken, collectionID, "", datasetID, body.CollectionState)
 	if err != nil {
 		log.Event(ctx, "error adding dataset to collection", log.ERROR, log.Error(err), log.Data(logInfo))
 		http.Error(w, "error adding dataset to collection", http.StatusInternalServerError)
 		return
 	}
 
-	err = zc.PutDatasetVersionInCollection(ctx, userAccessToken, "", collectionID, datasetID, edition, version, body.CollectionState)
+	err = zc.PutDatasetVersionInCollection(ctx, userAccessToken, collectionID, "", datasetID, edition, version, body.CollectionState)
 	if err != nil {
 		log.Event(ctx, "error adding version to collection", log.ERROR, log.Error(err), log.Data(logInfo))
 		http.Error(w, "error adding version to collection", http.StatusInternalServerError)
