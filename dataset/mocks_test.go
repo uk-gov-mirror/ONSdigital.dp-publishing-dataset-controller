@@ -49,7 +49,7 @@ var _ DatasetClient = &DatasetClientMock{}
 //             PutDatasetFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, d dataset.DatasetDetails) error {
 // 	               panic("mock out the PutDataset method")
 //             },
-//             PutInstanceFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string, i dataset.Instance) error {
+//             PutInstanceFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string, i dataset.UpdateInstance) error {
 // 	               panic("mock out the PutInstance method")
 //             },
 //             PutVersionFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, edition string, version string, v dataset.Version) error {
@@ -81,7 +81,7 @@ type DatasetClientMock struct {
 	PutDatasetFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, d dataset.DatasetDetails) error
 
 	// PutInstanceFunc mocks the PutInstance method.
-	PutInstanceFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string, i dataset.Instance) error
+	PutInstanceFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string, i dataset.UpdateInstance) error
 
 	// PutVersionFunc mocks the PutVersion method.
 	PutVersionFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, edition string, version string, v dataset.Version) error
@@ -185,7 +185,7 @@ type DatasetClientMock struct {
 			// InstanceID is the instanceID argument value.
 			InstanceID string
 			// I is the i argument value.
-			I dataset.Instance
+			I dataset.UpdateInstance
 		}
 		// PutVersion holds details about calls to the PutVersion method.
 		PutVersion []struct {
@@ -504,7 +504,7 @@ func (mock *DatasetClientMock) PutDatasetCalls() []struct {
 }
 
 // PutInstance calls PutInstanceFunc.
-func (mock *DatasetClientMock) PutInstance(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string, i dataset.Instance) error {
+func (mock *DatasetClientMock) PutInstance(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string, i dataset.UpdateInstance) error {
 	if mock.PutInstanceFunc == nil {
 		panic("DatasetClientMock.PutInstanceFunc: method is nil but DatasetClient.PutInstance was just called")
 	}
@@ -514,7 +514,7 @@ func (mock *DatasetClientMock) PutInstance(ctx context.Context, userAuthToken st
 		ServiceAuthToken string
 		CollectionID     string
 		InstanceID       string
-		I                dataset.Instance
+		I                dataset.UpdateInstance
 	}{
 		Ctx:              ctx,
 		UserAuthToken:    userAuthToken,
@@ -538,7 +538,7 @@ func (mock *DatasetClientMock) PutInstanceCalls() []struct {
 	ServiceAuthToken string
 	CollectionID     string
 	InstanceID       string
-	I                dataset.Instance
+	I                dataset.UpdateInstance
 } {
 	var calls []struct {
 		Ctx              context.Context
@@ -546,7 +546,7 @@ func (mock *DatasetClientMock) PutInstanceCalls() []struct {
 		ServiceAuthToken string
 		CollectionID     string
 		InstanceID       string
-		I                dataset.Instance
+		I                dataset.UpdateInstance
 	}
 	lockDatasetClientMockPutInstance.RLock()
 	calls = mock.calls.PutInstance
