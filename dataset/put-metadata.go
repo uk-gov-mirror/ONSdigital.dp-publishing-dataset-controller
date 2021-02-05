@@ -9,7 +9,6 @@ import (
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/ONSdigital/log.go/log"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 )
 
@@ -79,8 +78,6 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 		http.Error(w, "error updating dimensions", http.StatusInternalServerError)
 		return
 	}
-
-	spew.Dump(collectionID)
 
 	err = zc.PutDatasetInCollection(ctx, userAccessToken, collectionID, "", datasetID, body.CollectionState)
 	if err != nil {
