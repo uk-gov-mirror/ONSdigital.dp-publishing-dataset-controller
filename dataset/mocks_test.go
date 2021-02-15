@@ -7,6 +7,7 @@ import (
 	"context"
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-api-clients-go/zebedee"
+	"github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"sync"
 )
 
@@ -848,5 +849,79 @@ func (mock *ZebedeeClientMock) PutDatasetVersionInCollectionCalls() []struct {
 	lockZebedeeClientMockPutDatasetVersionInCollection.RLock()
 	calls = mock.calls.PutDatasetVersionInCollection
 	lockZebedeeClientMockPutDatasetVersionInCollection.RUnlock()
+	return calls
+}
+
+var (
+	lockBabbageClientMockGetTopics sync.RWMutex
+)
+
+// Ensure, that BabbageClientMock does implement BabbageClient.
+// If this is not the case, regenerate this file with moq.
+var _ BabbageClient = &BabbageClientMock{}
+
+// BabbageClientMock is a mock implementation of BabbageClient.
+//
+//     func TestSomethingThatUsesBabbageClient(t *testing.T) {
+//
+//         // make and configure a mocked BabbageClient
+//         mockedBabbageClient := &BabbageClientMock{
+//             GetTopicsFunc: func(ctx context.Context, userAccessToken string) (topics.TopicsResult, error) {
+// 	               panic("mock out the GetTopics method")
+//             },
+//         }
+//
+//         // use mockedBabbageClient in code that requires BabbageClient
+//         // and then make assertions.
+//
+//     }
+type BabbageClientMock struct {
+	// GetTopicsFunc mocks the GetTopics method.
+	GetTopicsFunc func(ctx context.Context, userAccessToken string) (topics.TopicsResult, error)
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// GetTopics holds details about calls to the GetTopics method.
+		GetTopics []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAccessToken is the userAccessToken argument value.
+			UserAccessToken string
+		}
+	}
+}
+
+// GetTopics calls GetTopicsFunc.
+func (mock *BabbageClientMock) GetTopics(ctx context.Context, userAccessToken string) (topics.TopicsResult, error) {
+	if mock.GetTopicsFunc == nil {
+		panic("BabbageClientMock.GetTopicsFunc: method is nil but BabbageClient.GetTopics was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		UserAccessToken string
+	}{
+		Ctx:             ctx,
+		UserAccessToken: userAccessToken,
+	}
+	lockBabbageClientMockGetTopics.Lock()
+	mock.calls.GetTopics = append(mock.calls.GetTopics, callInfo)
+	lockBabbageClientMockGetTopics.Unlock()
+	return mock.GetTopicsFunc(ctx, userAccessToken)
+}
+
+// GetTopicsCalls gets all the calls that were made to GetTopics.
+// Check the length with:
+//     len(mockedBabbageClient.GetTopicsCalls())
+func (mock *BabbageClientMock) GetTopicsCalls() []struct {
+	Ctx             context.Context
+	UserAccessToken string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		UserAccessToken string
+	}
+	lockBabbageClientMockGetTopics.RLock()
+	calls = mock.calls.GetTopics
+	lockBabbageClientMockGetTopics.RUnlock()
 	return calls
 }
