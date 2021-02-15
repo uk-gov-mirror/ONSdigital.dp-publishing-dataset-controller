@@ -5,6 +5,7 @@ import (
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	babbage "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -294,5 +295,43 @@ func TestUnitMapper(t *testing.T) {
 	Convey("test EditMetadata", t, func() {
 		outcome := EditMetadata(mockDatasetDetails, mockVersion, mockDimensions, mockCollection)
 		So(outcome, ShouldResemble, expectedEditMetadata)
+	})
+
+	mockTopics := babbage.TopicsResult{
+		Topics: babbage.Topic{
+			Results: []babbage.Result{{
+				Description: babbage.Description{
+					Title: "test 1",
+				},
+				URI:  "/test/uri/1",
+				Type: "page",
+			},
+				{
+					Description: babbage.Description{
+						Title: "test 2",
+					},
+					URI:  "/test/uri/2",
+					Type: "page",
+				}},
+		},
+	}
+
+	mockEmptyTopics := babbage.TopicsResult{
+		Topics: babbage.Topic{
+			Results: []babbage.Result{},
+		},
+	}
+
+	expectedTopics := []model.Topics{{Title: "test 1"}, {Title: "test 2"}}
+
+	Convey("test Topics", t, func() {
+		Convey("maps correctly if results have topics", func() {
+			outcome := Topics(mockTopics)
+			So(outcome, ShouldResemble, expectedTopics)
+		})
+		Convey("retruns empty slice and doesn't error if no results", func() {
+			outcome := Topics(mockEmptyTopics)
+			So(outcome, ShouldResemble, []model.Topics(nil))
+		})
 	})
 }

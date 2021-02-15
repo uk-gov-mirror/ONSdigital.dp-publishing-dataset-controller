@@ -9,6 +9,7 @@ import (
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	babbageclient "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/pkg/errors"
 )
@@ -230,4 +231,17 @@ func mapLatestChanges(un []dataset.Change) []model.LatestChanges {
 		})
 	}
 	return latestChanges
+}
+
+// Topics takes babbage topics respond and returns a slice with topic titles
+func Topics(tpcs babbageclient.TopicsResult) []model.Topics {
+	var topics []model.Topics
+	if len(tpcs.Topics.Results) > 0 {
+		for _, tpc := range tpcs.Topics.Results {
+			topics = append(topics, model.Topics{
+				Title: tpc.Description.Title,
+			})
+		}
+	}
+	return topics
 }
