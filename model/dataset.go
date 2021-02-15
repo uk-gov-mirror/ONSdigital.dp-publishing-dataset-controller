@@ -98,3 +98,7 @@ func (d Dataset) GetLabel() string {
 	}
 	return d.Title
 }
+
+type Topics struct {
+	Title string `json:"title"`
+}
