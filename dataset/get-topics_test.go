@@ -46,12 +46,12 @@ func TestUnitGetAllTopics(t *testing.T) {
 				},
 			}
 
-			req := httptest.NewRequest("GET", "/datasets/create", nil)
+			req := httptest.NewRequest("GET", "/datasets/123/create", nil)
 			req.Header.Set("Collection-Id", "testcollection")
 			req.Header.Set("X-Florence-Token", "testuser")
 			rec := httptest.NewRecorder()
 			router := mux.NewRouter()
-			router.Path("/datasets/create").HandlerFunc(GetTopics(mockBabbageClient))
+			router.Path("/datasets/123/create").HandlerFunc(GetTopics(mockBabbageClient))
 			Convey("returns 200 response", func() {
 				router.ServeHTTP(rec, req)
 				So(rec.Code, ShouldEqual, http.StatusOK)
@@ -73,11 +73,11 @@ func TestUnitGetAllTopics(t *testing.T) {
 			}
 
 			Convey("collection id not set", func() {
-				req := httptest.NewRequest("GET", "/datasets/create", nil)
+				req := httptest.NewRequest("GET", "/datasets/123/create", nil)
 				req.Header.Set("X-Florence-Token", "testuser")
 				rec := httptest.NewRecorder()
 				router := mux.NewRouter()
-				router.Path("/datasets/create").HandlerFunc(GetTopics(mockBabbageClient))
+				router.Path("/datasets/123/create").HandlerFunc(GetTopics(mockBabbageClient))
 
 				Convey("returns 400 response", func() {
 					router.ServeHTTP(rec, req)
@@ -92,11 +92,11 @@ func TestUnitGetAllTopics(t *testing.T) {
 			})
 
 			Convey("user auth token not set", func() {
-				req := httptest.NewRequest("GET", "/datasets/create", nil)
+				req := httptest.NewRequest("GET", "/datasets/123/create", nil)
 				req.Header.Set("Collection-Id", "testcollection")
 				rec := httptest.NewRecorder()
 				router := mux.NewRouter()
-				router.Path("/datasets/create").HandlerFunc(GetTopics(mockBabbageClient))
+				router.Path("/datasets/123/create").HandlerFunc(GetTopics(mockBabbageClient))
 
 				Convey("returns 400 response", func() {
 					router.ServeHTTP(rec, req)
@@ -119,12 +119,12 @@ func TestUnitGetAllTopics(t *testing.T) {
 				},
 			}
 
-			req := httptest.NewRequest("GET", "/datasets/create", nil)
+			req := httptest.NewRequest("GET", "/datasets/123/create", nil)
 			req.Header.Set("Collection-Id", "testcollection")
 			req.Header.Set("X-Florence-Token", "testuser")
 			rec := httptest.NewRecorder()
 			router := mux.NewRouter()
-			router.Path("/datasets/create").HandlerFunc(GetTopics(mockBabbageClient))
+			router.Path("/datasets/123/create").HandlerFunc(GetTopics(mockBabbageClient))
 
 			Convey("returns 500 response", func() {
 				router.ServeHTTP(rec, req)
