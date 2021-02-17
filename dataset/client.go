@@ -5,9 +5,10 @@ import (
 
 	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
 	zebedeeclient "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	babbageclient "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 )
 
-//go:generate moq -out mocks_test.go -pkg dataset . DatasetClient ZebedeeClient
+//go:generate moq -out mocks_test.go -pkg dataset . DatasetClient ZebedeeClient BabbageClient
 
 type DatasetClient interface {
 	//healthcheck.Client
@@ -25,4 +26,8 @@ type ZebedeeClient interface {
 	GetCollection(ctx context.Context, userAccessToken, collectionID string) (c zebedeeclient.Collection, err error)
 	PutDatasetInCollection(ctx context.Context, userAccessToken, collectionID, lang, datasetID, state string) error
 	PutDatasetVersionInCollection(ctx context.Context, userAccessToken, collectionID, lang, datasetID, edition, version, state string) error
+}
+
+type BabbageClient interface {
+	GetTopics(ctx context.Context, userAccessToken string) (result babbageclient.TopicsResult, err error)
 }

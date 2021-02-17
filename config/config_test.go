@@ -23,6 +23,7 @@ func TestSpec(t *testing.T) {
 				So(cfg.GracefulShutdownTimeout, ShouldEqual, 5*time.Second)
 				So(cfg.HealthCheckInterval, ShouldEqual, 30*time.Second)
 				So(cfg.HealthCheckCritialTimeout, ShouldEqual, 90*time.Second)
+				So(cfg.BabbageURL, ShouldEqual, "http://localhost:8080")
 			})
 		})
 	})
