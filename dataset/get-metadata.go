@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
+	zebedeeclient "github.com/ONSdigital/dp-api-clients-go/zebedee"
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/log"
@@ -77,7 +78,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		dims = append(dims, dimensions...)
 	}
 
-	c, err := zc.GetCollection(ctx, userAccessToken, collectionID)
+	c, err := getCollectionDetails(ctx, zc, userAccessToken, d.Next.CollectionID)
 	if err != nil {
 		log.Event(ctx, "failed Get collection details", log.Error(err), log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
@@ -101,6 +102,18 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		return
 	}
 
+}
+
+func getCollectionDetails(ctx context.Context, zc ZebedeeClient, userAccessToken, collectionID string) (zebedeeclient.Collection, error) {
+	if len(collectionID) > 0 {
+		c, err := zc.GetCollection(ctx, userAccessToken, collectionID)
+		if err != nil {
+			return zebedeeclient.Collection{}, err
+		}
+		return c, nil
+	} else {
+		return zebedeeclient.Collection{}, nil
+	}
 }
 
 func getLatestPublishedVersionDimensions(ctx context.Context, w http.ResponseWriter, req *http.Request, dc DatasetClient, userAccessToken, collectionID, latestVersionURL string) []datasetclient.VersionDimension {
