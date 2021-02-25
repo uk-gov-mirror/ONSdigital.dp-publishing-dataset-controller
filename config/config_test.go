@@ -24,6 +24,8 @@ func TestSpec(t *testing.T) {
 				So(cfg.HealthCheckInterval, ShouldEqual, 30*time.Second)
 				So(cfg.HealthCheckCritialTimeout, ShouldEqual, 90*time.Second)
 				So(cfg.BabbageURL, ShouldEqual, "http://localhost:8080")
+				So(cfg.DatasetsBatchSize, ShouldEqual, 100)
+				So(cfg.DatasetsBatchWorkers, ShouldEqual, 10)
 			})
 		})
 	})
