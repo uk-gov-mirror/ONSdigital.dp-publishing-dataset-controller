@@ -12,13 +12,13 @@ import (
 )
 
 // GetAll returns a mapped list of all datasets
-func GetAll(dc DatasetClient) http.HandlerFunc {
+func GetAll(dc DatasetClient, batchSize, maxWorkers int) http.HandlerFunc {
 	return dphandlers.ControllerHandler(func(w http.ResponseWriter, r *http.Request, lang, collectionID, accessToken string) {
-		getAll(w, r, dc, accessToken, collectionID, lang)
+		getAll(w, r, dc, accessToken, collectionID, lang, batchSize, maxWorkers)
 	})
 }
 
-func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAccessToken, collectionID, lang string) {
+func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAccessToken, collectionID, lang string, batchSize, maxWorkers int) {
 	ctx := req.Context()
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
@@ -30,7 +30,7 @@ func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAcce
 
 	log.Event(ctx, "calling get datasets")
 
-	datasets, err := dc.GetDatasets(ctx, userAccessToken, "", collectionID)
+	datasets, err := dc.GetDatasetsInBatches(ctx, userAccessToken, "", collectionID, batchSize, maxWorkers)
 	if err != nil {
 		log.Event(ctx, "error getting all datasets from dataset API", log.ERROR, log.Error(err))
 		http.Error(w, "error getting all datasets from dataset API", http.StatusInternalServerError)

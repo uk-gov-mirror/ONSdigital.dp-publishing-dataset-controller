@@ -11,17 +11,6 @@ import (
 	"sync"
 )
 
-var (
-	lockDatasetClientMockGet                      sync.RWMutex
-	lockDatasetClientMockGetDatasetCurrentAndNext sync.RWMutex
-	lockDatasetClientMockGetDatasets              sync.RWMutex
-	lockDatasetClientMockGetInstance              sync.RWMutex
-	lockDatasetClientMockGetVersion               sync.RWMutex
-	lockDatasetClientMockPutDataset               sync.RWMutex
-	lockDatasetClientMockPutInstance              sync.RWMutex
-	lockDatasetClientMockPutVersion               sync.RWMutex
-)
-
 // Ensure, that DatasetClientMock does implement DatasetClient.
 // If this is not the case, regenerate this file with moq.
 var _ DatasetClient = &DatasetClientMock{}
@@ -38,8 +27,8 @@ var _ DatasetClient = &DatasetClientMock{}
 //             GetDatasetCurrentAndNextFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.Dataset, error) {
 // 	               panic("mock out the GetDatasetCurrentAndNext method")
 //             },
-//             GetDatasetsFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string) (dataset.List, error) {
-// 	               panic("mock out the GetDatasets method")
+//             GetDatasetsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, batchSize int, maxWorkers int) (dataset.List, error) {
+// 	               panic("mock out the GetDatasetsInBatches method")
 //             },
 //             GetInstanceFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string) (dataset.Instance, error) {
 // 	               panic("mock out the GetInstance method")
@@ -69,8 +58,8 @@ type DatasetClientMock struct {
 	// GetDatasetCurrentAndNextFunc mocks the GetDatasetCurrentAndNext method.
 	GetDatasetCurrentAndNextFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (dataset.Dataset, error)
 
-	// GetDatasetsFunc mocks the GetDatasets method.
-	GetDatasetsFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string) (dataset.List, error)
+	// GetDatasetsInBatchesFunc mocks the GetDatasetsInBatches method.
+	GetDatasetsInBatchesFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, batchSize int, maxWorkers int) (dataset.List, error)
 
 	// GetInstanceFunc mocks the GetInstance method.
 	GetInstanceFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string) (dataset.Instance, error)
@@ -115,8 +104,8 @@ type DatasetClientMock struct {
 			// DatasetID is the datasetID argument value.
 			DatasetID string
 		}
-		// GetDatasets holds details about calls to the GetDatasets method.
-		GetDatasets []struct {
+		// GetDatasetsInBatches holds details about calls to the GetDatasetsInBatches method.
+		GetDatasetsInBatches []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// UserAuthToken is the userAuthToken argument value.
@@ -125,6 +114,10 @@ type DatasetClientMock struct {
 			ServiceAuthToken string
 			// CollectionID is the collectionID argument value.
 			CollectionID string
+			// BatchSize is the batchSize argument value.
+			BatchSize int
+			// MaxWorkers is the maxWorkers argument value.
+			MaxWorkers int
 		}
 		// GetInstance holds details about calls to the GetInstance method.
 		GetInstance []struct {
@@ -208,6 +201,14 @@ type DatasetClientMock struct {
 			V dataset.Version
 		}
 	}
+	lockGet                      sync.RWMutex
+	lockGetDatasetCurrentAndNext sync.RWMutex
+	lockGetDatasetsInBatches     sync.RWMutex
+	lockGetInstance              sync.RWMutex
+	lockGetVersion               sync.RWMutex
+	lockPutDataset               sync.RWMutex
+	lockPutInstance              sync.RWMutex
+	lockPutVersion               sync.RWMutex
 }
 
 // Get calls GetFunc.
@@ -228,9 +229,9 @@ func (mock *DatasetClientMock) Get(ctx context.Context, userAuthToken string, se
 		CollectionID:     collectionID,
 		DatasetID:        datasetID,
 	}
-	lockDatasetClientMockGet.Lock()
+	mock.lockGet.Lock()
 	mock.calls.Get = append(mock.calls.Get, callInfo)
-	lockDatasetClientMockGet.Unlock()
+	mock.lockGet.Unlock()
 	return mock.GetFunc(ctx, userAuthToken, serviceAuthToken, collectionID, datasetID)
 }
 
@@ -251,9 +252,9 @@ func (mock *DatasetClientMock) GetCalls() []struct {
 		CollectionID     string
 		DatasetID        string
 	}
-	lockDatasetClientMockGet.RLock()
+	mock.lockGet.RLock()
 	calls = mock.calls.Get
-	lockDatasetClientMockGet.RUnlock()
+	mock.lockGet.RUnlock()
 	return calls
 }
 
@@ -275,9 +276,9 @@ func (mock *DatasetClientMock) GetDatasetCurrentAndNext(ctx context.Context, use
 		CollectionID:     collectionID,
 		DatasetID:        datasetID,
 	}
-	lockDatasetClientMockGetDatasetCurrentAndNext.Lock()
+	mock.lockGetDatasetCurrentAndNext.Lock()
 	mock.calls.GetDatasetCurrentAndNext = append(mock.calls.GetDatasetCurrentAndNext, callInfo)
-	lockDatasetClientMockGetDatasetCurrentAndNext.Unlock()
+	mock.lockGetDatasetCurrentAndNext.Unlock()
 	return mock.GetDatasetCurrentAndNextFunc(ctx, userAuthToken, serviceAuthToken, collectionID, datasetID)
 }
 
@@ -298,52 +299,60 @@ func (mock *DatasetClientMock) GetDatasetCurrentAndNextCalls() []struct {
 		CollectionID     string
 		DatasetID        string
 	}
-	lockDatasetClientMockGetDatasetCurrentAndNext.RLock()
+	mock.lockGetDatasetCurrentAndNext.RLock()
 	calls = mock.calls.GetDatasetCurrentAndNext
-	lockDatasetClientMockGetDatasetCurrentAndNext.RUnlock()
+	mock.lockGetDatasetCurrentAndNext.RUnlock()
 	return calls
 }
 
-// GetDatasets calls GetDatasetsFunc.
-func (mock *DatasetClientMock) GetDatasets(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string) (dataset.List, error) {
-	if mock.GetDatasetsFunc == nil {
-		panic("DatasetClientMock.GetDatasetsFunc: method is nil but DatasetClient.GetDatasets was just called")
+// GetDatasetsInBatches calls GetDatasetsInBatchesFunc.
+func (mock *DatasetClientMock) GetDatasetsInBatches(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, batchSize int, maxWorkers int) (dataset.List, error) {
+	if mock.GetDatasetsInBatchesFunc == nil {
+		panic("DatasetClientMock.GetDatasetsInBatchesFunc: method is nil but DatasetClient.GetDatasetsInBatches was just called")
 	}
 	callInfo := struct {
 		Ctx              context.Context
 		UserAuthToken    string
 		ServiceAuthToken string
 		CollectionID     string
+		BatchSize        int
+		MaxWorkers       int
 	}{
 		Ctx:              ctx,
 		UserAuthToken:    userAuthToken,
 		ServiceAuthToken: serviceAuthToken,
 		CollectionID:     collectionID,
+		BatchSize:        batchSize,
+		MaxWorkers:       maxWorkers,
 	}
-	lockDatasetClientMockGetDatasets.Lock()
-	mock.calls.GetDatasets = append(mock.calls.GetDatasets, callInfo)
-	lockDatasetClientMockGetDatasets.Unlock()
-	return mock.GetDatasetsFunc(ctx, userAuthToken, serviceAuthToken, collectionID)
+	mock.lockGetDatasetsInBatches.Lock()
+	mock.calls.GetDatasetsInBatches = append(mock.calls.GetDatasetsInBatches, callInfo)
+	mock.lockGetDatasetsInBatches.Unlock()
+	return mock.GetDatasetsInBatchesFunc(ctx, userAuthToken, serviceAuthToken, collectionID, batchSize, maxWorkers)
 }
 
-// GetDatasetsCalls gets all the calls that were made to GetDatasets.
+// GetDatasetsInBatchesCalls gets all the calls that were made to GetDatasetsInBatches.
 // Check the length with:
-//     len(mockedDatasetClient.GetDatasetsCalls())
-func (mock *DatasetClientMock) GetDatasetsCalls() []struct {
+//     len(mockedDatasetClient.GetDatasetsInBatchesCalls())
+func (mock *DatasetClientMock) GetDatasetsInBatchesCalls() []struct {
 	Ctx              context.Context
 	UserAuthToken    string
 	ServiceAuthToken string
 	CollectionID     string
+	BatchSize        int
+	MaxWorkers       int
 } {
 	var calls []struct {
 		Ctx              context.Context
 		UserAuthToken    string
 		ServiceAuthToken string
 		CollectionID     string
+		BatchSize        int
+		MaxWorkers       int
 	}
-	lockDatasetClientMockGetDatasets.RLock()
-	calls = mock.calls.GetDatasets
-	lockDatasetClientMockGetDatasets.RUnlock()
+	mock.lockGetDatasetsInBatches.RLock()
+	calls = mock.calls.GetDatasetsInBatches
+	mock.lockGetDatasetsInBatches.RUnlock()
 	return calls
 }
 
@@ -365,9 +374,9 @@ func (mock *DatasetClientMock) GetInstance(ctx context.Context, userAuthToken st
 		CollectionID:     collectionID,
 		InstanceID:       instanceID,
 	}
-	lockDatasetClientMockGetInstance.Lock()
+	mock.lockGetInstance.Lock()
 	mock.calls.GetInstance = append(mock.calls.GetInstance, callInfo)
-	lockDatasetClientMockGetInstance.Unlock()
+	mock.lockGetInstance.Unlock()
 	return mock.GetInstanceFunc(ctx, userAuthToken, serviceAuthToken, collectionID, instanceID)
 }
 
@@ -388,9 +397,9 @@ func (mock *DatasetClientMock) GetInstanceCalls() []struct {
 		CollectionID     string
 		InstanceID       string
 	}
-	lockDatasetClientMockGetInstance.RLock()
+	mock.lockGetInstance.RLock()
 	calls = mock.calls.GetInstance
-	lockDatasetClientMockGetInstance.RUnlock()
+	mock.lockGetInstance.RUnlock()
 	return calls
 }
 
@@ -418,9 +427,9 @@ func (mock *DatasetClientMock) GetVersion(ctx context.Context, userAuthToken str
 		Edition:                  edition,
 		Version:                  version,
 	}
-	lockDatasetClientMockGetVersion.Lock()
+	mock.lockGetVersion.Lock()
 	mock.calls.GetVersion = append(mock.calls.GetVersion, callInfo)
-	lockDatasetClientMockGetVersion.Unlock()
+	mock.lockGetVersion.Unlock()
 	return mock.GetVersionFunc(ctx, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version)
 }
 
@@ -447,9 +456,9 @@ func (mock *DatasetClientMock) GetVersionCalls() []struct {
 		Edition                  string
 		Version                  string
 	}
-	lockDatasetClientMockGetVersion.RLock()
+	mock.lockGetVersion.RLock()
 	calls = mock.calls.GetVersion
-	lockDatasetClientMockGetVersion.RUnlock()
+	mock.lockGetVersion.RUnlock()
 	return calls
 }
 
@@ -473,9 +482,9 @@ func (mock *DatasetClientMock) PutDataset(ctx context.Context, userAuthToken str
 		DatasetID:        datasetID,
 		D:                d,
 	}
-	lockDatasetClientMockPutDataset.Lock()
+	mock.lockPutDataset.Lock()
 	mock.calls.PutDataset = append(mock.calls.PutDataset, callInfo)
-	lockDatasetClientMockPutDataset.Unlock()
+	mock.lockPutDataset.Unlock()
 	return mock.PutDatasetFunc(ctx, userAuthToken, serviceAuthToken, collectionID, datasetID, d)
 }
 
@@ -498,9 +507,9 @@ func (mock *DatasetClientMock) PutDatasetCalls() []struct {
 		DatasetID        string
 		D                dataset.DatasetDetails
 	}
-	lockDatasetClientMockPutDataset.RLock()
+	mock.lockPutDataset.RLock()
 	calls = mock.calls.PutDataset
-	lockDatasetClientMockPutDataset.RUnlock()
+	mock.lockPutDataset.RUnlock()
 	return calls
 }
 
@@ -524,9 +533,9 @@ func (mock *DatasetClientMock) PutInstance(ctx context.Context, userAuthToken st
 		InstanceID:       instanceID,
 		I:                i,
 	}
-	lockDatasetClientMockPutInstance.Lock()
+	mock.lockPutInstance.Lock()
 	mock.calls.PutInstance = append(mock.calls.PutInstance, callInfo)
-	lockDatasetClientMockPutInstance.Unlock()
+	mock.lockPutInstance.Unlock()
 	return mock.PutInstanceFunc(ctx, userAuthToken, serviceAuthToken, collectionID, instanceID, i)
 }
 
@@ -549,9 +558,9 @@ func (mock *DatasetClientMock) PutInstanceCalls() []struct {
 		InstanceID       string
 		I                dataset.UpdateInstance
 	}
-	lockDatasetClientMockPutInstance.RLock()
+	mock.lockPutInstance.RLock()
 	calls = mock.calls.PutInstance
-	lockDatasetClientMockPutInstance.RUnlock()
+	mock.lockPutInstance.RUnlock()
 	return calls
 }
 
@@ -579,9 +588,9 @@ func (mock *DatasetClientMock) PutVersion(ctx context.Context, userAuthToken str
 		Version:          version,
 		V:                v,
 	}
-	lockDatasetClientMockPutVersion.Lock()
+	mock.lockPutVersion.Lock()
 	mock.calls.PutVersion = append(mock.calls.PutVersion, callInfo)
-	lockDatasetClientMockPutVersion.Unlock()
+	mock.lockPutVersion.Unlock()
 	return mock.PutVersionFunc(ctx, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version, v)
 }
 
@@ -608,17 +617,11 @@ func (mock *DatasetClientMock) PutVersionCalls() []struct {
 		Version          string
 		V                dataset.Version
 	}
-	lockDatasetClientMockPutVersion.RLock()
+	mock.lockPutVersion.RLock()
 	calls = mock.calls.PutVersion
-	lockDatasetClientMockPutVersion.RUnlock()
+	mock.lockPutVersion.RUnlock()
 	return calls
 }
-
-var (
-	lockZebedeeClientMockGetCollection                 sync.RWMutex
-	lockZebedeeClientMockPutDatasetInCollection        sync.RWMutex
-	lockZebedeeClientMockPutDatasetVersionInCollection sync.RWMutex
-)
 
 // Ensure, that ZebedeeClientMock does implement ZebedeeClient.
 // If this is not the case, regenerate this file with moq.
@@ -701,6 +704,9 @@ type ZebedeeClientMock struct {
 			State string
 		}
 	}
+	lockGetCollection                 sync.RWMutex
+	lockPutDatasetInCollection        sync.RWMutex
+	lockPutDatasetVersionInCollection sync.RWMutex
 }
 
 // GetCollection calls GetCollectionFunc.
@@ -717,9 +723,9 @@ func (mock *ZebedeeClientMock) GetCollection(ctx context.Context, userAccessToke
 		UserAccessToken: userAccessToken,
 		CollectionID:    collectionID,
 	}
-	lockZebedeeClientMockGetCollection.Lock()
+	mock.lockGetCollection.Lock()
 	mock.calls.GetCollection = append(mock.calls.GetCollection, callInfo)
-	lockZebedeeClientMockGetCollection.Unlock()
+	mock.lockGetCollection.Unlock()
 	return mock.GetCollectionFunc(ctx, userAccessToken, collectionID)
 }
 
@@ -736,9 +742,9 @@ func (mock *ZebedeeClientMock) GetCollectionCalls() []struct {
 		UserAccessToken string
 		CollectionID    string
 	}
-	lockZebedeeClientMockGetCollection.RLock()
+	mock.lockGetCollection.RLock()
 	calls = mock.calls.GetCollection
-	lockZebedeeClientMockGetCollection.RUnlock()
+	mock.lockGetCollection.RUnlock()
 	return calls
 }
 
@@ -762,9 +768,9 @@ func (mock *ZebedeeClientMock) PutDatasetInCollection(ctx context.Context, userA
 		DatasetID:       datasetID,
 		State:           state,
 	}
-	lockZebedeeClientMockPutDatasetInCollection.Lock()
+	mock.lockPutDatasetInCollection.Lock()
 	mock.calls.PutDatasetInCollection = append(mock.calls.PutDatasetInCollection, callInfo)
-	lockZebedeeClientMockPutDatasetInCollection.Unlock()
+	mock.lockPutDatasetInCollection.Unlock()
 	return mock.PutDatasetInCollectionFunc(ctx, userAccessToken, collectionID, lang, datasetID, state)
 }
 
@@ -787,9 +793,9 @@ func (mock *ZebedeeClientMock) PutDatasetInCollectionCalls() []struct {
 		DatasetID       string
 		State           string
 	}
-	lockZebedeeClientMockPutDatasetInCollection.RLock()
+	mock.lockPutDatasetInCollection.RLock()
 	calls = mock.calls.PutDatasetInCollection
-	lockZebedeeClientMockPutDatasetInCollection.RUnlock()
+	mock.lockPutDatasetInCollection.RUnlock()
 	return calls
 }
 
@@ -817,9 +823,9 @@ func (mock *ZebedeeClientMock) PutDatasetVersionInCollection(ctx context.Context
 		Version:         version,
 		State:           state,
 	}
-	lockZebedeeClientMockPutDatasetVersionInCollection.Lock()
+	mock.lockPutDatasetVersionInCollection.Lock()
 	mock.calls.PutDatasetVersionInCollection = append(mock.calls.PutDatasetVersionInCollection, callInfo)
-	lockZebedeeClientMockPutDatasetVersionInCollection.Unlock()
+	mock.lockPutDatasetVersionInCollection.Unlock()
 	return mock.PutDatasetVersionInCollectionFunc(ctx, userAccessToken, collectionID, lang, datasetID, edition, version, state)
 }
 
@@ -846,15 +852,11 @@ func (mock *ZebedeeClientMock) PutDatasetVersionInCollectionCalls() []struct {
 		Version         string
 		State           string
 	}
-	lockZebedeeClientMockPutDatasetVersionInCollection.RLock()
+	mock.lockPutDatasetVersionInCollection.RLock()
 	calls = mock.calls.PutDatasetVersionInCollection
-	lockZebedeeClientMockPutDatasetVersionInCollection.RUnlock()
+	mock.lockPutDatasetVersionInCollection.RUnlock()
 	return calls
 }
-
-var (
-	lockBabbageClientMockGetTopics sync.RWMutex
-)
 
 // Ensure, that BabbageClientMock does implement BabbageClient.
 // If this is not the case, regenerate this file with moq.
@@ -889,6 +891,7 @@ type BabbageClientMock struct {
 			UserAccessToken string
 		}
 	}
+	lockGetTopics sync.RWMutex
 }
 
 // GetTopics calls GetTopicsFunc.
@@ -903,9 +906,9 @@ func (mock *BabbageClientMock) GetTopics(ctx context.Context, userAccessToken st
 		Ctx:             ctx,
 		UserAccessToken: userAccessToken,
 	}
-	lockBabbageClientMockGetTopics.Lock()
+	mock.lockGetTopics.Lock()
 	mock.calls.GetTopics = append(mock.calls.GetTopics, callInfo)
-	lockBabbageClientMockGetTopics.Unlock()
+	mock.lockGetTopics.Unlock()
 	return mock.GetTopicsFunc(ctx, userAccessToken)
 }
 
@@ -920,8 +923,8 @@ func (mock *BabbageClientMock) GetTopicsCalls() []struct {
 		Ctx             context.Context
 		UserAccessToken string
 	}
-	lockBabbageClientMockGetTopics.RLock()
+	mock.lockGetTopics.RLock()
 	calls = mock.calls.GetTopics
-	lockBabbageClientMockGetTopics.RUnlock()
+	mock.lockGetTopics.RUnlock()
 	return calls
 }
