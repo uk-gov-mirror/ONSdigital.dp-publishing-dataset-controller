@@ -16,14 +16,17 @@ import (
 
 func TestUnitGetAllDatasets(t *testing.T) {
 
+	datasetsBatchSize := 10
+	datasetsMaxWorkers := 3
+
 	mockedDatasetResponse := []datasetclient.Dataset{
-		datasetclient.Dataset{
+		{
 			ID: "id-1",
 			Next: &datasetclient.DatasetDetails{
 				Title: "Test title 1",
 			},
 		},
-		datasetclient.Dataset{
+		{
 			ID: "id-2",
 			Next: &datasetclient.DatasetDetails{
 				Title: "Test title 2",
@@ -37,7 +40,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 		Convey("on success", func() {
 
 			mockDatasetClient := &DatasetClientMock{
-				GetDatasetsFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (datasetclient.List, error) {
+				GetDatasetsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, batchSize int, maxWorkers int) (datasetclient.List, error) {
 					return datasetclient.List{Items: mockedDatasetResponse}, nil
 				},
 			}
@@ -47,7 +50,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 			req.Header.Set("X-Florence-Token", "testuser")
 			rec := httptest.NewRecorder()
 			router := mux.NewRouter()
-			router.Path("/datasets").HandlerFunc(GetAll(mockDatasetClient))
+			router.Path("/datasets").HandlerFunc(GetAll(mockDatasetClient, datasetsBatchSize, datasetsMaxWorkers))
 
 			Convey("returns 200 response", func() {
 				router.ServeHTTP(rec, req)
@@ -64,7 +67,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 		Convey("errors if no headers are passed", func() {
 
 			mockDatasetClient := &DatasetClientMock{
-				GetDatasetsFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (datasetclient.List, error) {
+				GetDatasetsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, batchSize int, maxWorkers int) (datasetclient.List, error) {
 					return datasetclient.List{}, nil
 				},
 			}
@@ -74,7 +77,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 				req.Header.Set("X-Florence-Token", "testuser")
 				rec := httptest.NewRecorder()
 				router := mux.NewRouter()
-				router.Path("/datasets").HandlerFunc(GetAll(mockDatasetClient))
+				router.Path("/datasets").HandlerFunc(GetAll(mockDatasetClient, datasetsBatchSize, datasetsMaxWorkers))
 
 				Convey("returns 400 response", func() {
 					router.ServeHTTP(rec, req)
@@ -93,7 +96,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 				req.Header.Set("Collection-Id", "testcollection")
 				rec := httptest.NewRecorder()
 				router := mux.NewRouter()
-				router.Path("/datasets").HandlerFunc(GetAll(mockDatasetClient))
+				router.Path("/datasets").HandlerFunc(GetAll(mockDatasetClient, datasetsBatchSize, datasetsMaxWorkers))
 
 				Convey("returns 400 response", func() {
 					router.ServeHTTP(rec, req)
@@ -111,7 +114,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 		Convey("handles error from dataset client", func() {
 
 			mockDatasetClient := &DatasetClientMock{
-				GetDatasetsFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID string) (datasetclient.List, error) {
+				GetDatasetsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, batchSize int, maxWorkers int) (datasetclient.List, error) {
 					return datasetclient.List{}, errors.New("test dataset API error")
 				},
 			}
@@ -121,7 +124,7 @@ func TestUnitGetAllDatasets(t *testing.T) {
 			req.Header.Set("X-Florence-Token", "testuser")
 			rec := httptest.NewRecorder()
 			router := mux.NewRouter()
-			router.Path("/datasets").HandlerFunc(GetAll(mockDatasetClient))
+			router.Path("/datasets").HandlerFunc(GetAll(mockDatasetClient, datasetsBatchSize, datasetsMaxWorkers))
 
 			Convey("returns 500 response", func() {
 				router.ServeHTTP(rec, req)

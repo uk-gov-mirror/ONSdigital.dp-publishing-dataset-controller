@@ -15,6 +15,9 @@ type Config struct {
 	GracefulShutdownTimeout   time.Duration `envconfig:"GRACEFUL_SHUTDOWN_TIMEOUT"`
 	HealthCheckInterval       time.Duration `envconfig:"HEALTHCHECK_INTERVAL"`
 	HealthCheckCritialTimeout time.Duration `envconfig:"HEALTHCHECK_CRITICAL_TIMEOUT"`
+	BabbageURL                string        `envconfig:"BABBAGE_URL"`
+	DatasetsBatchSize         int           `envconfig:"DATASET_BATCH_SIZE"`
+	DatasetsBatchWorkers      int           `envconfig:"DATASET_BATCH_WORKERS"`
 }
 
 // Get retrieves the config from the environment for florence
@@ -29,6 +32,9 @@ func Get() (*Config, error) {
 		GracefulShutdownTimeout:   5 * time.Second,
 		HealthCheckInterval:       30 * time.Second,
 		HealthCheckCritialTimeout: 90 * time.Second,
+		BabbageURL:                "http://localhost:8080",
+		DatasetsBatchSize:         100,
+		DatasetsBatchWorkers:      10,
 	}
 
 	return cfg, envconfig.Process("", cfg)

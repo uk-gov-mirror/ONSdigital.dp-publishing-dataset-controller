@@ -4,21 +4,19 @@ import (
 	"encoding/json"
 	"net/http"
 
-	//datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
-
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/log"
 )
 
-// GetAll returns a mapped list of all datasets
-func GetAll(dc DatasetClient, batchSize, maxWorkers int) http.HandlerFunc {
+// GetTopics returns a mapped list of topics
+func GetTopics(bc BabbageClient) http.HandlerFunc {
 	return dphandlers.ControllerHandler(func(w http.ResponseWriter, r *http.Request, lang, collectionID, accessToken string) {
-		getAll(w, r, dc, accessToken, collectionID, lang, batchSize, maxWorkers)
+		getTopics(w, r, bc, accessToken, collectionID, lang)
 	})
 }
 
-func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAccessToken, collectionID, lang string, batchSize, maxWorkers int) {
+func getTopics(w http.ResponseWriter, req *http.Request, bc BabbageClient, userAccessToken, collectionID, lang string) {
 	ctx := req.Context()
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
@@ -28,16 +26,16 @@ func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAcce
 		return
 	}
 
-	log.Event(ctx, "calling get datasets")
+	log.Event(ctx, "calling get topics")
 
-	datasets, err := dc.GetDatasetsInBatches(ctx, userAccessToken, "", collectionID, batchSize, maxWorkers)
+	topics, err := bc.GetTopics(ctx, userAccessToken)
 	if err != nil {
-		log.Event(ctx, "error getting all datasets from dataset API", log.ERROR, log.Error(err))
-		http.Error(w, "error getting all datasets from dataset API", http.StatusInternalServerError)
+		log.Event(ctx, "error getting topics", log.ERROR, log.Error(err))
+		http.Error(w, "error getting topics", http.StatusInternalServerError)
 		return
 	}
 
-	mapped := mapper.AllDatasets(datasets)
+	mapped := mapper.Topics(topics)
 
 	b, err := json.Marshal(mapped)
 	if err != nil {
@@ -48,5 +46,5 @@ func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAcce
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 
-	log.Event(ctx, "get all: request successful", log.INFO)
+	log.Event(ctx, "get topics: request successful", log.INFO)
 }

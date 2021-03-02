@@ -9,6 +9,7 @@ import (
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
 	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	babbageclient "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/pkg/errors"
 )
@@ -38,11 +39,11 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	return mappedDatasets
 }
 
-func EditMetadata(d dataset.DatasetDetails, v dataset.Version, i dataset.Instance, c zebedee.Collection) model.EditMetadata {
+func EditMetadata(d *dataset.DatasetDetails, v dataset.Version, dim []dataset.VersionDimension, c zebedee.Collection) model.EditMetadata {
 	mappedMetadata := model.EditMetadata{
-		Dataset:      d,
+		Dataset:      *d,
 		Version:      v,
-		Instance:     i,
+		Dimensions:   dim,
 		CollectionID: c.ID,
 	}
 
@@ -50,6 +51,7 @@ func EditMetadata(d dataset.DatasetDetails, v dataset.Version, i dataset.Instanc
 		for _, dataset := range c.Datasets {
 			if dataset.ID == d.ID {
 				mappedMetadata.CollectionState = dataset.State
+				mappedMetadata.CollectionLastEditedBy = dataset.LastEditedBy
 			}
 		}
 	}
@@ -229,4 +231,17 @@ func mapLatestChanges(un []dataset.Change) []model.LatestChanges {
 		})
 	}
 	return latestChanges
+}
+
+// Topics takes babbage topics respond and returns a slice with topic titles
+func Topics(tpcs babbageclient.TopicsResult) []model.Topics {
+	var topics []model.Topics
+	if len(tpcs.Topics.Results) > 0 {
+		for _, tpc := range tpcs.Topics.Results {
+			topics = append(topics, model.Topics{
+				Title: tpc.Description.Title,
+			})
+		}
+	}
+	return topics
 }
