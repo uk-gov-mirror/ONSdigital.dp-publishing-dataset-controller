@@ -10,6 +10,13 @@ type Dataset struct {
 	Title string `json:"title"`
 }
 
+type Version struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Version     int    `json:"version"`
+	ReleaseDate string `json:"release_date"`
+}
+
 type EditMetadata struct {
 	Dataset                datasetclient.DatasetDetails     `json:"dataset"`
 	Version                datasetclient.Version            `json:"version"`

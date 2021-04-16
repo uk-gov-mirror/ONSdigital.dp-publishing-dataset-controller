@@ -334,4 +334,33 @@ func TestUnitMapper(t *testing.T) {
 			So(outcome, ShouldResemble, []model.Topics(nil))
 		})
 	})
+
+	mockedAllVersions := dataset.VersionsList{
+		Items: []dataset.Version{},
+	}
+	mockedAllVersions.Items = append(mockedAllVersions.Items, dataset.Version{
+		ID:          "test-id-3",
+		Version:     3,
+		ReleaseDate: "",
+		State:       "not-published",
+	}, dataset.Version{
+		ID:          "test-id-1",
+		Version:     1,
+		ReleaseDate: "2020-11-07T00:00:00.000Z",
+		State:       "published",
+	}, dataset.Version{
+		ID:          "test-id-2",
+		Version:     2,
+		ReleaseDate: "2020-11-20T00:00:00.000Z",
+		State:       "published",
+	})
+
+	expectedAllVersions := []model.Version{{ID: "test-id-3", Title: "Version: 3", Version: 3, ReleaseDate: ""}, {ID: "test-id-2", Title: "Version: 2 (published)", Version: 2, ReleaseDate: "20 November 2020"}, {ID: "test-id-1", Title: "Version: 1 (published)", Version: 1, ReleaseDate: "07 November 2020"}}
+
+	Convey("test AllVersions", t, func() {
+		Convey("maps correctly", func() {
+			mapped := AllVersions(mockedAllVersions)
+			So(mapped, ShouldResemble, expectedAllVersions)
+		})
+	})
 }

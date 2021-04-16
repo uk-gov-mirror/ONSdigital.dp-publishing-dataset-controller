@@ -7,7 +7,7 @@ import (
 
 	"time"
 
-	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	dataset "github.com/ONSdigital/dp-api-clients-go/dataset"
 	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
 	babbageclient "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
@@ -37,6 +37,33 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	})
 
 	return mappedDatasets
+}
+
+func AllVersions(versions dataset.VersionsList) []model.Version {
+	var mappedVersions []model.Version
+	for _, v := range versions.Items {
+		title := fmt.Sprintf("Version: %v", v.Version)
+		if v.State == "published" {
+			title += " (published)"
+		}
+		time, err := time.Parse("2006-01-02T15:04:05Z", v.ReleaseDate)
+		timeF := ""
+		if err == nil {
+			timeF = time.Format("02 January 2006")
+		}
+		mappedVersions = append(mappedVersions, model.Version{
+			ID:          v.ID,
+			Title:       title,
+			Version:     v.Version,
+			ReleaseDate: timeF,
+		})
+	}
+
+	sort.Slice(mappedVersions, func(i, j int) bool {
+		return mappedVersions[i].Version > mappedVersions[j].Version
+	})
+
+	return mappedVersions
 }
 
 func EditMetadata(d *dataset.DatasetDetails, v dataset.Version, dim []dataset.VersionDimension, c zebedee.Collection) model.EditMetadata {
