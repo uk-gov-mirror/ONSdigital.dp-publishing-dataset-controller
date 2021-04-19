@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"context"
 	"testing"
 
 	"github.com/ONSdigital/dp-api-clients-go/dataset"
@@ -9,6 +10,8 @@ import (
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+var ctx = context.Background()
 
 func TestUnitMapper(t *testing.T) {
 	t.Parallel()
@@ -359,7 +362,7 @@ func TestUnitMapper(t *testing.T) {
 
 	Convey("test AllVersions", t, func() {
 		Convey("maps correctly", func() {
-			mapped := AllVersions(mockedAllVersions)
+			mapped := AllVersions(ctx, mockedAllVersions)
 			So(mapped, ShouldResemble, expectedAllVersions)
 		})
 	})
