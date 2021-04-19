@@ -8,7 +8,6 @@ import (
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/log"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 )
 
@@ -56,9 +55,8 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 		http.Error(w, "error marshalling response to json", http.StatusInternalServerError)
 		return
 	}
-	spew.Dump(b)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 
-	log.Event(ctx, "get all: request successful", log.INFO, log.Data(logInfo))
+	log.Event(ctx, "get versions: request successful", log.INFO, log.Data(logInfo))
 }
