@@ -139,7 +139,7 @@ func TestUnitGetVersions(t *testing.T) {
 			Convey("returns error body", func() {
 				router.ServeHTTP(rec, req)
 				response := rec.Body.String()
-				So(response, ShouldResemble, "error getting all datasets from dataset API: test dataset API error\n")
+				So(response, ShouldResemble, "error getting all versions from dataset API: test dataset API error\n")
 			})
 
 		})

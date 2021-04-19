@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	//datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
-
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/log"
@@ -14,7 +12,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// GetAll returns a mapped list of all datasets
+// GetVersions returns a mapped list of all versions
 func GetVersions(dc DatasetClient, batchSize, maxWorkers int) http.HandlerFunc {
 	return dphandlers.ControllerHandler(func(w http.ResponseWriter, r *http.Request, lang, collectionID, accessToken string) {
 		getVersions(w, r, dc, accessToken, collectionID, lang, batchSize, maxWorkers)
@@ -23,8 +21,6 @@ func GetVersions(dc DatasetClient, batchSize, maxWorkers int) http.HandlerFunc {
 
 func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAccessToken, collectionID, lang string, batchSize, maxWorkers int) {
 	ctx := req.Context()
-
-	spew.Dump("called")
 
 	vars := mux.Vars(req)
 	datasetID := vars["datasetID"]
@@ -46,8 +42,8 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 
 	versions, err := dc.GetVersionsInBatches(ctx, userAccessToken, "", "", collectionID, datasetID, edition, batchSize, maxWorkers)
 	if err != nil {
-		errMsg := fmt.Sprintf("error getting all datasets from dataset API: %v", err.Error())
-		log.Event(ctx, "error getting all datasets from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
+		errMsg := fmt.Sprintf("error getting all versions from dataset API: %v", err.Error())
+		log.Event(ctx, "error getting all versions from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
