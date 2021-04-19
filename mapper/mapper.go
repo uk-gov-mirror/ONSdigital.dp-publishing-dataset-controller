@@ -1,16 +1,18 @@
 package mapper
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
 
 	"time"
 
-	"github.com/ONSdigital/dp-api-clients-go/dataset"
+	dataset "github.com/ONSdigital/dp-api-clients-go/dataset"
 	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
 	babbageclient "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
+	"github.com/ONSdigital/log.go/log"
 	"github.com/pkg/errors"
 )
 
@@ -37,6 +39,35 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	})
 
 	return mappedDatasets
+}
+
+func AllVersions(ctx context.Context, versions dataset.VersionsList) []model.Version {
+	var mappedVersions []model.Version
+	for _, v := range versions.Items {
+		title := fmt.Sprintf("Version: %v", v.Version)
+		if v.State == "published" {
+			title += " (published)"
+		}
+		var timeF string
+		time, err := time.Parse("2006-01-02T15:04:05Z", v.ReleaseDate)
+		if err != nil {
+			log.Event(ctx, "failed to parse release date", log.WARN, log.Error(err))
+		} else {
+			timeF = time.Format("02 January 2006")
+		}
+		mappedVersions = append(mappedVersions, model.Version{
+			ID:          v.ID,
+			Title:       title,
+			Version:     v.Version,
+			ReleaseDate: timeF,
+		})
+	}
+
+	sort.Slice(mappedVersions, func(i, j int) bool {
+		return mappedVersions[i].Version > mappedVersions[j].Version
+	})
+
+	return mappedVersions
 }
 
 func EditMetadata(d *dataset.DatasetDetails, v dataset.Version, dim []dataset.VersionDimension, c zebedee.Collection) model.EditMetadata {
