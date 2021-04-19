@@ -47,7 +47,7 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 		return
 	}
 
-	mapped := mapper.AllVersions(versions)
+	mapped := mapper.AllVersions(ctx, versions)
 
 	b, err := json.Marshal(mapped)
 	if err != nil {
