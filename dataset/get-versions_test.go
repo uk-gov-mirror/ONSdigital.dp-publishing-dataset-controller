@@ -16,6 +16,7 @@ import (
 )
 
 func TestUnitGetVersions(t *testing.T) {
+	t.Parallel()
 
 	datasetID := "test-dataset"
 	editionID := "test-edition"
@@ -38,7 +39,6 @@ func TestUnitGetVersions(t *testing.T) {
 	expectedSuccessResponse := "[{\"id\":\"version-2\",\"title\":\"Version: 2\",\"version\":2,\"release_date\":\"\"},{\"id\":\"version-1\",\"title\":\"Version: 1\",\"version\":1,\"release_date\":\"\"}]"
 
 	Convey("test getAllVersions", t, func() {
-		t.Parallel()
 		Convey("on success", func() {
 
 			mockDatasetClient := &DatasetClientMock{
