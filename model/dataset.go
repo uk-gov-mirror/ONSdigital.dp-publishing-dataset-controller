@@ -10,6 +10,11 @@ type Dataset struct {
 	Title string `json:"title"`
 }
 
+type VersionsPage struct {
+	DatasetName string    `json:"dataset_name"`
+	EditionName string    `json:"edition_name"`
+	Versions    []Version `json:"versions"`
+}
 type Version struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`

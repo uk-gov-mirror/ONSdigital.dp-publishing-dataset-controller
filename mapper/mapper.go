@@ -41,7 +41,9 @@ func AllDatasets(datasets dataset.List) []model.Dataset {
 	return mappedDatasets
 }
 
-func AllVersions(ctx context.Context, versions dataset.VersionsList) []model.Version {
+func AllVersions(ctx context.Context, dataset dataset.Dataset, edition dataset.Edition, versions dataset.VersionsList) model.VersionsPage {
+	datasetName := dataset.Next.Title
+	editionName := edition.Edition
 	var mappedVersions []model.Version
 	for _, v := range versions.Items {
 		title := fmt.Sprintf("Version: %v", v.Version)
@@ -67,7 +69,11 @@ func AllVersions(ctx context.Context, versions dataset.VersionsList) []model.Ver
 		return mappedVersions[i].Version > mappedVersions[j].Version
 	})
 
-	return mappedVersions
+	return model.VersionsPage{
+		DatasetName: datasetName,
+		EditionName: editionName,
+		Versions:    mappedVersions,
+	}
 }
 
 func EditMetadata(d *dataset.DatasetDetails, v dataset.Version, dim []dataset.VersionDimension, c zebedee.Collection) model.EditMetadata {
