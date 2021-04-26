@@ -23,11 +23,11 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 
 	vars := mux.Vars(req)
 	datasetID := vars["datasetID"]
-	edition := vars["editionID"]
+	editionID := vars["editionID"]
 
 	logInfo := map[string]interface{}{
 		"datasetID": datasetID,
-		"edition":   edition,
+		"edition":   editionID,
 	}
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
@@ -39,7 +39,23 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 
 	log.Event(ctx, "calling get versions", log.Data(logInfo))
 
-	versions, err := dc.GetVersionsInBatches(ctx, userAccessToken, "", "", collectionID, datasetID, edition, batchSize, maxWorkers)
+	dataset, err := dc.GetDatasetCurrentAndNext(ctx, userAccessToken, "", collectionID, datasetID)
+	if err != nil {
+		errMsg := fmt.Sprintf("error getting dataset from dataset API: %v", err.Error())
+		log.Event(ctx, "error getting dataset from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
+	}
+
+	edition, err := dc.GetEdition(ctx, userAccessToken, "", collectionID, datasetID, editionID)
+	if err != nil {
+		errMsg := fmt.Sprintf("error getting dataset from dataset API: %v", err.Error())
+		log.Event(ctx, "error getting dataset from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
+	}
+
+	versions, err := dc.GetVersionsInBatches(ctx, userAccessToken, "", "", collectionID, datasetID, editionID, batchSize, maxWorkers)
 	if err != nil {
 		errMsg := fmt.Sprintf("error getting all versions from dataset API: %v", err.Error())
 		log.Event(ctx, "error getting all versions from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
@@ -47,7 +63,7 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 		return
 	}
 
-	mapped := mapper.AllVersions(ctx, versions)
+	mapped := mapper.AllVersions(ctx, dataset, edition, versions)
 
 	b, err := json.Marshal(mapped)
 	if err != nil {

@@ -23,6 +23,16 @@ func TestUnitGetVersions(t *testing.T) {
 	verionsBatchSize := 10
 	versionsMaxWorkers := 3
 
+	mockedDatasetResponse := datasetclient.Dataset{
+		Next: &datasetclient.DatasetDetails{
+			Title: "Test title",
+		},
+	}
+
+	mockedEditionResponse := datasetclient.Edition{
+		Edition: "edition-1",
+	}
+
 	mockedVersionsResponse := []datasetclient.Version{
 		{
 			ID:         "version-1",
@@ -36,17 +46,23 @@ func TestUnitGetVersions(t *testing.T) {
 		},
 	}
 
-	expectedSuccessResponse := "[{\"id\":\"version-2\",\"title\":\"Version: 2\",\"version\":2,\"release_date\":\"\"},{\"id\":\"version-1\",\"title\":\"Version: 1\",\"version\":1,\"release_date\":\"\"}]"
+	expectedSuccessResponse := "{\"dataset_name\":\"Test title\",\"edition_name\":\"edition-1\",\"versions\":[{\"id\":\"version-2\",\"title\":\"Version: 2\",\"version\":2,\"release_date\":\"\"},{\"id\":\"version-1\",\"title\":\"Version: 1\",\"version\":1,\"release_date\":\"\"}]}"
 
 	Convey("test getAllVersions", t, func() {
+
+		mockDatasetClient := &DatasetClientMock{
+			GetDatasetCurrentAndNextFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (datasetclient.Dataset, error) {
+				return mockedDatasetResponse, nil
+			},
+			GetEditionFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, editionID string) (datasetclient.Edition, error) {
+				return mockedEditionResponse, nil
+			},
+			GetVersionsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, editionID string, batchSize int, maxWorkers int) (datasetclient.VersionsList, error) {
+				return datasetclient.VersionsList{Items: mockedVersionsResponse}, nil
+			},
+		}
+
 		Convey("on success", func() {
-
-			mockDatasetClient := &DatasetClientMock{
-				GetVersionsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, editionID string, batchSize int, maxWorkers int) (datasetclient.VersionsList, error) {
-					return datasetclient.VersionsList{Items: mockedVersionsResponse}, nil
-				},
-			}
-
 			reqURL := fmt.Sprintf("/datasets/%v/editions/%v/versions", datasetID, editionID)
 			req := httptest.NewRequest("GET", reqURL, nil)
 			req.Header.Set("Collection-Id", "testcollection")
@@ -68,13 +84,6 @@ func TestUnitGetVersions(t *testing.T) {
 		})
 
 		Convey("errors if no headers are passed", func() {
-
-			mockDatasetClient := &DatasetClientMock{
-				GetVersionsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, editionID string, batchSize int, maxWorkers int) (datasetclient.VersionsList, error) {
-					return datasetclient.VersionsList{Items: mockedVersionsResponse}, nil
-				},
-			}
-
 			Convey("collection id not set", func() {
 				reqURL := fmt.Sprintf("/datasets/%v/editions/%v/versions", datasetID, editionID)
 				req := httptest.NewRequest("GET", reqURL, nil)
@@ -117,8 +126,13 @@ func TestUnitGetVersions(t *testing.T) {
 		})
 
 		Convey("handles error from dataset client", func() {
-
 			mockDatasetClient := &DatasetClientMock{
+				GetDatasetCurrentAndNextFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string) (datasetclient.Dataset, error) {
+					return mockedDatasetResponse, nil
+				},
+				GetEditionFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, editionID string) (datasetclient.Edition, error) {
+					return mockedEditionResponse, nil
+				},
 				GetVersionsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, editionID string, batchSize int, maxWorkers int) (datasetclient.VersionsList, error) {
 					return datasetclient.VersionsList{}, errors.New("test dataset API error")
 				},
