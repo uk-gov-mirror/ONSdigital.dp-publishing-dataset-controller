@@ -345,7 +345,7 @@ func TestUnitMapper(t *testing.T) {
 		ID:          "test-id-3",
 		Version:     3,
 		ReleaseDate: "",
-		State:       "not-published",
+		State:       "edition-confirmed",
 	}, dataset.Version{
 		ID:          "test-id-1",
 		Version:     1,
@@ -368,7 +368,7 @@ func TestUnitMapper(t *testing.T) {
 		Edition: "edition-1",
 	}
 
-	expectedAllVersions := []model.Version{{ID: "test-id-3", Title: "Version: 3", Version: 3, ReleaseDate: ""}, {ID: "test-id-2", Title: "Version: 2 (published)", Version: 2, ReleaseDate: "20 November 2020"}, {ID: "test-id-1", Title: "Version: 1 (published)", Version: 1, ReleaseDate: "07 November 2020"}}
+	expectedAllVersions := []model.Version{{ID: "test-id-3", Title: "Version: 3", Version: 3, ReleaseDate: "", State: "edition-confirmed"}, {ID: "test-id-2", Title: "Version: 2 (published)", Version: 2, ReleaseDate: "20 November 2020", State: "published"}, {ID: "test-id-1", Title: "Version: 1 (published)", Version: 1, ReleaseDate: "07 November 2020", State: "published"}}
 
 	expectedVersionsPage := model.VersionsPage{DatasetName: "Test title", EditionName: "edition-1", Versions: expectedAllVersions}
 

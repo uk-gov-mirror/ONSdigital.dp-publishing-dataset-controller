@@ -20,6 +20,7 @@ type Version struct {
 	Title       string `json:"title"`
 	Version     int    `json:"version"`
 	ReleaseDate string `json:"release_date"`
+	State       string `json:"state"`
 }
 
 type EditMetadata struct {

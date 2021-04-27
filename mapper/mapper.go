@@ -62,6 +62,7 @@ func AllVersions(ctx context.Context, dataset dataset.Dataset, edition dataset.E
 			Title:       title,
 			Version:     v.Version,
 			ReleaseDate: timeF,
+			State:       v.State,
 		})
 	}
 
