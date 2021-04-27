@@ -46,7 +46,7 @@ func TestUnitGetVersions(t *testing.T) {
 		},
 	}
 
-	expectedSuccessResponse := "{\"dataset_name\":\"Test title\",\"edition_name\":\"edition-1\",\"versions\":[{\"id\":\"version-2\",\"title\":\"Version: 2\",\"version\":2,\"release_date\":\"\"},{\"id\":\"version-1\",\"title\":\"Version: 1\",\"version\":1,\"release_date\":\"\"}]}"
+	expectedSuccessResponse := "{\"dataset_name\":\"Test title\",\"edition_name\":\"edition-1\",\"versions\":[{\"id\":\"version-2\",\"title\":\"Version: 2\",\"version\":2,\"release_date\":\"\",\"state\":\"\"},{\"id\":\"version-1\",\"title\":\"Version: 1\",\"version\":1,\"release_date\":\"\",\"state\":\"\"}]}"
 
 	Convey("test getAllVersions", t, func() {
 
