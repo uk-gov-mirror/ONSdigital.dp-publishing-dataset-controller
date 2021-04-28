@@ -49,8 +49,8 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 
 	edition, err := dc.GetEdition(ctx, userAccessToken, "", collectionID, datasetID, editionID)
 	if err != nil {
-		errMsg := fmt.Sprintf("error getting dataset from dataset API: %v", err.Error())
-		log.Event(ctx, "error getting dataset from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
+		errMsg := fmt.Sprintf("error getting edition from dataset API: %v", err.Error())
+		log.Event(ctx, "error getting edition from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
