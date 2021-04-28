@@ -15,6 +15,7 @@ var (
 	lockDatasetClientMockGet                      sync.RWMutex
 	lockDatasetClientMockGetDatasetCurrentAndNext sync.RWMutex
 	lockDatasetClientMockGetDatasetsInBatches     sync.RWMutex
+	lockDatasetClientMockGetEdition               sync.RWMutex
 	lockDatasetClientMockGetInstance              sync.RWMutex
 	lockDatasetClientMockGetVersion               sync.RWMutex
 	lockDatasetClientMockGetVersionsInBatches     sync.RWMutex
@@ -41,6 +42,9 @@ var _ DatasetClient = &DatasetClientMock{}
 //             },
 //             GetDatasetsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, batchSize int, maxWorkers int) (dataset.List, error) {
 // 	               panic("mock out the GetDatasetsInBatches method")
+//             },
+//             GetEditionFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, edition string) (dataset.Edition, error) {
+// 	               panic("mock out the GetEdition method")
 //             },
 //             GetInstanceFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string) (dataset.Instance, error) {
 // 	               panic("mock out the GetInstance method")
@@ -75,6 +79,9 @@ type DatasetClientMock struct {
 
 	// GetDatasetsInBatchesFunc mocks the GetDatasetsInBatches method.
 	GetDatasetsInBatchesFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, batchSize int, maxWorkers int) (dataset.List, error)
+
+	// GetEditionFunc mocks the GetEdition method.
+	GetEditionFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, edition string) (dataset.Edition, error)
 
 	// GetInstanceFunc mocks the GetInstance method.
 	GetInstanceFunc func(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, instanceID string) (dataset.Instance, error)
@@ -136,6 +143,21 @@ type DatasetClientMock struct {
 			BatchSize int
 			// MaxWorkers is the maxWorkers argument value.
 			MaxWorkers int
+		}
+		// GetEdition holds details about calls to the GetEdition method.
+		GetEdition []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// UserAuthToken is the userAuthToken argument value.
+			UserAuthToken string
+			// ServiceAuthToken is the serviceAuthToken argument value.
+			ServiceAuthToken string
+			// CollectionID is the collectionID argument value.
+			CollectionID string
+			// DatasetID is the datasetID argument value.
+			DatasetID string
+			// Edition is the edition argument value.
+			Edition string
 		}
 		// GetInstance holds details about calls to the GetInstance method.
 		GetInstance []struct {
@@ -384,6 +406,57 @@ func (mock *DatasetClientMock) GetDatasetsInBatchesCalls() []struct {
 	lockDatasetClientMockGetDatasetsInBatches.RLock()
 	calls = mock.calls.GetDatasetsInBatches
 	lockDatasetClientMockGetDatasetsInBatches.RUnlock()
+	return calls
+}
+
+// GetEdition calls GetEditionFunc.
+func (mock *DatasetClientMock) GetEdition(ctx context.Context, userAuthToken string, serviceAuthToken string, collectionID string, datasetID string, edition string) (dataset.Edition, error) {
+	if mock.GetEditionFunc == nil {
+		panic("DatasetClientMock.GetEditionFunc: method is nil but DatasetClient.GetEdition was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+		Edition          string
+	}{
+		Ctx:              ctx,
+		UserAuthToken:    userAuthToken,
+		ServiceAuthToken: serviceAuthToken,
+		CollectionID:     collectionID,
+		DatasetID:        datasetID,
+		Edition:          edition,
+	}
+	lockDatasetClientMockGetEdition.Lock()
+	mock.calls.GetEdition = append(mock.calls.GetEdition, callInfo)
+	lockDatasetClientMockGetEdition.Unlock()
+	return mock.GetEditionFunc(ctx, userAuthToken, serviceAuthToken, collectionID, datasetID, edition)
+}
+
+// GetEditionCalls gets all the calls that were made to GetEdition.
+// Check the length with:
+//     len(mockedDatasetClient.GetEditionCalls())
+func (mock *DatasetClientMock) GetEditionCalls() []struct {
+	Ctx              context.Context
+	UserAuthToken    string
+	ServiceAuthToken string
+	CollectionID     string
+	DatasetID        string
+	Edition          string
+} {
+	var calls []struct {
+		Ctx              context.Context
+		UserAuthToken    string
+		ServiceAuthToken string
+		CollectionID     string
+		DatasetID        string
+		Edition          string
+	}
+	lockDatasetClientMockGetEdition.RLock()
+	calls = mock.calls.GetEdition
+	lockDatasetClientMockGetEdition.RUnlock()
 	return calls
 }
 
