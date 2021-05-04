@@ -5,7 +5,6 @@ import (
 
 	dataset "github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
-	"github.com/davecgh/go-spew/spew"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -43,7 +42,6 @@ func TestUnitAllEditions(t *testing.T) {
 
 	Convey("test all editions maps correctly", t, func() {
 		mapped := AllEditions(ctx, mockedDataset, mockedEditions, mockedLatestVersions)
-		spew.Dump(mapped)
 		So(mapped, ShouldResemble, expectedEditionsPage)
 	})
 }
