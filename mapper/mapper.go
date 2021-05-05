@@ -25,7 +25,7 @@ type related struct {
 func AllDatasets(datasets dataset.List) []model.Dataset {
 	var mappedDatasets []model.Dataset
 	for _, ds := range datasets.Items {
-		if &ds == nil || ds.Next == nil {
+		if &ds == nil || ds.Next == nil || ds.Next.Type == "nomis" {
 			continue
 		}
 		mappedDatasets = append(mappedDatasets, model.Dataset{
