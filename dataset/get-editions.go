@@ -35,7 +35,7 @@ func getEditions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 		return
 	}
 
-	log.Event(ctx, "calling get editions", log.Data(logInfo))
+	log.Event(ctx, "calling get editions", log.INFO, log.Data(logInfo))
 
 	dataset, err := dc.GetDatasetCurrentAndNext(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
