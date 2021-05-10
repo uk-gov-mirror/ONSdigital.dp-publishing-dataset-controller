@@ -1,11 +1,11 @@
 module github.com/ONSdigital/dp-publishing-dataset-controller
 
-go 1.15
+go 1.16
 
 require (
-	github.com/ONSdigital/dp-api-clients-go v1.34.0
+	github.com/ONSdigital/dp-api-clients-go v1.34.3
 	github.com/ONSdigital/dp-healthcheck v1.0.5
-	github.com/ONSdigital/dp-net v1.0.10
+	github.com/ONSdigital/dp-net v1.0.12
 	github.com/ONSdigital/log.go v1.0.1
 	github.com/golang/mock v1.4.4
 	github.com/gopherjs/gopherjs v0.0.0-20191106031601-ce3c9ade29de // indirect
