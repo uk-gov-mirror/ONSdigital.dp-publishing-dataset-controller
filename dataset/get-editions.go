@@ -24,15 +24,16 @@ func getEditions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 	vars := mux.Vars(req)
 	datasetID := vars["datasetID"]
 
-	logInfo := map[string]interface{}{
-		"datasetID": datasetID,
-	}
-
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
 	if err != nil {
 		log.Event(ctx, err.Error(), log.ERROR)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+
+	logInfo := map[string]interface{}{
+		"datasetID":    datasetID,
+		"collectionID": collectionID,
 	}
 
 	log.Event(ctx, "calling get editions", log.INFO, log.Data(logInfo))
