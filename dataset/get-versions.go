@@ -37,7 +37,7 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 		return
 	}
 
-	log.Event(ctx, "calling get versions", log.Data(logInfo))
+	log.Event(ctx, "calling get versions", log.INFO, log.Data(logInfo))
 
 	dataset, err := dc.GetDatasetCurrentAndNext(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {

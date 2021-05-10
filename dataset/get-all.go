@@ -28,7 +28,7 @@ func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAcce
 		return
 	}
 
-	log.Event(ctx, "calling get datasets")
+	log.Event(ctx, "calling get datasets", log.INFO)
 
 	datasets, err := dc.GetDatasetsInBatches(ctx, userAccessToken, "", collectionID, batchSize, maxWorkers)
 	if err != nil {
