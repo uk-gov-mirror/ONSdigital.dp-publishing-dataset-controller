@@ -73,12 +73,12 @@ func getEditions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 
 	b, err := json.Marshal(mapped)
 	if err != nil {
-		log.Event(ctx, "error marshalling response to json", log.ERROR, log.Error(err), log.Data(logInfo))
-		http.Error(w, "error marshalling response to json", http.StatusInternalServerError)
+		log.Event(ctx, "error marshalling editions response to json", log.ERROR, log.Error(err), log.Data(logInfo))
+		http.Error(w, "error marshalling editions response to json", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 
-	log.Event(ctx, "get versions: request successful", log.INFO, log.Data(logInfo))
+	log.Event(ctx, "get editions: request successful", log.INFO, log.Data(logInfo))
 }
