@@ -26,7 +26,7 @@ func getTopics(w http.ResponseWriter, req *http.Request, bc BabbageClient, userA
 		return
 	}
 
-	log.Event(ctx, "calling get topics")
+	log.Event(ctx, "calling get topics", log.INFO)
 
 	topics, err := bc.GetTopics(ctx, userAccessToken)
 	if err != nil {
