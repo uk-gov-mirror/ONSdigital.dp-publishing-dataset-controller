@@ -6,7 +6,7 @@ import (
 
 	dataset "github.com/ONSdigital/dp-api-clients-go/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
-	"github.com/ONSdigital/log.go/log"
+	"github.com/ONSdigital/log.go/v2/log"
 )
 
 // AllEditions maps dataset and editions response to editions list page model
@@ -18,7 +18,7 @@ func AllEditions(ctx context.Context, dataset dataset.Dataset, editions []datase
 			if k == e.Edition {
 				time, err := time.Parse("2006-01-02T15:04:05Z", latestVersion)
 				if err != nil {
-					log.Event(ctx, "failed to parse release date", log.WARN, log.Error(err))
+					log.Warn(ctx, "failed to parse release date", log.FormatErrors([]error{err}))
 				} else {
 					timeF = time.Format("02 January 2006")
 				}

@@ -7,7 +7,7 @@ import (
 
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
-	"github.com/ONSdigital/log.go/log"
+	"github.com/ONSdigital/log.go/v2/log"
 	"github.com/gorilla/mux"
 )
 
@@ -26,7 +26,7 @@ func getEditions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
 	if err != nil {
-		log.Event(ctx, err.Error(), log.ERROR)
+		log.Error(ctx, err.Error(), err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -36,12 +36,12 @@ func getEditions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 		"collectionID": collectionID,
 	}
 
-	log.Event(ctx, "calling get editions", log.INFO, log.Data(logInfo))
+	log.Info(ctx, "calling get editions", log.Data(logInfo))
 
 	dataset, err := dc.GetDatasetCurrentAndNext(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
 		errMsg := fmt.Sprintf("error getting dataset from dataset API: %v", err.Error())
-		log.Event(ctx, "error getting dataset from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error getting dataset from dataset API", err, log.Data(logInfo))
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
@@ -49,7 +49,7 @@ func getEditions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 	editions, err := dc.GetEditions(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
 		errMsg := fmt.Sprintf("error getting editions from dataset API: %v", err.Error())
-		log.Event(ctx, "error getting editions from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error getting editions from dataset API", err, log.Data(logInfo))
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
@@ -73,12 +73,12 @@ func getEditions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 
 	b, err := json.Marshal(mapped)
 	if err != nil {
-		log.Event(ctx, "error marshalling editions response to json", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error marshalling editions response to json", err, log.Data(logInfo))
 		http.Error(w, "error marshalling editions response to json", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 
-	log.Event(ctx, "get editions: request successful", log.INFO, log.Data(logInfo))
+	log.Info(ctx, "get editions: request successful", log.Data(logInfo))
 }

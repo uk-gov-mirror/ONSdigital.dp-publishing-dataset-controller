@@ -7,7 +7,7 @@ import (
 
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
-	"github.com/ONSdigital/log.go/log"
+	"github.com/ONSdigital/log.go/v2/log"
 	"github.com/gorilla/mux"
 )
 
@@ -32,17 +32,17 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
 	if err != nil {
-		log.Event(ctx, err.Error(), log.ERROR)
+		log.Error(ctx, err.Error(), err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	log.Event(ctx, "calling get versions", log.INFO, log.Data(logInfo))
+	log.Info(ctx, "calling get versions", log.Data(logInfo))
 
 	dataset, err := dc.GetDatasetCurrentAndNext(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
 		errMsg := fmt.Sprintf("error getting dataset from dataset API: %v", err.Error())
-		log.Event(ctx, "error getting dataset from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error getting dataset from dataset API", err, log.Data(logInfo))
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
@@ -50,7 +50,7 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 	edition, err := dc.GetEdition(ctx, userAccessToken, "", collectionID, datasetID, editionID)
 	if err != nil {
 		errMsg := fmt.Sprintf("error getting edition from dataset API: %v", err.Error())
-		log.Event(ctx, "error getting edition from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error getting edition from dataset API", err, log.Data(logInfo))
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
@@ -58,7 +58,7 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 	versions, err := dc.GetVersionsInBatches(ctx, userAccessToken, "", "", collectionID, datasetID, editionID, batchSize, maxWorkers)
 	if err != nil {
 		errMsg := fmt.Sprintf("error getting all versions from dataset API: %v", err.Error())
-		log.Event(ctx, "error getting all versions from dataset API", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error getting all versions from dataset API", err, log.Data(logInfo))
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
@@ -67,12 +67,12 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetClient, use
 
 	b, err := json.Marshal(mapped)
 	if err != nil {
-		log.Event(ctx, "error marshalling response to json", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error marshalling response to json", err, log.Data(logInfo))
 		http.Error(w, "error marshalling response to json", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 
-	log.Event(ctx, "get versions: request successful", log.INFO, log.Data(logInfo))
+	log.Info(ctx, "get versions: request successful", log.Data(logInfo))
 }

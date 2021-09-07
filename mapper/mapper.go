@@ -12,7 +12,7 @@ import (
 	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
 	babbageclient "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
-	"github.com/ONSdigital/log.go/log"
+	"github.com/ONSdigital/log.go/v2/log"
 	"github.com/pkg/errors"
 )
 
@@ -53,7 +53,7 @@ func AllVersions(ctx context.Context, dataset dataset.Dataset, edition dataset.E
 		var timeF string
 		time, err := time.Parse("2006-01-02T15:04:05Z", v.ReleaseDate)
 		if err != nil {
-			log.Event(ctx, "failed to parse release date", log.WARN, log.Error(err))
+			log.Warn(ctx, "failed to parse release date", log.FormatErrors([]error{err}))
 		} else {
 			timeF = time.Format("02 January 2006")
 		}
