@@ -3,8 +3,8 @@ package routes
 import (
 	"net/http"
 
-	ds "github.com/ONSdigital/dp-api-clients-go/dataset"
-	zc "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	ds "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
+	zc "github.com/ONSdigital/dp-api-clients-go/v2/zebedee"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
 	bc "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/config"

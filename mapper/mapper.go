@@ -8,8 +8,8 @@ import (
 
 	"time"
 
-	dataset "github.com/ONSdigital/dp-api-clients-go/dataset"
-	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	dataset "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
+	zebedee "github.com/ONSdigital/dp-api-clients-go/v2/zebedee"
 	babbageclient "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/ONSdigital/log.go/v2/log"
@@ -134,7 +134,7 @@ func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (mo
 		ReleaseDate:   releaseDate,
 		Notices:       notices,
 		Dimensions:    v.Dimensions,
-		UsageNotes:    mapUsageNotes(d.UsageNotes),
+		UsageNotes:    mapUsageNotes(v.UsageNotes),
 		LatestChanges: mapLatestChanges(v.LatestChanges),
 
 		Title:                d.Title,

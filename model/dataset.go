@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/ONSdigital/dp-api-clients-go/dataset"
-	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
+	"github.com/ONSdigital/dp-api-clients-go/v2/dataset"
+	datasetclient "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
 )
 
 type Dataset struct {

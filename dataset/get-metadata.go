@@ -8,8 +8,8 @@ import (
 	"net/url"
 	"strings"
 
-	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
-	zebedeeclient "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	datasetclient "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
+	zebedeeclient "github.com/ONSdigital/dp-api-clients-go/v2/zebedee"
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/v2/log"
