@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ONSdigital/dp-api-clients-go/dataset"
-	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	"github.com/ONSdigital/dp-api-clients-go/v2/dataset"
+	zebedee "github.com/ONSdigital/dp-api-clients-go/v2/zebedee"
 	babbage "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	. "github.com/smartystreets/goconvey/convey"
@@ -223,7 +223,6 @@ func TestUnitMapper(t *testing.T) {
 		Title:            "fred",
 		UnitOfMeasure:    "plugh",
 		URI:              "xyzzy",
-		UsageNotes:       &mockUsageNotes,
 	}
 	mockAlerts := []dataset.Alert{
 		{
@@ -274,6 +273,7 @@ func TestUnitMapper(t *testing.T) {
 		State:         "grault",
 		Temporal:      nil,
 		Version:       1,
+		UsageNotes:    &mockUsageNotes,
 	}
 	mockDimensions = []dataset.VersionDimension{}
 

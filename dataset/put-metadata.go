@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
+	datasetclient "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/ONSdigital/log.go/v2/log"
@@ -72,7 +72,7 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 	instance.InstanceID = body.Version.ID
 	instance.Dimensions = body.Dimensions
 
-	err = dc.PutInstance(ctx, userAccessToken, "", collectionID, body.Version.ID, instance)
+	_, err = dc.PutInstance(ctx, userAccessToken, "", collectionID, body.Version.ID, instance, "")
 	if err != nil {
 		log.Error(ctx, "error updating dimensions", err, log.Data(logInfo))
 		http.Error(w, "error updating dimensions", http.StatusInternalServerError)

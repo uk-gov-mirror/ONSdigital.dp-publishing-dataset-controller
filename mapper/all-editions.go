@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	dataset "github.com/ONSdigital/dp-api-clients-go/dataset"
+	dataset "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 	"github.com/ONSdigital/log.go/v2/log"
 )

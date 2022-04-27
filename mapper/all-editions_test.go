@@ -3,7 +3,7 @@ package mapper
 import (
 	"testing"
 
-	dataset "github.com/ONSdigital/dp-api-clients-go/dataset"
+	dataset "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
 
 	. "github.com/smartystreets/goconvey/convey"

@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	//datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
-
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
 	"github.com/ONSdigital/log.go/v2/log"

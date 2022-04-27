@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
+	datasetclient "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

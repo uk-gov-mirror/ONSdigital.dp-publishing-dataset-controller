@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
+	datasetclient "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -33,8 +33,8 @@ func TestUnitPutMetadata(t *testing.T) {
 				PutVersionFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version string, v datasetclient.Version) error {
 					return nil
 				},
-				PutInstanceFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.UpdateInstance) error {
-					return nil
+				PutInstanceFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.UpdateInstance, ifMatch string) (string, error) {
+					return "", nil
 				},
 			}
 
@@ -69,8 +69,8 @@ func TestUnitPutMetadata(t *testing.T) {
 				PutVersionFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version string, v datasetclient.Version) error {
 					return nil
 				},
-				PutInstanceFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.UpdateInstance) error {
-					return nil
+				PutInstanceFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.UpdateInstance, ifMatch string) (string, error) {
+					return "", nil
 				},
 			}
 
@@ -131,8 +131,8 @@ func TestUnitPutMetadata(t *testing.T) {
 				PutVersionFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version string, v datasetclient.Version) error {
 					return nil
 				},
-				PutInstanceFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.UpdateInstance) error {
-					return nil
+				PutInstanceFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.UpdateInstance, ifMatch string) (string, error) {
+					return "", nil
 				},
 			}
 

@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	healthcheck "github.com/ONSdigital/dp-api-clients-go/health"
+	healthcheck "github.com/ONSdigital/dp-api-clients-go/v2/health"
 	health "github.com/ONSdigital/dp-healthcheck/healthcheck"
 	dphttp "github.com/ONSdigital/dp-net/http"
 	"github.com/ONSdigital/log.go/v2/log"
