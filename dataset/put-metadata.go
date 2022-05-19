@@ -5,10 +5,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
+	datasetclient "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
-	"github.com/ONSdigital/log.go/log"
+	"github.com/ONSdigital/log.go/v2/log"
 	"github.com/gorilla/mux"
 )
 
@@ -24,7 +24,7 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
 	if err != nil {
-		log.Event(ctx, err.Error(), log.ERROR)
+		log.Error(ctx, err.Error(), err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -42,28 +42,28 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		log.Event(ctx, "putMetadata endpoint: error reading body", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "putMetadata endpoint: error reading body", err, log.Data(logInfo))
 		http.Error(w, "error reading body", http.StatusBadRequest)
 		return
 	}
 
 	var body model.EditMetadata
 	if err = json.Unmarshal(b, &body); err != nil {
-		log.Event(ctx, "putMetadata endpoint: error unmarshalling body", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "putMetadata endpoint: error unmarshalling body", err, log.Data(logInfo))
 		http.Error(w, "error unmarshalling body", http.StatusBadRequest)
 		return
 	}
 
 	err = dc.PutDataset(ctx, userAccessToken, "", collectionID, datasetID, body.Dataset)
 	if err != nil {
-		log.Event(ctx, "error updating dataset", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error updating dataset", err, log.Data(logInfo))
 		http.Error(w, "error updating dataset", http.StatusInternalServerError)
 		return
 	}
 
 	err = dc.PutVersion(ctx, userAccessToken, "", collectionID, datasetID, edition, version, body.Version)
 	if err != nil {
-		log.Event(ctx, "error updating version", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error updating version", err, log.Data(logInfo))
 		http.Error(w, "error updating version", http.StatusInternalServerError)
 		return
 	}
@@ -72,28 +72,28 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 	instance.InstanceID = body.Version.ID
 	instance.Dimensions = body.Dimensions
 
-	err = dc.PutInstance(ctx, userAccessToken, "", collectionID, body.Version.ID, instance)
+	_, err = dc.PutInstance(ctx, userAccessToken, "", collectionID, body.Version.ID, instance, "")
 	if err != nil {
-		log.Event(ctx, "error updating dimensions", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error updating dimensions", err, log.Data(logInfo))
 		http.Error(w, "error updating dimensions", http.StatusInternalServerError)
 		return
 	}
 
 	err = zc.PutDatasetInCollection(ctx, userAccessToken, collectionID, "", datasetID, body.CollectionState)
 	if err != nil {
-		log.Event(ctx, "error adding dataset to collection", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error adding dataset to collection", err, log.Data(logInfo))
 		http.Error(w, "error adding dataset to collection", http.StatusInternalServerError)
 		return
 	}
 
 	err = zc.PutDatasetVersionInCollection(ctx, userAccessToken, collectionID, "", datasetID, edition, version, body.CollectionState)
 	if err != nil {
-		log.Event(ctx, "error adding version to collection", log.ERROR, log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "error adding version to collection", err, log.Data(logInfo))
 		http.Error(w, "error adding version to collection", http.StatusInternalServerError)
 	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
 
-	log.Event(ctx, "put metadata: request successful", log.INFO, log.Data(logInfo))
+	log.Info(ctx, "put metadata: request successful", log.Data(logInfo))
 }

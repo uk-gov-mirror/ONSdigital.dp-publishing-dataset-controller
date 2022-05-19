@@ -8,11 +8,11 @@ import (
 
 	"time"
 
-	dataset "github.com/ONSdigital/dp-api-clients-go/dataset"
-	zebedee "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	dataset "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
+	zebedee "github.com/ONSdigital/dp-api-clients-go/v2/zebedee"
 	babbageclient "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/model"
-	"github.com/ONSdigital/log.go/log"
+	"github.com/ONSdigital/log.go/v2/log"
 	"github.com/pkg/errors"
 )
 
@@ -53,7 +53,7 @@ func AllVersions(ctx context.Context, dataset dataset.Dataset, edition dataset.E
 		var timeF string
 		time, err := time.Parse("2006-01-02T15:04:05Z", v.ReleaseDate)
 		if err != nil {
-			log.Event(ctx, "failed to parse release date", log.WARN, log.Error(err))
+			log.Warn(ctx, "failed to parse release date", log.FormatErrors([]error{err}))
 		} else {
 			timeF = time.Format("02 January 2006")
 		}
@@ -134,7 +134,7 @@ func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (mo
 		ReleaseDate:   releaseDate,
 		Notices:       notices,
 		Dimensions:    v.Dimensions,
-		UsageNotes:    mapUsageNotes(d.UsageNotes),
+		UsageNotes:    mapUsageNotes(v.UsageNotes),
 		LatestChanges: mapLatestChanges(v.LatestChanges),
 
 		Title:                d.Title,

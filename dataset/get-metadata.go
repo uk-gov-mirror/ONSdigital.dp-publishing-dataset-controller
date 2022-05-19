@@ -8,11 +8,11 @@ import (
 	"net/url"
 	"strings"
 
-	datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
-	zebedeeclient "github.com/ONSdigital/dp-api-clients-go/zebedee"
+	datasetclient "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
+	zebedeeclient "github.com/ONSdigital/dp-api-clients-go/v2/zebedee"
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
-	"github.com/ONSdigital/log.go/log"
+	"github.com/ONSdigital/log.go/v2/log"
 	"github.com/gorilla/mux"
 )
 
@@ -37,7 +37,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
 	if err != nil {
-		log.Event(ctx, err.Error(), log.ERROR)
+		log.Error(ctx, err.Error(), err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -55,7 +55,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 
 	v, err := dc.GetVersion(ctx, userAccessToken, "", "", collectionID, datasetID, edition, version)
 	if err != nil {
-		log.Event(ctx, "failed Get version details", log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "failed Get version details", err, log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
@@ -64,7 +64,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	// on the current doc
 	d, err := dc.GetDatasetCurrentAndNext(ctx, userAccessToken, "", collectionID, datasetID)
 	if err != nil {
-		log.Event(ctx, "failed Get dataset details", log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "failed Get dataset details", err, log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
@@ -80,7 +80,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 
 	c, err := getCollectionDetails(ctx, zc, userAccessToken, d.Next.CollectionID)
 	if err != nil {
-		log.Event(ctx, "failed Get collection details", log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "failed Get collection details", err, log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
@@ -89,7 +89,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 
 	b, err := json.Marshal(p)
 	if err != nil {
-		log.Event(ctx, "failed marshalling page into bytes", log.Error(err))
+		log.Error(ctx, "failed marshalling page into bytes", err)
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
@@ -97,7 +97,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 
 	_, err = w.Write(b)
 	if err != nil {
-		log.Event(ctx, "failed to write bytes for http response", log.Error(err), log.Data(logInfo))
+		log.Error(ctx, "failed to write bytes for http response", err, log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
 		return
 	}
@@ -119,13 +119,13 @@ func getCollectionDetails(ctx context.Context, zc ZebedeeClient, userAccessToken
 func getLatestPublishedVersionDimensions(ctx context.Context, w http.ResponseWriter, req *http.Request, dc DatasetClient, userAccessToken, collectionID, latestVersionURL string) []datasetclient.VersionDimension {
 	datasetID, editionID, versionID, err := getIDsFromURL(latestVersionURL)
 	if err != nil {
-		log.Event(ctx, "failed to parse latest version url", log.Error(err))
+		log.Error(ctx, "failed to parse latest version url", err)
 		return []datasetclient.VersionDimension{}
 	}
 
 	latestPublishedVersion, err := dc.GetVersion(ctx, userAccessToken, "", "", collectionID, datasetID, editionID, versionID)
 	if err != nil {
-		log.Event(ctx, "failed Get latest published version details", log.Error(err))
+		log.Error(ctx, "failed Get latest published version details", err)
 		setErrorStatusCode(req, w, err, datasetID)
 		return []datasetclient.VersionDimension{}
 	}
@@ -156,6 +156,6 @@ func setErrorStatusCode(req *http.Request, w http.ResponseWriter, err error, dat
 			status = err.Code()
 		}
 	}
-	log.Event(req.Context(), "client error", log.ERROR, log.Error(err), log.Data{"setting-response-status": status, "datasetID": datasetID})
+	log.Error(req.Context(), "client error", err, log.Data{"setting-response-status": status, "datasetID": datasetID})
 	w.WriteHeader(status)
 }

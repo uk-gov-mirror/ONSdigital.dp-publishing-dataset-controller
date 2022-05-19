@@ -7,15 +7,15 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ONSdigital/dp-api-clients-go/dataset"
-	"github.com/ONSdigital/dp-api-clients-go/health"
-	"github.com/ONSdigital/dp-api-clients-go/zebedee"
+	"github.com/ONSdigital/dp-api-clients-go/v2/dataset"
+	"github.com/ONSdigital/dp-api-clients-go/v2/health"
+	"github.com/ONSdigital/dp-api-clients-go/v2/zebedee"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
 	dpnethttp "github.com/ONSdigital/dp-net/http"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/config"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/routes"
-	"github.com/ONSdigital/log.go/log"
+	"github.com/ONSdigital/log.go/v2/log"
 	"github.com/gorilla/mux"
 )
 
@@ -39,10 +39,10 @@ func main() {
 
 	cfg, err := config.Get()
 	if err != nil {
-		log.Event(ctx, "error getting configuration", log.FATAL, log.Error(err))
+		log.Fatal(ctx, "error getting configuration", err)
 		os.Exit(1)
 	}
-	log.Event(ctx, "config on startup", log.INFO, log.Data{"config": cfg})
+	log.Info(ctx, "config on startup", log.Data{"config": cfg})
 
 	versionInfo, err := healthcheck.NewVersionInfo(
 		BuildTime,
@@ -50,7 +50,7 @@ func main() {
 		Version,
 	)
 	if err != nil {
-		log.Event(ctx, "failed to create service version information", log.FATAL, log.Error(err))
+		log.Fatal(ctx, "failed to create service version information", err)
 		os.Exit(1)
 	}
 
@@ -61,7 +61,7 @@ func main() {
 
 	hc := healthcheck.New(versionInfo, cfg.HealthCheckCritialTimeout, cfg.HealthCheckInterval)
 	if err = hc.AddCheck("API router", apiRouterCli.Checker); err != nil {
-		log.Event(ctx, "failed to add dataset API checker", log.FATAL, log.Error(err))
+		log.Fatal(ctx, "failed to add dataset API checker", err)
 		os.Exit(1)
 	}
 
@@ -72,7 +72,7 @@ func main() {
 
 	go func() {
 		if err := s.ListenAndServe(); err != nil {
-			log.Event(ctx, "error starting http server", log.ERROR, log.Error(err))
+			log.Error(ctx, "error starting http server", err)
 			return
 		}
 	}()
@@ -82,20 +82,20 @@ func main() {
 	// Block until a fatal error occurs
 	select {
 	case signal := <-signals:
-		log.Event(ctx, "quitting after os signal received", log.INFO, log.Data{"signal": signal})
+		log.Info(ctx, "quitting after os signal received", log.Data{"signal": signal})
 	}
 
-	log.Event(ctx, fmt.Sprintf("shutdown with timeout: %s", cfg.GracefulShutdownTimeout), log.INFO)
+	log.Info(ctx, fmt.Sprintf("shutdown with timeout: %s", cfg.GracefulShutdownTimeout))
 
 	// give the app `Timeout` seconds to close gracefully before killing it.
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.GracefulShutdownTimeout)
 
 	go func() {
-		log.Event(ctx, "stop health checkers", log.INFO)
+		log.Info(ctx, "stop health checkers")
 		hc.Stop()
 
 		if err := s.Shutdown(ctx); err != nil {
-			log.Event(ctx, "failed to gracefully shutdown http server", log.ERROR, log.Error(err))
+			log.Error(ctx, "failed to gracefully shutdown http server", err)
 		}
 
 		cancel() // stop timer
@@ -104,9 +104,9 @@ func main() {
 	// wait for timeout or success (via cancel)
 	<-ctx.Done()
 	if ctx.Err() == context.DeadlineExceeded {
-		log.Event(ctx, "context deadline exceeded", log.WARN, log.Error(ctx.Err()))
+		log.Warn(ctx, "context deadline exceeded", log.FormatErrors([]error{ctx.Err()}))
 	} else {
-		log.Event(ctx, "graceful shutdown complete", log.INFO, log.Data{"context": ctx.Err()})
+		log.Info(ctx, "graceful shutdown complete", log.Data{"context": ctx.Err()})
 	}
 
 	os.Exit(0)

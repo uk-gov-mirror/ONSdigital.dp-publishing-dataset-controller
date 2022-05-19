@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	//datasetclient "github.com/ONSdigital/dp-api-clients-go/dataset"
-
 	dphandlers "github.com/ONSdigital/dp-net/handlers"
 	"github.com/ONSdigital/dp-publishing-dataset-controller/mapper"
-	"github.com/ONSdigital/log.go/log"
+	"github.com/ONSdigital/log.go/v2/log"
 )
 
 // GetAll returns a mapped list of all datasets
@@ -23,16 +21,16 @@ func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAcce
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
 	if err != nil {
-		log.Event(ctx, err.Error(), log.ERROR)
+		log.Error(ctx, err.Error(), err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	log.Event(ctx, "calling get datasets", log.INFO)
+	log.Info(ctx, "calling get datasets")
 
 	datasets, err := dc.GetDatasetsInBatches(ctx, userAccessToken, "", collectionID, batchSize, maxWorkers)
 	if err != nil {
-		log.Event(ctx, "error getting all datasets from dataset API", log.ERROR, log.Error(err))
+		log.Error(ctx, "error getting all datasets from dataset API", err)
 		http.Error(w, "error getting all datasets from dataset API", http.StatusInternalServerError)
 		return
 	}
@@ -41,12 +39,12 @@ func getAll(w http.ResponseWriter, req *http.Request, dc DatasetClient, userAcce
 
 	b, err := json.Marshal(mapped)
 	if err != nil {
-		log.Event(ctx, "error marshalling response to json", log.ERROR, log.Error(err))
+		log.Error(ctx, "error marshalling response to json", err)
 		http.Error(w, "error marshalling response to json", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 
-	log.Event(ctx, "get all: request successful", log.INFO)
+	log.Info(ctx, "get all: request successful")
 }
