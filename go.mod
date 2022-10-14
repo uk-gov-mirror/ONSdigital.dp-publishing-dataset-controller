@@ -5,8 +5,11 @@ go 1.18
 // fixes vulnerabilities in github.com/hashicorp/consul/api@v1.1.0 and github.com/hashicorp/consul/sdk@v0.1.1 dependencies
 replace github.com/spf13/cobra => github.com/spf13/cobra v1.4.0
 
+// fixes vulnerabilities in golang.org/x/text@v0.3.7 dependency
+replace golang.org/x/text => golang.org/x/text v0.3.8
+
 require (
-	github.com/ONSdigital/dp-api-clients-go/v2 v2.183.0
+	github.com/ONSdigital/dp-api-clients-go/v2 v2.186.0
 	github.com/ONSdigital/dp-healthcheck v1.3.0
 	github.com/ONSdigital/dp-net v1.5.0
 	github.com/ONSdigital/log.go/v2 v2.2.0
