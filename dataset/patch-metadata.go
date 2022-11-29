@@ -52,7 +52,7 @@ func patchMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, u
 		return
 	}
 
-	err = dc.PatchtVersion(ctx, userAccessToken, "", collectionID, datasetID, edition, version, ifMatch, req.Body)
+	err = dc.PatchVersion(ctx, userAccessToken, "", collectionID, datasetID, edition, version, ifMatch, req.Body)
 	if err != nil {
 		log.Error(ctx, "error updating (patch) version", err, log.Data(logInfo))
 		http.Error(w, "error updating (patch) version", http.StatusInternalServerError)
