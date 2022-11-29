@@ -22,4 +22,5 @@ func Init(router *mux.Router, cfg *config.Config, hc healthcheck.HealthCheck, dc
 	router.StrictSlash(true).Path("/datasets/{datasetID}/editions/{editionID}/versions").HandlerFunc(dataset.GetVersions(dc, cfg.DatasetsBatchSize, cfg.DatasetsBatchWorkers)).Methods(http.MethodGet)
 	router.StrictSlash(true).Path("/datasets/{datasetID}/editions/{editionID}/versions/{versionID}").HandlerFunc(dataset.GetMetadataHandler(dc, zc)).Methods(http.MethodGet)
 	router.StrictSlash(true).Path("/datasets/{datasetID}/editions/{editionID}/versions/{versionID}").HandlerFunc(dataset.PutMetadata(dc, zc)).Methods(http.MethodPut)
+	router.StrictSlash(true).Path("/datasets/{datasetID}/editions/{editionID}/versions/{versionID}").HandlerFunc(dataset.PatchMetadata(dc)).Methods(http.MethodPatch)
 }
