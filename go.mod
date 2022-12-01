@@ -9,9 +9,10 @@ replace github.com/spf13/cobra => github.com/spf13/cobra v1.4.0
 replace golang.org/x/text => golang.org/x/text v0.3.8
 
 require (
-	github.com/ONSdigital/dp-api-clients-go/v2 v2.202.1-0.20221129171250-236bb9e699db
+	github.com/ONSdigital/dp-api-clients-go/v2 v2.202.1-0.20221201143239-153637934dc3
 	github.com/ONSdigital/dp-healthcheck v1.3.0
 	github.com/ONSdigital/dp-net v1.5.0
+	github.com/ONSdigital/dp-net/v2 v2.4.0
 	github.com/ONSdigital/log.go/v2 v2.2.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.0
@@ -22,7 +23,6 @@ require (
 
 require (
 	github.com/ONSdigital/dp-api-clients-go v1.43.0 // indirect
-	github.com/ONSdigital/dp-net/v2 v2.4.0 // indirect
 	github.com/aws/aws-sdk-go v1.44.76 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect

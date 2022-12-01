@@ -2,11 +2,10 @@ package dataset
 
 import (
 	"context"
-	"io"
-
 	datasetclient "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
 	zebedeeclient "github.com/ONSdigital/dp-api-clients-go/v2/zebedee"
 	babbageclient "github.com/ONSdigital/dp-publishing-dataset-controller/clients/topics"
+	dprequest "github.com/ONSdigital/dp-net/v2/request"
 )
 
 //go:generate moq -out mocks_test.go -pkg dataset . DatasetClient ZebedeeClient BabbageClient
@@ -23,8 +22,8 @@ type DatasetClient interface {
 	PutDataset(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string, d datasetclient.DatasetDetails) error
 	PutVersion(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version string, v datasetclient.Version) error
 	PutInstance(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, instanceID string, i datasetclient.UpdateInstance, ifMatch string) (eTag string, err error)
-	PatchDataset(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, ifMatch string, requestBody io.ReadCloser) error
-	PatchVersion(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version, ifMatch string, requestBody io.ReadCloser) error
+	PatchDataset(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, ifMatch string, datasetPatches []dprequest.Patch) error
+	PatchVersion(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID, edition, version, ifMatch string, datasetVersionPatches []dprequest.Patch) error
 }
 
 type ZebedeeClient interface {
