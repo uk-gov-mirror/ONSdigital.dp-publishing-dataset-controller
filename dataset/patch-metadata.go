@@ -1,6 +1,7 @@
 package dataset
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -82,6 +83,13 @@ func patchMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, u
 		}
 	}
 
+	allPatches, err := json.Marshal(patches)
+	if err != nil {
+		log.Error(ctx, "error marshalling patch body to json", err)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
+	w.Write(allPatches)
 	log.Info(ctx, "patch metadata: request successful", log.Data(logInfo))
 }
