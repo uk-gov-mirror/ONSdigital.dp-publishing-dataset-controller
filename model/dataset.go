@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/ONSdigital/dp-api-clients-go/v2/dataset"
 	datasetclient "github.com/ONSdigital/dp-api-clients-go/v2/dataset"
+	dprequest "github.com/ONSdigital/dp-net/v2/request"
 )
 
 type Dataset struct {
@@ -125,4 +126,10 @@ func (d Dataset) GetLabel() string {
 
 type Topics struct {
 	Title string `json:"title"`
+}
+
+type UpdateMetadata struct {
+	Patches         []dprequest.Patch `json:"patches"`
+	CollectionID    string            `json:"collection_id"`
+	CollectionState string            `json:"collection_state"`
 }
