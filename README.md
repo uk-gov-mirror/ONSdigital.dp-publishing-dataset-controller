@@ -24,8 +24,10 @@ make debug
 | Environment variable           | Default                           | Description
 | ------------------------------ | --------------------------------- | -----------
 | BIND_ADDR                      | :24000                            | The host and port to bind to
-| DATASET_API_URL                | http://localhost:22000            | The host name for [Dataset API](https://github.com/ONSdigital/dp-dataset-api)
-| ZEBEDEE_URL                    | http://localhost:8081             | The host name for [Zebedee](https://github.com/ONSdigital/zebedee)
+| API_ROUTER_URL                 | http://localhost:23200/v1         | The URL of the [dp-api-router](https://github.com/ONSdigital/dp-api-router)
+| BABBAGE_URL                    | http://localhost:8080             | The URL for [Babbage](https://github.com/ONSdigital/babbage)
+| DATASET_BATCH_SIZE             | 100                               | Size of the batches, used for pagination
+| DATASET_BATCH_WORKERS          | 10                                | Number of batch workers, used for pagination
 | GRACEFUL_SHUTDOWN_TIMEOUT      | 5s                                | The graceful shutdown timeout in seconds
 | HEALTHCHECK_INTERVAL           | 30s                               | Healthcheck interval in seconds
 | HEALTHCHECK_CRITICAL_TIMEOUT   | 90s                               | Healthcheck timeout in seconds
