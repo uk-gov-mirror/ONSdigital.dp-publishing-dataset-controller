@@ -141,165 +141,6 @@ func TestUnitMapper(t *testing.T) {
 		So(len(mapped), ShouldEqual, 4)
 	})
 
-	mockContacts := []dataset.Contact{
-		{
-			Name:      "foo",
-			Telephone: "Bar",
-			Email:     "bAz",
-		},
-		{
-			Name:      "bad-foo",
-			Telephone: "bad-Bar",
-			Email:     "bad-bAz",
-		},
-	}
-	mockMethodology := []dataset.Methodology{
-		{
-			Description: "foo",
-			URL:         "Bar",
-			Title:       "bAz",
-		},
-		{
-			Description: "qux",
-			URL:         "quux",
-			Title:       "grault",
-		},
-	}
-	mockPublications := []dataset.Publication{
-		{
-			Description: "Bar",
-			URL:         "bAz",
-			Title:       "foo",
-		},
-		{
-			Description: "quux",
-			URL:         "grault",
-			Title:       "qux",
-		},
-	}
-	mockRelatedDataset := []dataset.RelatedDataset{
-		{
-			URL:   "foo",
-			Title: "Bar",
-		},
-		{
-			URL:   "bAz",
-			Title: "qux",
-		},
-	}
-	mockKeywords := []string{"foo", "Bar", "bAz"}
-	mockUsageNotes := []dataset.UsageNote{
-		{
-			Title: "foo",
-			Note:  "Bar",
-		},
-		{
-			Title: "bAz",
-			Note:  "qux",
-		},
-	}
-	mockDatasetDetails := &dataset.DatasetDetails{
-		ID:                "foo",
-		CollectionID:      "Bar",
-		Contacts:          &mockContacts,
-		Description:       "bAz",
-		Keywords:          &mockKeywords,
-		License:           "qux",
-		Links:             dataset.Links{},
-		Methodologies:     &mockMethodology,
-		NationalStatistic: false,
-		NextRelease:       "quux",
-		Publications:      &mockPublications,
-		Publisher:         &dataset.Publisher{},
-		QMI: dataset.Publication{
-			Description: "foo",
-			URL:         "Bar",
-			Title:       "bAz",
-		},
-		RelatedDatasets:  &mockRelatedDataset,
-		ReleaseFrequency: "grault",
-		State:            "garply",
-		Theme:            "waldo",
-		Title:            "fred",
-		UnitOfMeasure:    "plugh",
-		URI:              "xyzzy",
-	}
-	mockAlerts := []dataset.Alert{
-		{
-			Date:        "2020-02-04T11:05:06.000Z",
-			Description: "Bar",
-			Type:        "bAz",
-		},
-		{
-			Date:        "2001-04-02T23:04:02.000Z",
-			Description: "quux",
-			Type:        "grault",
-		},
-	}
-	mockDimensions := []dataset.VersionDimension{
-		{
-			Links: dataset.Links{},
-			Label: "bAz",
-		},
-		{
-			Links: dataset.Links{},
-			Label: "plaugh",
-		},
-	}
-
-	mockLatestChanges := []dataset.Change{
-		{
-			Description: "foo",
-			Name:        "Bar",
-			Type:        "bAz",
-		},
-		{
-			Description: "qux",
-			Name:        "quux",
-			Type:        "grault",
-		},
-	}
-	mockVersion := dataset.Version{
-		Alerts:        &mockAlerts,
-		CollectionID:  "foo",
-		Downloads:     nil,
-		Edition:       "Bar",
-		Dimensions:    mockDimensions,
-		ID:            "bAz",
-		InstanceID:    "qux",
-		LatestChanges: mockLatestChanges,
-		Links:         dataset.Links{},
-		ReleaseDate:   "quux",
-		State:         "grault",
-		Temporal:      nil,
-		Version:       1,
-		UsageNotes:    &mockUsageNotes,
-	}
-	mockDimensions = []dataset.VersionDimension{}
-
-	mockCollection := zebedee.Collection{
-		ID: "test-collection",
-		Datasets: []zebedee.CollectionItem{
-			{
-				ID:    "foo",
-				State: "inProgress",
-			},
-		},
-	}
-
-	expectedEditMetadata := model.EditMetadata{
-		Dataset:         *mockDatasetDetails,
-		Version:         mockVersion,
-		Dimensions:      mockDimensions,
-		CollectionID:    "test-collection",
-		CollectionState: "inProgress",
-	}
-
-	Convey("test EditMetadata", t, func() {
-		outcome := EditMetadata(mockDatasetDetails, mockVersion, mockDimensions, mockCollection)
-		So(outcome, ShouldResemble, expectedEditMetadata)
-	})
-
 	mockTopics := babbage.TopicsResult{
 		Topics: babbage.Topic{
 			Results: []babbage.Result{{
@@ -377,5 +218,215 @@ func TestUnitMapper(t *testing.T) {
 			mapped := AllVersions(ctx, mockedDataset, mockedEdition, mockedAllVersions)
 			So(mapped, ShouldResemble, expectedVersionsPage)
 		})
+	})
+}
+
+func TestMetadata(t *testing.T) {
+	Convey("Given an EditMetadata object", t, func() {
+		mockDatasetDetails := &dataset.DatasetDetails{
+			ID:           "foo",
+			CollectionID: "Bar",
+			Contacts: &[]dataset.Contact{
+				{
+					Name:      "foo",
+					Telephone: "Bar",
+					Email:     "bAz",
+				},
+				{
+					Name:      "bad-foo",
+					Telephone: "bad-Bar",
+					Email:     "bad-bAz",
+				},
+			},
+			Description: "bAz",
+			Keywords:    &[]string{"foo", "Bar", "bAz"},
+			License:     "qux",
+			Links:       dataset.Links{},
+			Methodologies: &[]dataset.Methodology{
+				{
+					Description: "foo",
+					URL:         "Bar",
+					Title:       "bAz",
+				},
+				{
+					Description: "qux",
+					URL:         "quux",
+					Title:       "grault",
+				},
+			},
+			NationalStatistic: false,
+			NextRelease:       "quux",
+			Publications: &[]dataset.Publication{
+				{
+					Description: "Bar",
+					URL:         "bAz",
+					Title:       "foo",
+				},
+				{
+					Description: "quux",
+					URL:         "grault",
+					Title:       "qux",
+				},
+			},
+			Publisher: &dataset.Publisher{},
+			QMI: dataset.Publication{
+				Description: "foo",
+				URL:         "Bar",
+				Title:       "bAz",
+			},
+			RelatedDatasets: &[]dataset.RelatedDataset{
+				{
+					URL:   "foo",
+					Title: "Bar",
+				},
+				{
+					URL:   "bAz",
+					Title: "qux",
+				},
+			},
+			ReleaseFrequency: "grault",
+			State:            "garply",
+			Theme:            "waldo",
+			Title:            "fred",
+			UnitOfMeasure:    "plugh",
+			URI:              "xyzzy",
+			CanonicalTopic:   "1234",
+			Subtopics:        []string{"5678", "9012"},
+			RelatedContent: &[]dataset.GeneralDetails{
+				{
+					Description: "foo",
+					HRef:        "Bar",
+					Title:       "baz",
+				},
+				{
+					Description: "foo",
+					HRef:        "Bar",
+					Title:       "baz",
+				},
+			},
+			Survey: "census",
+		}
+		mockDimensions := []dataset.VersionDimension{
+			{
+				Links: dataset.Links{},
+				Label: "bAz",
+			},
+			{
+				Links: dataset.Links{},
+				Label: "plaugh",
+			},
+		}
+
+		mockVersion := dataset.Version{
+			Alerts: &[]dataset.Alert{
+				{
+					Date:        "2020-02-04T11:05:06.000Z",
+					Description: "Bar",
+					Type:        "bAz",
+				},
+				{
+					Date:        "2001-04-02T23:04:02.000Z",
+					Description: "quux",
+					Type:        "grault",
+				},
+			},
+			CollectionID: "foo",
+			Downloads:    nil,
+			Edition:      "Bar",
+			Dimensions:   mockDimensions,
+			ID:           "bAz",
+			InstanceID:   "qux",
+			LatestChanges: []dataset.Change{
+				{
+					Description: "foo",
+					Name:        "Bar",
+					Type:        "bAz",
+				},
+				{
+					Description: "qux",
+					Name:        "quux",
+					Type:        "grault",
+				},
+			},
+			Links:       dataset.Links{},
+			ReleaseDate: "grault",
+			State:       "grault",
+			Temporal:    nil,
+			Version:     1,
+			UsageNotes: &[]dataset.UsageNote{
+				{
+					Title: "foo",
+					Note:  "Bar",
+				},
+				{
+					Title: "bAz",
+					Note:  "qux",
+				},
+			},
+		}
+
+		datasetCollectionItem := zebedee.CollectionItem{
+			ID:           mockDatasetDetails.ID,
+			State:        "inProgress",
+			LastEditedBy: "User",
+		}
+		mockCollection := zebedee.Collection{
+			ID: "test-collection",
+			Datasets: []zebedee.CollectionItem{
+				{
+					ID:           "other dataset id",
+					State:        "reviewd",
+					LastEditedBy: "Other user",
+				},
+				datasetCollectionItem,
+			},
+		}
+
+		editMetadata := model.EditMetadata{
+			Dataset:                *mockDatasetDetails,
+			Version:                mockVersion,
+			Dimensions:             mockDimensions,
+			CollectionID:           mockCollection.ID,
+			CollectionState:        datasetCollectionItem.State,
+			CollectionLastEditedBy: datasetCollectionItem.LastEditedBy,
+		}
+
+		Convey("When we call EditMetadata", func() {
+			outcome := EditMetadata(mockDatasetDetails, mockVersion, mockDimensions, mockCollection)
+			Convey("Then it returns an object with all the EditMetadata fields populated", func() {
+				So(outcome, ShouldResemble, editMetadata)
+			})
+
+		})
+		Convey("When we call PutMetadata", func() {
+			editableMetadataObj := PutMetadata(editMetadata)
+
+			Convey("Then it returns an object with all the editable metadata fields populated", func() {
+				So(editableMetadataObj.Description, ShouldEqual, editMetadata.Dataset.Description)
+				So(editableMetadataObj.Keywords, ShouldResemble, *editMetadata.Dataset.Keywords)
+				So(editableMetadataObj.Title, ShouldEqual, editMetadata.Dataset.Title)
+				So(editableMetadataObj.UnitOfMeasure, ShouldEqual, editMetadata.Dataset.UnitOfMeasure)
+				So(editableMetadataObj.Contacts, ShouldResemble, *editMetadata.Dataset.Contacts)
+				So(editableMetadataObj.QMI, ShouldResemble, &editMetadata.Dataset.QMI)
+				So(editableMetadataObj.RelatedContent, ShouldResemble, *editMetadata.Dataset.RelatedContent)
+				So(editableMetadataObj.CanonicalTopic, ShouldEqual, editMetadata.Dataset.CanonicalTopic)
+				So(editableMetadataObj.Subtopics, ShouldResemble, editMetadata.Dataset.Subtopics)
+				So(editableMetadataObj.License, ShouldResemble, editMetadata.Dataset.License)
+				So(editableMetadataObj.Methodologies, ShouldResemble, *editMetadata.Dataset.Methodologies)
+				So(editableMetadataObj.NationalStatistic, ShouldResemble, &editMetadata.Dataset.NationalStatistic)
+				So(editableMetadataObj.NextRelease, ShouldResemble, editMetadata.Dataset.NextRelease)
+				So(editableMetadataObj.Publications, ShouldResemble, *editMetadata.Dataset.Publications)
+				So(editableMetadataObj.RelatedDatasets, ShouldResemble, *editMetadata.Dataset.RelatedDatasets)
+				So(editableMetadataObj.ReleaseFrequency, ShouldResemble, editMetadata.Dataset.ReleaseFrequency)
+				So(editableMetadataObj.Survey, ShouldEqual, editMetadata.Dataset.Survey)
+
+				So(editableMetadataObj.Dimensions, ShouldResemble, editMetadata.Version.Dimensions)
+				So(editableMetadataObj.ReleaseDate, ShouldEqual, editMetadata.Version.ReleaseDate)
+				So(editableMetadataObj.Alerts, ShouldEqual, editMetadata.Version.Alerts)
+				So(editableMetadataObj.LatestChanges, ShouldResemble, &editMetadata.Version.LatestChanges)
+				So(editableMetadataObj.UsageNotes, ShouldEqual, editMetadata.Version.UsageNotes)
+			})
+		})
+
 	})
 }

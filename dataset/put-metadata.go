@@ -100,6 +100,8 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 }
 
 // PutEditableMetadata updates a given list of metadata fields, agreed as being editable for both a dataset and a version object
+// This new endpoint makes an unique call to the dataset api updating only the relevant metadata fields in a transactional way
+// It also calls zebedee to update the collection
 func PutEditableMetadata(dc DatasetClient, zc ZebedeeClient) http.HandlerFunc {
 	return dphandlers.ControllerHandler(func(w http.ResponseWriter, r *http.Request, lang, collectionID, accessToken string) {
 		putEditableMetadata(w, r, dc, zc, accessToken, collectionID, lang)

@@ -130,7 +130,7 @@ func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (mo
 	keywordsString := ""
 	if d.Keywords != nil {
 		keywords := *d.Keywords
-		keywordsString = fmt.Sprintf(strings.Join(keywords, ", "))
+		keywordsString = fmt.Sprint(strings.Join(keywords, ", "))
 	}
 
 	relatedContent := mapRelatedContent(d.RelatedDatasets, d.Methodologies, d.Publications)
