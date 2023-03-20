@@ -98,6 +98,34 @@ func EditMetadata(d *dataset.DatasetDetails, v dataset.Version, dim []dataset.Ve
 
 }
 
+// PutMetadata transform an EditMetadata object to the EditableMetadata as expected by dataset api
+func PutMetadata(m model.EditMetadata) dataset.EditableMetadata {
+	return dataset.EditableMetadata{
+		Alerts:            m.Version.Alerts,
+		CanonicalTopic:    m.Dataset.CanonicalTopic,
+		Contacts:          *m.Dataset.Contacts,
+		Description:       m.Dataset.Description,
+		Dimensions:        m.Version.Dimensions,
+		Keywords:          *m.Dataset.Keywords,
+		LatestChanges:     &m.Version.LatestChanges,
+		License:           m.Dataset.License,
+		Methodologies:     *m.Dataset.Methodologies,
+		NationalStatistic: &m.Dataset.NationalStatistic,
+		NextRelease:       m.Dataset.NextRelease,
+		Publications:      *m.Dataset.Publications,
+		QMI:               &m.Dataset.QMI,
+		RelatedDatasets:   *m.Dataset.RelatedDatasets,
+		ReleaseDate:       m.Version.ReleaseDate,
+		ReleaseFrequency:  m.Dataset.ReleaseFrequency,
+		Subtopics:         m.Dataset.Subtopics,
+		Survey:            m.Dataset.Survey,
+		Title:             m.Dataset.Title,
+		UnitOfMeasure:     m.Dataset.UnitOfMeasure,
+		UsageNotes:        m.Version.UsageNotes,
+		RelatedContent:    *m.Dataset.RelatedContent,
+	}
+}
+
 func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (model.EditVersionMetaData, error) {
 	keywordsString := ""
 	if d.Keywords != nil {
