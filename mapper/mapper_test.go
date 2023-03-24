@@ -222,7 +222,7 @@ func TestUnitMapper(t *testing.T) {
 }
 
 func TestMetadata(t *testing.T) {
-	Convey("Given an EditMetadata object", t, func() {
+	Convey("Given a dataset and version objects", t, func() {
 		mockDatasetDetails := &dataset.DatasetDetails{
 			ID:           "foo",
 			CollectionID: "Bar",
@@ -365,66 +365,74 @@ func TestMetadata(t *testing.T) {
 			},
 		}
 
-		datasetCollectionItem := zebedee.CollectionItem{
-			ID:           mockDatasetDetails.ID,
-			State:        "inProgress",
-			LastEditedBy: "User",
-		}
-		mockCollection := zebedee.Collection{
-			ID: "test-collection",
-			Datasets: []zebedee.CollectionItem{
-				{
-					ID:           "other dataset id",
-					State:        "reviewd",
-					LastEditedBy: "Other user",
+		Convey("And a zebedee collection", func() {
+
+			datasetCollectionItem := zebedee.CollectionItem{
+				ID:           mockDatasetDetails.ID,
+				State:        "inProgress",
+				LastEditedBy: "User",
+			}
+			mockCollection := zebedee.Collection{
+				ID: "test-collection",
+				Datasets: []zebedee.CollectionItem{
+					{
+						ID:           "other dataset id",
+						State:        "reviewd",
+						LastEditedBy: "Other user",
+					},
+					datasetCollectionItem,
 				},
-				datasetCollectionItem,
-			},
-		}
-
-		editMetadata := model.EditMetadata{
-			Dataset:                *mockDatasetDetails,
-			Version:                mockVersion,
-			Dimensions:             mockDimensions,
-			CollectionID:           mockCollection.ID,
-			CollectionState:        datasetCollectionItem.State,
-			CollectionLastEditedBy: datasetCollectionItem.LastEditedBy,
-		}
-
-		Convey("When we call EditMetadata", func() {
-			outcome := EditMetadata(mockDatasetDetails, mockVersion, mockDimensions, mockCollection)
-			Convey("Then it returns an object with all the EditMetadata fields populated", func() {
-				So(outcome, ShouldResemble, editMetadata)
+			}
+			Convey("When we call EditMetadata", func() {
+				outcome := EditMetadata(mockDatasetDetails, mockVersion, mockDimensions, mockCollection)
+				Convey("Then it returns an object with all the EditMetadata fields populated", func() {
+					expectedEditMetadata := model.EditMetadata{
+						Dataset:                *mockDatasetDetails,
+						Version:                mockVersion,
+						Dimensions:             mockDimensions,
+						CollectionID:           mockCollection.ID,
+						CollectionState:        datasetCollectionItem.State,
+						CollectionLastEditedBy: datasetCollectionItem.LastEditedBy,
+					}
+					So(outcome, ShouldResemble, expectedEditMetadata)
+				})
 			})
-
 		})
-		Convey("When we call PutMetadata", func() {
-			editableMetadataObj := PutMetadata(editMetadata)
 
-			Convey("Then it returns an object with all the editable metadata fields populated", func() {
-				So(editableMetadataObj.Description, ShouldEqual, editMetadata.Dataset.Description)
-				So(editableMetadataObj.Keywords, ShouldResemble, *editMetadata.Dataset.Keywords)
-				So(editableMetadataObj.Title, ShouldEqual, editMetadata.Dataset.Title)
-				So(editableMetadataObj.UnitOfMeasure, ShouldEqual, editMetadata.Dataset.UnitOfMeasure)
-				So(editableMetadataObj.Contacts, ShouldResemble, *editMetadata.Dataset.Contacts)
-				So(editableMetadataObj.QMI, ShouldResemble, &editMetadata.Dataset.QMI)
-				So(editableMetadataObj.RelatedContent, ShouldResemble, *editMetadata.Dataset.RelatedContent)
-				So(editableMetadataObj.CanonicalTopic, ShouldEqual, editMetadata.Dataset.CanonicalTopic)
-				So(editableMetadataObj.Subtopics, ShouldResemble, editMetadata.Dataset.Subtopics)
-				So(editableMetadataObj.License, ShouldResemble, editMetadata.Dataset.License)
-				So(editableMetadataObj.Methodologies, ShouldResemble, *editMetadata.Dataset.Methodologies)
-				So(editableMetadataObj.NationalStatistic, ShouldResemble, &editMetadata.Dataset.NationalStatistic)
-				So(editableMetadataObj.NextRelease, ShouldResemble, editMetadata.Dataset.NextRelease)
-				So(editableMetadataObj.Publications, ShouldResemble, *editMetadata.Dataset.Publications)
-				So(editableMetadataObj.RelatedDatasets, ShouldResemble, *editMetadata.Dataset.RelatedDatasets)
-				So(editableMetadataObj.ReleaseFrequency, ShouldResemble, editMetadata.Dataset.ReleaseFrequency)
-				So(editableMetadataObj.Survey, ShouldEqual, editMetadata.Dataset.Survey)
+		Convey("And an EditMetadata object", func() {
+			editMetadata := model.EditMetadata{
+				Dataset: *mockDatasetDetails,
+				Version: mockVersion,
+			}
+			Convey("When we call PutMetadata", func() {
 
-				So(editableMetadataObj.Dimensions, ShouldResemble, editMetadata.Version.Dimensions)
-				So(editableMetadataObj.ReleaseDate, ShouldEqual, editMetadata.Version.ReleaseDate)
-				So(editableMetadataObj.Alerts, ShouldEqual, editMetadata.Version.Alerts)
-				So(editableMetadataObj.LatestChanges, ShouldResemble, &editMetadata.Version.LatestChanges)
-				So(editableMetadataObj.UsageNotes, ShouldEqual, editMetadata.Version.UsageNotes)
+				editableMetadataObj := PutMetadata(editMetadata)
+
+				Convey("Then it returns an object with all the editable metadata fields populated", func() {
+					So(editableMetadataObj.Description, ShouldEqual, editMetadata.Dataset.Description)
+					So(editableMetadataObj.Keywords, ShouldResemble, *editMetadata.Dataset.Keywords)
+					So(editableMetadataObj.Title, ShouldEqual, editMetadata.Dataset.Title)
+					So(editableMetadataObj.UnitOfMeasure, ShouldEqual, editMetadata.Dataset.UnitOfMeasure)
+					So(editableMetadataObj.Contacts, ShouldResemble, *editMetadata.Dataset.Contacts)
+					So(editableMetadataObj.QMI, ShouldResemble, &editMetadata.Dataset.QMI)
+					So(editableMetadataObj.RelatedContent, ShouldResemble, *editMetadata.Dataset.RelatedContent)
+					So(editableMetadataObj.CanonicalTopic, ShouldEqual, editMetadata.Dataset.CanonicalTopic)
+					So(editableMetadataObj.Subtopics, ShouldResemble, editMetadata.Dataset.Subtopics)
+					So(editableMetadataObj.License, ShouldResemble, editMetadata.Dataset.License)
+					So(editableMetadataObj.Methodologies, ShouldResemble, *editMetadata.Dataset.Methodologies)
+					So(editableMetadataObj.NationalStatistic, ShouldResemble, &editMetadata.Dataset.NationalStatistic)
+					So(editableMetadataObj.NextRelease, ShouldResemble, editMetadata.Dataset.NextRelease)
+					So(editableMetadataObj.Publications, ShouldResemble, *editMetadata.Dataset.Publications)
+					So(editableMetadataObj.RelatedDatasets, ShouldResemble, *editMetadata.Dataset.RelatedDatasets)
+					So(editableMetadataObj.ReleaseFrequency, ShouldResemble, editMetadata.Dataset.ReleaseFrequency)
+					So(editableMetadataObj.Survey, ShouldEqual, editMetadata.Dataset.Survey)
+
+					So(editableMetadataObj.Dimensions, ShouldResemble, editMetadata.Version.Dimensions)
+					So(editableMetadataObj.ReleaseDate, ShouldEqual, editMetadata.Version.ReleaseDate)
+					So(editableMetadataObj.Alerts, ShouldEqual, editMetadata.Version.Alerts)
+					So(editableMetadataObj.LatestChanges, ShouldResemble, &editMetadata.Version.LatestChanges)
+					So(editableMetadataObj.UsageNotes, ShouldEqual, editMetadata.Version.UsageNotes)
+				})
 			})
 		})
 
