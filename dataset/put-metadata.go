@@ -143,7 +143,7 @@ func putEditableMetadata(w http.ResponseWriter, req *http.Request, dc DatasetCli
 		return
 	}
 
-	versionEtag := body.Version.ETag
+	versionEtag := body.VersionEtag
 
 	editableMetadata := mapper.PutMetadata(body)
 
