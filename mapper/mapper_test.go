@@ -399,7 +399,43 @@ func TestMetadata(t *testing.T) {
 			})
 		})
 
-		Convey("And an EditMetadata object", func() {
+		Convey("And an empty EditMetadata", func() {
+			editMetadata := model.EditMetadata{}
+			Convey("When we call PutMetadata", func() {
+
+				editableMetadataObj := PutMetadata(editMetadata)
+
+				Convey("Then it returns an object with all the editable metadata fields populated", func() {
+					So(editableMetadataObj.Description, ShouldBeEmpty)
+					So(editableMetadataObj.Keywords, ShouldBeEmpty)
+					So(editableMetadataObj.Title, ShouldBeEmpty)
+					So(editableMetadataObj.UnitOfMeasure, ShouldBeEmpty)
+					So(editableMetadataObj.Contacts, ShouldBeEmpty)
+					So(editableMetadataObj.QMI.Description, ShouldBeEmpty)
+					So(editableMetadataObj.QMI.Title, ShouldBeEmpty)
+					So(editableMetadataObj.QMI.URL, ShouldBeEmpty)
+					So(editableMetadataObj.RelatedContent, ShouldBeEmpty)
+					So(editableMetadataObj.CanonicalTopic, ShouldBeEmpty)
+					So(editableMetadataObj.Subtopics, ShouldBeEmpty)
+					So(editableMetadataObj.License, ShouldBeEmpty)
+					So(editableMetadataObj.Methodologies, ShouldBeEmpty)
+					So(*editableMetadataObj.NationalStatistic, ShouldBeFalse)
+					So(editableMetadataObj.NextRelease, ShouldBeEmpty)
+					So(editableMetadataObj.Publications, ShouldBeEmpty)
+					So(editableMetadataObj.RelatedDatasets, ShouldBeEmpty)
+					So(editableMetadataObj.ReleaseFrequency, ShouldBeEmpty)
+					So(editableMetadataObj.Survey, ShouldBeEmpty)
+
+					So(editableMetadataObj.Dimensions, ShouldBeEmpty)
+					So(editableMetadataObj.ReleaseDate, ShouldBeEmpty)
+					So(editableMetadataObj.Alerts, ShouldBeNil)
+					So(editableMetadataObj.LatestChanges, ShouldBeEmpty)
+					So(editableMetadataObj.UsageNotes, ShouldBeNil)
+				})
+			})
+		})
+
+		Convey("And an EditMetadata object with full dataset and version", func() {
 			editMetadata := model.EditMetadata{
 				Dataset: *mockDatasetDetails,
 				Version: mockVersion,
@@ -435,6 +471,5 @@ func TestMetadata(t *testing.T) {
 				})
 			})
 		})
-
 	})
 }
