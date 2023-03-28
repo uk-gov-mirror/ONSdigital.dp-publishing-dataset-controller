@@ -42,6 +42,9 @@ var _ DatasetClient = &DatasetClientMock{}
 //			GetVersionFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, edition string, version string) (datasetclient.Version, error) {
 //				panic("mock out the GetVersion method")
 //			},
+//			GetVersionWithHeadersFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, edition string, version string) (datasetclient.Version, datasetclient.ResponseHeaders, error) {
+//				panic("mock out the GetVersionWithHeaders method")
+//			},
 //			GetVersionsInBatchesFunc: func(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, edition string, batchSize int, maxWorkers int) (datasetclient.VersionsList, error) {
 //				panic("mock out the GetVersionsInBatches method")
 //			},
@@ -666,6 +669,36 @@ func (mock *DatasetClientMock) GetVersion(ctx context.Context, userAuthToken str
 	return mock.GetVersionFunc(ctx, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version)
 }
 
+// GetVersionCalls gets all the calls that were made to GetVersion.
+// Check the length with:
+//
+//	len(mockedDatasetClient.GetVersionCalls())
+func (mock *DatasetClientMock) GetVersionCalls() []struct {
+	Ctx                      context.Context
+	UserAuthToken            string
+	ServiceAuthToken         string
+	DownloadServiceAuthToken string
+	CollectionID             string
+	DatasetID                string
+	Edition                  string
+	Version                  string
+} {
+	var calls []struct {
+		Ctx                      context.Context
+		UserAuthToken            string
+		ServiceAuthToken         string
+		DownloadServiceAuthToken string
+		CollectionID             string
+		DatasetID                string
+		Edition                  string
+		Version                  string
+	}
+	mock.lockGetVersion.RLock()
+	calls = mock.calls.GetVersion
+	mock.lockGetVersion.RUnlock()
+	return calls
+}
+
 // GetVersionWithHeaders calls GetVersionWithHeadersFunc.
 func (mock *DatasetClientMock) GetVersionWithHeaders(ctx context.Context, userAuthToken string, serviceAuthToken string, downloadServiceAuthToken string, collectionID string, datasetID string, edition string, version string) (datasetclient.Version, datasetclient.ResponseHeaders, error) {
 	if mock.GetVersionWithHeadersFunc == nil {
@@ -696,11 +729,11 @@ func (mock *DatasetClientMock) GetVersionWithHeaders(ctx context.Context, userAu
 	return mock.GetVersionWithHeadersFunc(ctx, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version)
 }
 
-// GetVersionCalls gets all the calls that were made to GetVersion.
+// GetVersionWithHeadersCalls gets all the calls that were made to GetVersionWithHeaders.
 // Check the length with:
 //
-//	len(mockedDatasetClient.GetVersionCalls())
-func (mock *DatasetClientMock) GetVersionCalls() []struct {
+//	len(mockedDatasetClient.GetVersionWithHeadersCalls())
+func (mock *DatasetClientMock) GetVersionWithHeadersCalls() []struct {
 	Ctx                      context.Context
 	UserAuthToken            string
 	ServiceAuthToken         string
@@ -720,9 +753,9 @@ func (mock *DatasetClientMock) GetVersionCalls() []struct {
 		Edition                  string
 		Version                  string
 	}
-	mock.lockGetVersion.RLock()
-	calls = mock.calls.GetVersion
-	mock.lockGetVersion.RUnlock()
+	mock.lockGetVersionWithHeaders.RLock()
+	calls = mock.calls.GetVersionWithHeaders
+	mock.lockGetVersionWithHeaders.RUnlock()
 	return calls
 }
 
