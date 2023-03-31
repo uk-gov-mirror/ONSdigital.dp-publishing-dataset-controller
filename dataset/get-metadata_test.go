@@ -99,7 +99,7 @@ func TestUnitHandlers(t *testing.T) {
 				if collectionID == mockCollectionId {
 					return mockCollection, nil
 				} else {
-					return c, errors.New("Collection not found")
+					return c, errors.New("collection not found")
 				}
 			},
 		}

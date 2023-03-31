@@ -2,6 +2,7 @@ package dataset
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -100,15 +101,15 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc 
 }
 
 // PutEditableMetadata updates a given list of metadata fields, agreed as being editable for both a dataset and a version object
-// This new endpoint makes an unique call to the dataset api updating only the relevant metadata fields in a transactional way
+// This new endpoint makes a unique call to the dataset api updating only the relevant metadata fields in a transactional way
 // It also calls zebedee to update the collection
 func PutEditableMetadata(dc DatasetClient, zc ZebedeeClient) http.HandlerFunc {
 	return dphandlers.ControllerHandler(func(w http.ResponseWriter, r *http.Request, lang, collectionID, accessToken string) {
-		putEditableMetadata(w, r, dc, zc, accessToken, collectionID, lang)
+		putEditableMetadata(w, r, dc, zc, accessToken, collectionID)
 	})
 }
 
-func putEditableMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc ZebedeeClient, userAccessToken, collectionID, lang string) {
+func putEditableMetadata(w http.ResponseWriter, req *http.Request, dc DatasetClient, zc ZebedeeClient, userAccessToken, collectionID string) {
 	ctx := req.Context()
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
@@ -129,7 +130,7 @@ func putEditableMetadata(w http.ResponseWriter, req *http.Request, dc DatasetCli
 		"version":   version,
 	}
 
-	b, err := ioutil.ReadAll(req.Body)
+	b, err := io.ReadAll(req.Body)
 	if err != nil {
 		log.Error(ctx, "putMetadata endpoint: error reading body", err, log.Data(logInfo))
 		http.Error(w, "error reading body", http.StatusBadRequest)
@@ -165,10 +166,15 @@ func putEditableMetadata(w http.ResponseWriter, req *http.Request, dc DatasetCli
 	if err != nil {
 		log.Error(ctx, "error adding version to collection", err, log.Data(logInfo))
 		http.Error(w, "error adding version to collection", http.StatusInternalServerError)
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	if _, err = w.Write(b); err != nil {
+		log.Error(ctx, "failed to write response body", err, log.Data(logInfo))
+		http.Error(w, "failed to write response body", http.StatusInternalServerError)
+		return
+	}
 
 	log.Info(ctx, "put metadata: request successful", log.Data(logInfo))
 }
