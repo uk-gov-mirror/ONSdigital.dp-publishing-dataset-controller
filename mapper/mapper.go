@@ -98,11 +98,59 @@ func EditMetadata(d *dataset.DatasetDetails, v dataset.Version, dim []dataset.Ve
 
 }
 
+// PutMetadata transform an EditMetadata object to the EditableMetadata as expected by dataset api
+func PutMetadata(m model.EditMetadata) dataset.EditableMetadata {
+	metadata := dataset.EditableMetadata{
+		CanonicalTopic:    m.Dataset.CanonicalTopic,
+		Description:       m.Dataset.Description,
+		Dimensions:        m.Version.Dimensions,
+		LatestChanges:     &m.Version.LatestChanges,
+		License:           m.Dataset.License,
+		NationalStatistic: &m.Dataset.NationalStatistic,
+		NextRelease:       m.Dataset.NextRelease,
+		QMI:               &m.Dataset.QMI,
+		ReleaseDate:       m.Version.ReleaseDate,
+		ReleaseFrequency:  m.Dataset.ReleaseFrequency,
+		Subtopics:         m.Dataset.Subtopics,
+		Survey:            m.Dataset.Survey,
+		Title:             m.Dataset.Title,
+		UnitOfMeasure:     m.Dataset.UnitOfMeasure,
+	}
+
+	if m.Dataset.Contacts != nil {
+		metadata.Contacts = *m.Dataset.Contacts
+	}
+	if m.Dataset.Keywords != nil {
+		metadata.Keywords = *m.Dataset.Keywords
+	}
+	if m.Dataset.Methodologies != nil {
+		metadata.Methodologies = *m.Dataset.Methodologies
+	}
+	if m.Dataset.Publications != nil {
+		metadata.Publications = *m.Dataset.Publications
+	}
+	if m.Dataset.RelatedDatasets != nil {
+		metadata.RelatedDatasets = *m.Dataset.RelatedDatasets
+	}
+	if m.Dataset.RelatedContent != nil {
+		metadata.RelatedContent = *m.Dataset.RelatedContent
+	}
+
+	if m.Version.Alerts != nil {
+		metadata.Alerts = m.Version.Alerts
+	}
+	if m.Version.UsageNotes != nil {
+		metadata.UsageNotes = m.Version.UsageNotes
+	}
+
+	return metadata
+}
+
 func EditDatasetVersionMetaData(d dataset.DatasetDetails, v dataset.Version) (model.EditVersionMetaData, error) {
 	keywordsString := ""
 	if d.Keywords != nil {
 		keywords := *d.Keywords
-		keywordsString = fmt.Sprintf(strings.Join(keywords, ", "))
+		keywordsString = fmt.Sprint(strings.Join(keywords, ", "))
 	}
 
 	relatedContent := mapRelatedContent(d.RelatedDatasets, d.Methodologies, d.Publications)

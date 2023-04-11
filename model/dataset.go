@@ -41,6 +41,7 @@ type EditMetadata struct {
 	CollectionID           string                           `json:"collection_id"`
 	CollectionState        string                           `json:"collection_state"`
 	CollectionLastEditedBy string                           `json:"collection_last_edited_by"`
+	VersionEtag            string                           `json:"version_etag"`
 }
 
 type EditVersionMetaData struct {

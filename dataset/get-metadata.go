@@ -53,7 +53,7 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		"version":   version,
 	}
 
-	v, err := dc.GetVersion(ctx, userAccessToken, "", "", collectionID, datasetID, edition, version)
+	v, headers, err := dc.GetVersionWithHeaders(ctx, userAccessToken, "", "", collectionID, datasetID, edition, version)
 	if err != nil {
 		log.Error(ctx, "failed Get version details", err, log.Data(logInfo))
 		setErrorStatusCode(req, w, err, datasetID)
@@ -85,9 +85,10 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 		return
 	}
 
-	p := mapper.EditMetadata(d.Next, v, dims, c)
+	editMetadata := mapper.EditMetadata(d.Next, v, dims, c)
+	editMetadata.VersionEtag = headers.ETag
 
-	b, err := json.Marshal(p)
+	b, err := json.Marshal(editMetadata)
 	if err != nil {
 		log.Error(ctx, "failed marshalling page into bytes", err)
 		setErrorStatusCode(req, w, err, datasetID)
