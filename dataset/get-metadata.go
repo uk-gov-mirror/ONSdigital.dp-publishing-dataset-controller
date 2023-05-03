@@ -74,6 +74,13 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	// to prevent the user having to fill these in again
 	dims := []datasetclient.VersionDimension{}
 	if v.State == editionConfirmedState && v.Version > 1 {
+		if d.Current == nil {
+			err = errors.New("no current version published")
+			log.Error(ctx, "no current version published", err, log.Data(logInfo))
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		dimensions := getLatestPublishedVersionDimensions(ctx, w, req, dc, userAccessToken, collectionID, d.Current.Links.LatestVersion.URL)
 		dims = append(dims, dimensions...)
 	}

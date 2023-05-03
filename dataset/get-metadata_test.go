@@ -184,3 +184,79 @@ func TestUnitHandlers(t *testing.T) {
 		})
 	})
 }
+
+func TestCurrentVersionMissingError(t *testing.T) {
+	const mockUserAuthToken = "testuser"
+	const mockCollectionId = "test-collection"
+
+	mockDatasetDetails := dataset.DatasetDetails{
+		ID:           "test-dataset",
+		CollectionID: mockCollectionId,
+		Links:        dataset.Links{LatestVersion: dataset.Link{URL: "/v1/datasets/test/editions/test/version/1"}},
+	}
+
+	mockVersionDetails := dataset.Version{
+		ID:      "test-version",
+		Version: 2,
+	}
+
+	datasetCollectionItem := zebedee.CollectionItem{
+		ID:           mockDatasetDetails.ID,
+		State:        "inProgress",
+		LastEditedBy: "an-user",
+	}
+
+	mockCollection := zebedee.Collection{
+		ID: mockCollectionId,
+		Datasets: []zebedee.CollectionItem{
+
+			{
+				ID:           "foo",
+				State:        "reviewed",
+				LastEditedBy: "other-user",
+			},
+			datasetCollectionItem,
+		},
+	}
+
+	mockZebedeeClient := &ZebedeeClientMock{
+		GetCollectionFunc: func(ctx context.Context, userAccessToken, collectionID string) (c zebedeeclient.Collection, err error) {
+			if collectionID == mockCollectionId {
+				return mockCollection, nil
+			} else {
+				return c, errors.New("collection not found")
+			}
+		},
+	}
+
+	responseHeaders := dataset.ResponseHeaders{ETag: "version-etag"}
+
+	Convey("when Current is null when calling getEditMetadataHandler", t, func() {
+		mockDataset := dataset.Dataset{
+			Next: &mockDatasetDetails,
+		}
+
+		mockDatasetClient := &DatasetClientMock{
+			GetDatasetCurrentAndNextFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, collectionID, datasetID string) (m datasetclient.Dataset, err error) {
+				return mockDataset, nil
+			},
+			GetVersionFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version string) (datasetclient.Version, error) {
+				return mockVersionDetails, nil
+			},
+			GetVersionWithHeadersFunc: func(ctx context.Context, userAuthToken, serviceAuthToken, downloadServiceAuthToken, collectionID, datasetID, edition, version string) (datasetclient.Version, datasetclient.ResponseHeaders, error) {
+				return mockVersionDetails, responseHeaders, nil
+			},
+		}
+
+		mockVersionDetails.State = "edition-confirmed"
+
+		req := httptest.NewRequest("GET", "/datasets/bar/editions/baz/versions/1", nil)
+		req.Header.Set("Collection-Id", mockCollectionId)
+		req.Header.Set("X-Florence-Token", mockUserAuthToken)
+		w := doTestRequest("/datasets/{datasetID}/editions/{editionID}/versions/{versionID}", req, GetMetadataHandler(mockDatasetClient, mockZebedeeClient), nil)
+
+		So(w.Code, ShouldEqual, http.StatusBadRequest)
+		So(w.Body.String(), ShouldNotBeNil)
+		So(w.Body.String(), ShouldEqual, "no current version published\n")
+	})
+}
