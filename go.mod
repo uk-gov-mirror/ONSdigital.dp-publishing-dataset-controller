@@ -8,6 +8,9 @@ replace github.com/spf13/cobra => github.com/spf13/cobra v1.4.0
 // fixes vulnerabilities in golang.org/x/text@v0.3.7 dependency
 replace golang.org/x/text => golang.org/x/text v0.3.8
 
+// [CVE-2023-39325] CWE-770: Allocation of Resources Without Limits or Throttling
+replace golang.org/x/net => golang.org/x/net v0.23.0
+
 require (
 	github.com/ONSdigital/dp-api-clients-go/v2 v2.250.0
 	github.com/ONSdigital/dp-healthcheck v1.5.0
@@ -33,6 +36,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/smartystreets/assertions v1.13.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 )
