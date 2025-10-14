@@ -1,15 +1,6 @@
 module github.com/ONSdigital/dp-publishing-dataset-controller
 
-go 1.19
-
-// fixes vulnerabilities in github.com/hashicorp/consul/api@v1.1.0 and github.com/hashicorp/consul/sdk@v0.1.1 dependencies
-replace github.com/spf13/cobra => github.com/spf13/cobra v1.4.0
-
-// fixes vulnerabilities in golang.org/x/text@v0.3.7 dependency
-replace golang.org/x/text => golang.org/x/text v0.3.8
-
-// [CVE-2023-39325] CWE-770: Allocation of Resources Without Limits or Throttling
-replace golang.org/x/net => golang.org/x/net v0.23.0
+go 1.24
 
 require (
 	github.com/ONSdigital/dp-api-clients-go/v2 v2.250.0
