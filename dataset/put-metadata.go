@@ -31,14 +31,14 @@ func putMetadata(w http.ResponseWriter, req *http.Request, dc DatasetAPIClient, 
 	}
 
 	vars := mux.Vars(req)
-	datasetID := vars["datasetID"]
+	datasetID := vars[datasetIDKey]
 	edition := vars["editionID"]
 	version := vars["versionID"]
 
 	logInfo := map[string]interface{}{
-		"datasetID": datasetID,
-		"edition":   edition,
-		"version":   version,
+		datasetIDKey: datasetID,
+		editionKey:   edition,
+		"version":    version,
 	}
 
 	headers := datasetApiSdk.Headers{
@@ -138,14 +138,14 @@ func putEditableMetadata(w http.ResponseWriter, req *http.Request, dc DatasetAPI
 	}
 
 	vars := mux.Vars(req)
-	datasetID := vars["datasetID"]
+	datasetID := vars[datasetIDKey]
 	edition := vars["editionID"]
 	version := vars["versionID"]
 
 	logInfo := map[string]interface{}{
-		"datasetID": datasetID,
-		"edition":   edition,
-		"version":   version,
+		datasetIDKey: datasetID,
+		editionKey:   edition,
+		"version":    version,
 	}
 
 	headers := datasetApiSdk.Headers{

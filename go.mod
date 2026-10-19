@@ -1,6 +1,6 @@
 module github.com/ONSdigital/dp-publishing-dataset-controller
 
-go 1.24.0
+go 1.27.0
 
 require (
 	github.com/ONSdigital/dp-api-clients-go/v2 v2.270.0
@@ -16,11 +16,6 @@ require (
 )
 
 require (
-	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b // indirect
-	go.mongodb.org/mongo-driver v1.17.6 // indirect
-)
-
-require (
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -30,7 +25,9 @@ require (
 	github.com/justinas/alice v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b // indirect
 	github.com/smarty/assertions v1.16.0 // indirect
+	go.mongodb.org/mongo-driver v1.17.6 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel v1.38.0 // indirect
 	go.opentelemetry.io/otel/metric v1.38.0 // indirect

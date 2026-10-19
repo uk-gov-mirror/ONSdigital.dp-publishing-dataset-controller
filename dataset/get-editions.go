@@ -23,7 +23,7 @@ func getEditions(w http.ResponseWriter, req *http.Request, dc DatasetAPIClient, 
 	ctx := req.Context()
 
 	vars := mux.Vars(req)
-	datasetID := vars["datasetID"]
+	datasetID := vars[datasetIDKey]
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)
 	if err != nil {
@@ -33,7 +33,7 @@ func getEditions(w http.ResponseWriter, req *http.Request, dc DatasetAPIClient, 
 	}
 
 	logInfo := map[string]interface{}{
-		"datasetID":    datasetID,
+		datasetIDKey:   datasetID,
 		"collectionID": collectionID,
 	}
 
