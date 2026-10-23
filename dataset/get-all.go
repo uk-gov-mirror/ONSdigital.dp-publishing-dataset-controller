@@ -11,6 +11,11 @@ import (
 	"github.com/ONSdigital/log.go/v2/log"
 )
 
+const (
+	datasetIDKey = "datasetID"
+	editionKey   = "edition"
+)
+
 // GetAll returns a mapped list of all datasets
 func GetAll(dc DatasetAPIClient, batchSize, maxWorkers int) http.HandlerFunc {
 	return dphandlers.ControllerHandler(func(w http.ResponseWriter, r *http.Request, lang, collectionID, accessToken string) {

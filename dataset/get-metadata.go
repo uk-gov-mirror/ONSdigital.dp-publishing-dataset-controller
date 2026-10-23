@@ -44,14 +44,14 @@ func getEditMetadataHandler(w http.ResponseWriter, req *http.Request, dc Dataset
 	}
 
 	vars := mux.Vars(req)
-	datasetID := vars["datasetID"]
+	datasetID := vars[datasetIDKey]
 	edition := vars["editionID"]
 	version := vars["versionID"]
 
 	logInfo := map[string]interface{}{
-		"datasetID": datasetID,
-		"edition":   edition,
-		"version":   version,
+		datasetIDKey: datasetID,
+		editionKey:   edition,
+		"version":    version,
 	}
 
 	headers := datasetApiSdk.Headers{
@@ -162,6 +162,6 @@ func setErrorStatusCode(req *http.Request, w http.ResponseWriter, err error, dat
 			status = err.Code()
 		}
 	}
-	log.Error(req.Context(), "client error", err, log.Data{"setting-response-status": status, "datasetID": datasetID})
+	log.Error(req.Context(), "client error", err, log.Data{"setting-response-status": status, datasetIDKey: datasetID})
 	w.WriteHeader(status)
 }

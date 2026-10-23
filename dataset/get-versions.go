@@ -23,12 +23,12 @@ func getVersions(w http.ResponseWriter, req *http.Request, dc DatasetAPIClient, 
 	ctx := req.Context()
 
 	vars := mux.Vars(req)
-	datasetID := vars["datasetID"]
+	datasetID := vars[datasetIDKey]
 	editionID := vars["editionID"]
 
 	logInfo := map[string]interface{}{
-		"datasetID": datasetID,
-		"edition":   editionID,
+		datasetIDKey: datasetID,
+		editionKey:   editionID,
 	}
 
 	err := checkAccessTokenAndCollectionHeaders(userAccessToken, collectionID)

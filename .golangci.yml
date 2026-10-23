@@ -64,8 +64,10 @@ linters:
       - linters:
           - dupl
           - errcheck
+          - goconst
           - gocyclo
           - gosec
+          - prealloc
         path: _test\.go
       - linters:
           - revive
